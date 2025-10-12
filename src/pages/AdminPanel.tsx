@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { LogOut, Package, MapPin, Compass, Route, Users, Utensils, Mountain, Calendar, Images } from "lucide-react"
+import { LogOut, Package, Crown, MapPin, Compass, Route, Users, Utensils, Mountain, Calendar, Images } from "lucide-react"
 import JourneysAdmin from "@/components/admin/JourneysAdmin"
 import DestinationsAdmin from "@/components/admin/DestinationsAdmin"
 import ExperiencesAdmin from "@/components/admin/ExperiencesAdmin"
@@ -16,6 +16,8 @@ import { MenuMealsAdmin } from "@/components/admin/MenuMealsAdmin"
 import { ResortPackagesAdmin } from "@/components/admin/ResortPackagesAdmin"
 import { ResortActivitiesAdmin } from "@/components/admin/ResortActivitiesAdmin"
 import ResortGalleryAdmin from "@/components/admin/ResortGalleryAdmin"
+import ManageAdmins from "@/components/admin/ManageAdmins"
+
 
 const AdminPanel = () => {
         const [loading, setLoading] = useState(true)
@@ -27,6 +29,7 @@ const AdminPanel = () => {
                 checkAdminStatus()
         }, [])
 
+        // Update the checkAdminStatus function in AdminPanel.tsx
         const checkAdminStatus = async () => {
                 try {
                         const {
@@ -34,6 +37,18 @@ const AdminPanel = () => {
                         } = await supabase.auth.getUser()
 
                         if (!user) {
+                                navigate("/admin/login")
+                                return
+                        }
+
+                        // Check if email is confirmed
+                        if (!user.email_confirmed_at) {
+                                toast({
+                                        title: "Email not confirmed",
+                                        description: "Please check your email and confirm your account before accessing admin panel",
+                                        variant: "destructive",
+                                })
+                                await supabase.auth.signOut()
                                 navigate("/admin/login")
                                 return
                         }
@@ -103,10 +118,7 @@ const AdminPanel = () => {
                         <main className="container mx-auto px-4 py-8">
                                 <Tabs defaultValue="pending" className="space-y-6">
                                         <TabsList className="grid grid-cols-4 lg:grid-cols-9 w-full">
-                                                <TabsTrigger value="pending" className="flex items-center gap-2">
-                                                        <Users className="h-4 w-4" />
-                                                        <span className="hidden sm:inline">Pending</span>
-                                                </TabsTrigger>
+
                                                 <TabsTrigger value="journeys" className="flex items-center gap-2">
                                                         <Route className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Journeys</span>
@@ -139,10 +151,22 @@ const AdminPanel = () => {
                                                         <Images className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Gallery</span>
                                                 </TabsTrigger>
+                                                <TabsTrigger value="manage-admins" className="flex items-center gap-2">
+                                                        <Crown className="h-4 w-4" />
+                                                        <span className="hidden sm:inline">Manage Admins</span>
+                                                </TabsTrigger>
+                                                <TabsTrigger value="pending" className="flex items-center gap-2">
+                                                        <Users className="h-4 w-4" />
+                                                        <span className="hidden sm:inline">Pending</span>
+                                                </TabsTrigger>
                                         </TabsList>
 
                                         <TabsContent value="pending">
                                                 <PendingUsersAdmin />
+                                        </TabsContent>
+
+                                        <TabsContent value="manage-admins">
+                                                <ManageAdmins />
                                         </TabsContent>
 
                                         <TabsContent value="journeys">

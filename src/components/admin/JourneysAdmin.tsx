@@ -174,7 +174,7 @@ const JourneysAdmin = () => {
                                                         Add Journey
                                                 </Button>
                                         </DialogTrigger>
-                                        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                                        <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none p-6 overflow-y-auto">
                                                 <DialogHeader>
                                                         <DialogTitle>{editingJourney ? "Edit Journey" : "Add New Journey"}</DialogTitle>
                                                 </DialogHeader>

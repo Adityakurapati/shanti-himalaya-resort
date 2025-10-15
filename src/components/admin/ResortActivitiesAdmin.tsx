@@ -1,136 +1,172 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Mountain } from "lucide-react";
+"use client"
+
+import type React from "react"
+
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
+import ImageUploader from "./ImageUploader"
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Mountain,
+  Tent,
+  Trees,
+  MapPin,
+  Compass,
+  Route,
+  Camera,
+  Coffee,
+  Utensils,
+  Bike,
+  Binary as Binoculars,
+  Sailboat,
+  Sun,
+  Star,
+} from "lucide-react"
 
 interface Activity {
-  id: string;
-  title: string;
-  description: string;
-  full_description: string;
-  icon: string;
+  id: string
+  title: string
+  description: string
+  full_description: string
+  icon: string
+  image_url?: string
 }
 
 export const ResortActivitiesAdmin = () => {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
-  const { toast } = useToast();
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
+  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     full_description: "",
-    icon: "Mountain"
-  });
+    icon: "Mountain",
+    image_url: "",
+  })
+
+  const travelIconOptions = [
+    { name: "Mountain", Icon: Mountain },
+    { name: "Tent", Icon: Tent },
+    { name: "Trees", Icon: Trees },
+    { name: "MapPin", Icon: MapPin },
+    { name: "Compass", Icon: Compass },
+    { name: "Route", Icon: Route },
+    { name: "Camera", Icon: Camera },
+    { name: "Coffee", Icon: Coffee },
+    { name: "Utensils", Icon: Utensils },
+    { name: "Bike", Icon: Bike },
+    { name: "Binoculars", Icon: Binoculars },
+    { name: "Sailboat", Icon: Sailboat },
+    { name: "Sun", Icon: Sun },
+    { name: "Star", Icon: Star },
+  ]
 
   useEffect(() => {
-    fetchActivities();
-  }, []);
+    fetchActivities()
+  }, [])
 
   const fetchActivities = async () => {
     const { data, error } = await supabase
       .from("resort_activities")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
 
     if (error) {
       toast({
         title: "Error fetching activities",
         description: error.message,
-        variant: "destructive"
-      });
+        variant: "destructive",
+      })
     } else {
-      setActivities(data || []);
+      setActivities(data || [])
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (editingActivity) {
-      const { error } = await supabase
-        .from("resort_activities")
-        .update(formData)
-        .eq("id", editingActivity.id);
+      const { error } = await supabase.from("resort_activities").update(formData).eq("id", editingActivity.id)
 
       if (error) {
         toast({
           title: "Error updating activity",
           description: error.message,
-          variant: "destructive"
-        });
+          variant: "destructive",
+        })
       } else {
-        toast({ title: "Activity updated successfully!" });
-        fetchActivities();
-        resetForm();
+        toast({ title: "Activity updated successfully!" })
+        fetchActivities()
+        resetForm()
       }
     } else {
-      const { error } = await supabase
-        .from("resort_activities")
-        .insert([formData]);
+      const { error } = await supabase.from("resort_activities").insert([formData])
 
       if (error) {
         toast({
           title: "Error creating activity",
           description: error.message,
-          variant: "destructive"
-        });
+          variant: "destructive",
+        })
       } else {
-        toast({ title: "Activity created successfully!" });
-        fetchActivities();
-        resetForm();
+        toast({ title: "Activity created successfully!" })
+        fetchActivities()
+        resetForm()
       }
     }
-  };
+  }
 
   const handleEdit = (activity: Activity) => {
-    setEditingActivity(activity);
+    setEditingActivity(activity)
     setFormData({
       title: activity.title,
       description: activity.description,
       full_description: activity.full_description,
-      icon: activity.icon
-    });
-    setIsDialogOpen(true);
-  };
+      icon: activity.icon,
+      image_url: activity.image_url || "",
+    })
+    setIsDialogOpen(true)
+  }
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this activity?")) {
-      const { error } = await supabase
-        .from("resort_activities")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("resort_activities").delete().eq("id", id)
 
       if (error) {
         toast({
           title: "Error deleting activity",
           description: error.message,
-          variant: "destructive"
-        });
+          variant: "destructive",
+        })
       } else {
-        toast({ title: "Activity deleted successfully!" });
-        fetchActivities();
+        toast({ title: "Activity deleted successfully!" })
+        fetchActivities()
       }
     }
-  };
+  }
 
   const resetForm = () => {
     setFormData({
       title: "",
       description: "",
       full_description: "",
-      icon: "Mountain"
-    });
-    setEditingActivity(null);
-    setIsDialogOpen(false);
-  };
+      icon: "Mountain",
+      image_url: "",
+    })
+    setEditingActivity(null)
+    setIsDialogOpen(false)
+  }
 
   return (
     <div className="space-y-6">
@@ -146,7 +182,7 @@ export const ResortActivitiesAdmin = () => {
               Add Activity
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingActivity ? "Edit Activity" : "Add New Activity"}</DialogTitle>
             </DialogHeader>
@@ -181,17 +217,40 @@ export const ResortActivitiesAdmin = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="icon">Icon Name</Label>
-                <Input
-                  id="icon"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  placeholder="Mountain, TreePine, Utensils, Coffee, MapPin"
-                  required
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Use Lucide icon names like: Mountain, TreePine, Utensils, Coffee, MapPin, Camera
+                <Label htmlFor="icon">Icon</Label>
+                <div role="list" className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mt-2">
+                  {travelIconOptions.map(({ name, Icon }) => {
+                    const selected = formData.icon === name
+                    return (
+                      <button
+                        key={name}
+                        type="button"
+                        role="listitem"
+                        aria-pressed={selected}
+                        onClick={() => setFormData({ ...formData, icon: name })}
+                        className={[
+                          "flex flex-col items-center justify-center gap-1 rounded-md border p-3 text-xs",
+                          "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                          selected ? "bg-muted border-primary" : "hover:bg-muted",
+                        ].join(" ")}
+                        title={name}
+                      >
+                        <Icon className="h-5 w-5" aria-hidden="true" />
+                        <span className="text-foreground">{name}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Pick a travel-themed icon. This will be displayed with the activity on the site.
                 </p>
+              </div>
+              <div>
+                <Label htmlFor="image_url">Image (optional)</Label>
+                <ImageUploader
+                  value={formData.image_url}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
+                />
               </div>
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1">
@@ -232,5 +291,5 @@ export const ResortActivitiesAdmin = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

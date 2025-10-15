@@ -1,35 +1,40 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+"use client"
+
+import type React from "react"
+
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { Plus, Edit, Trash2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
+import ImageUploader from "./ImageUploader"
 
 type Destination = {
-  id: string;
-  name: string;
-  description: string;
-  highlights: string[];
-  duration: string;
-  difficulty: string;
-  best_time: string;
-  altitude?: string;
-  featured: boolean;
-  category: string;
-  image_url?: string;
-};
+  id: string
+  name: string
+  description: string
+  highlights: string[]
+  duration: string
+  difficulty: string
+  best_time: string
+  altitude?: string
+  featured: boolean
+  category: string
+  image_url?: string
+}
 
 const DestinationsAdmin = () => {
-  const [destinations, setDestinations] = useState<Destination[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingDestination, setEditingDestination] = useState<Destination | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toast } = useToast();
+  const [destinations, setDestinations] = useState<Destination[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingDestination, setEditingDestination] = useState<Destination | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,82 +47,77 @@ const DestinationsAdmin = () => {
     featured: false,
     category: "",
     image_url: "",
-  });
+  })
 
   useEffect(() => {
-    fetchDestinations();
-    
+    fetchDestinations()
+
     const channel = supabase
-      .channel('destinations-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'destinations' }, () => {
-        fetchDestinations();
+      .channel("destinations-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "destinations" }, () => {
+        fetchDestinations()
       })
-      .subscribe();
+      .subscribe()
 
     return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const fetchDestinations = async () => {
     try {
-      const { data, error } = await supabase
-        .from("destinations")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("destinations").select("*").order("created_at", { ascending: false })
 
-      if (error) throw error;
-      setDestinations(data || []);
+      if (error) throw error
+      setDestinations(data || [])
     } catch (error: any) {
       toast({
         title: "Error fetching destinations",
         description: error.message,
         variant: "destructive",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     const destinationData = {
       ...formData,
-      highlights: formData.highlights.split(",").map(h => h.trim()).filter(Boolean),
-    };
+      highlights: formData.highlights
+        .split(",")
+        .map((h) => h.trim())
+        .filter(Boolean),
+    }
 
     try {
       if (editingDestination) {
-        const { error } = await supabase
-          .from("destinations")
-          .update(destinationData)
-          .eq("id", editingDestination.id);
+        const { error } = await supabase.from("destinations").update(destinationData).eq("id", editingDestination.id)
 
-        if (error) throw error;
-        toast({ title: "Destination updated successfully" });
+        if (error) throw error
+        toast({ title: "Destination updated successfully" })
       } else {
-        const { error } = await supabase
-          .from("destinations")
-          .insert([destinationData]);
+        const { error } = await supabase.from("destinations").insert([destinationData])
 
-        if (error) throw error;
-        toast({ title: "Destination created successfully" });
+        if (error) throw error
+        toast({ title: "Destination created successfully" })
       }
 
-      resetForm();
-      setIsDialogOpen(false);
+      resetForm()
+      setIsDialogOpen(false)
     } catch (error: any) {
       toast({
         title: "Error saving destination",
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const handleEdit = (destination: Destination) => {
-    setEditingDestination(destination);
+    setEditingDestination(destination)
     setFormData({
       name: destination.name,
       description: destination.description,
@@ -129,29 +129,26 @@ const DestinationsAdmin = () => {
       featured: destination.featured,
       category: destination.category,
       image_url: destination.image_url || "",
-    });
-    setIsDialogOpen(true);
-  };
+    })
+    setIsDialogOpen(true)
+  }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this destination?")) return;
+    if (!confirm("Are you sure you want to delete this destination?")) return
 
     try {
-      const { error } = await supabase
-        .from("destinations")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("destinations").delete().eq("id", id)
 
-      if (error) throw error;
-      toast({ title: "Destination deleted successfully" });
+      if (error) throw error
+      toast({ title: "Destination deleted successfully" })
     } catch (error: any) {
       toast({
         title: "Error deleting destination",
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const resetForm = () => {
     setFormData({
@@ -165,12 +162,12 @@ const DestinationsAdmin = () => {
       featured: false,
       category: "",
       image_url: "",
-    });
-    setEditingDestination(null);
-  };
+    })
+    setEditingDestination(null)
+  }
 
   if (loading) {
-    return <div className="text-center py-8">Loading destinations...</div>;
+    return <div className="text-center py-8">Loading destinations...</div>
   }
 
   return (
@@ -184,7 +181,7 @@ const DestinationsAdmin = () => {
               Add Destination
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingDestination ? "Edit Destination" : "Add New Destination"}</DialogTitle>
             </DialogHeader>
@@ -265,11 +262,10 @@ const DestinationsAdmin = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
+                <Label htmlFor="image_url">Image</Label>
+                <ImageUploader
                   value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -317,7 +313,7 @@ const DestinationsAdmin = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DestinationsAdmin;
+export default DestinationsAdmin

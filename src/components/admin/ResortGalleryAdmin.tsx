@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, Edit, Trash2, ImageIcon, ListOrdered } from "lucide-react"
+import ImageUploader from "./ImageUploader"
 
 interface GalleryItem {
   id: string
@@ -126,19 +127,16 @@ export const ResortGalleryAdmin = () => {
               Add Image
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editing ? "Edit Image" : "Add New Image"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
+                <Label htmlFor="image_url">Image</Label>
+                <ImageUploader
                   value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://..."
-                  required
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
                 />
               </div>
               <div>

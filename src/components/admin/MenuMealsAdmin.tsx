@@ -232,7 +232,7 @@ export const MenuMealsAdmin = () => {
                 Add Meal Plan
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingPlan ? "Edit Meal Plan" : "Add New Meal Plan"}</DialogTitle>
               </DialogHeader>
@@ -367,7 +367,7 @@ export const MenuMealsAdmin = () => {
                 Add Schedule
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingSchedule ? "Edit Schedule" : "Add Schedule"}</DialogTitle>
               </DialogHeader>

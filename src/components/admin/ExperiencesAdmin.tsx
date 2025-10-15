@@ -1,34 +1,39 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+"use client"
+
+import type React from "react"
+
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { Plus, Edit, Trash2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
+import ImageUploader from "./ImageUploader"
 
 type Experience = {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  duration: string;
-  group_size: string;
-  highlights: string[];
-  price: string;
-  featured: boolean;
-  image_url?: string;
-};
+  id: string
+  title: string
+  description: string
+  category: string
+  duration: string
+  group_size: string
+  highlights: string[]
+  price: string
+  featured: boolean
+  image_url?: string
+}
 
 const ExperiencesAdmin = () => {
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toast } = useToast();
+  const [experiences, setExperiences] = useState<Experience[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingExperience, setEditingExperience] = useState<Experience | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     title: "",
@@ -40,82 +45,77 @@ const ExperiencesAdmin = () => {
     price: "",
     featured: false,
     image_url: "",
-  });
+  })
 
   useEffect(() => {
-    fetchExperiences();
-    
+    fetchExperiences()
+
     const channel = supabase
-      .channel('experiences-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'experiences' }, () => {
-        fetchExperiences();
+      .channel("experiences-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "experiences" }, () => {
+        fetchExperiences()
       })
-      .subscribe();
+      .subscribe()
 
     return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const fetchExperiences = async () => {
     try {
-      const { data, error } = await supabase
-        .from("experiences")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("experiences").select("*").order("created_at", { ascending: false })
 
-      if (error) throw error;
-      setExperiences(data || []);
+      if (error) throw error
+      setExperiences(data || [])
     } catch (error: any) {
       toast({
         title: "Error fetching experiences",
         description: error.message,
         variant: "destructive",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     const experienceData = {
       ...formData,
-      highlights: formData.highlights.split(",").map(h => h.trim()).filter(Boolean),
-    };
+      highlights: formData.highlights
+        .split(",")
+        .map((h) => h.trim())
+        .filter(Boolean),
+    }
 
     try {
       if (editingExperience) {
-        const { error } = await supabase
-          .from("experiences")
-          .update(experienceData)
-          .eq("id", editingExperience.id);
+        const { error } = await supabase.from("experiences").update(experienceData).eq("id", editingExperience.id)
 
-        if (error) throw error;
-        toast({ title: "Experience updated successfully" });
+        if (error) throw error
+        toast({ title: "Experience updated successfully" })
       } else {
-        const { error } = await supabase
-          .from("experiences")
-          .insert([experienceData]);
+        const { error } = await supabase.from("experiences").insert([experienceData])
 
-        if (error) throw error;
-        toast({ title: "Experience created successfully" });
+        if (error) throw error
+        toast({ title: "Experience created successfully" })
       }
 
-      resetForm();
-      setIsDialogOpen(false);
+      resetForm()
+      setIsDialogOpen(false)
     } catch (error: any) {
       toast({
         title: "Error saving experience",
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const handleEdit = (experience: Experience) => {
-    setEditingExperience(experience);
+    setEditingExperience(experience)
     setFormData({
       title: experience.title,
       description: experience.description,
@@ -126,29 +126,26 @@ const ExperiencesAdmin = () => {
       price: experience.price,
       featured: experience.featured,
       image_url: experience.image_url || "",
-    });
-    setIsDialogOpen(true);
-  };
+    })
+    setIsDialogOpen(true)
+  }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this experience?")) return;
+    if (!confirm("Are you sure you want to delete this experience?")) return
 
     try {
-      const { error } = await supabase
-        .from("experiences")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("experiences").delete().eq("id", id)
 
-      if (error) throw error;
-      toast({ title: "Experience deleted successfully" });
+      if (error) throw error
+      toast({ title: "Experience deleted successfully" })
     } catch (error: any) {
       toast({
         title: "Error deleting experience",
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const resetForm = () => {
     setFormData({
@@ -161,12 +158,12 @@ const ExperiencesAdmin = () => {
       price: "",
       featured: false,
       image_url: "",
-    });
-    setEditingExperience(null);
-  };
+    })
+    setEditingExperience(null)
+  }
 
   if (loading) {
-    return <div className="text-center py-8">Loading experiences...</div>;
+    return <div className="text-center py-8">Loading experiences...</div>
   }
 
   return (
@@ -180,7 +177,7 @@ const ExperiencesAdmin = () => {
               Add Experience
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingExperience ? "Edit Experience" : "Add New Experience"}</DialogTitle>
             </DialogHeader>
@@ -251,11 +248,10 @@ const ExperiencesAdmin = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
+                <Label htmlFor="image_url">Image</Label>
+                <ImageUploader
                   value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -303,7 +299,7 @@ const ExperiencesAdmin = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ExperiencesAdmin;
+export default ExperiencesAdmin

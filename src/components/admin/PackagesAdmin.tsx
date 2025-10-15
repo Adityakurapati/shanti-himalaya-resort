@@ -1,36 +1,41 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+"use client"
+
+import type React from "react"
+
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { Plus, Edit, Trash2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
+import ImageUploader from "./ImageUploader"
 
 type Package = {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  author: string;
-  author_bio?: string;
-  author_avatar?: string;
-  image_url?: string;
-  tags: string[];
-  featured: boolean;
-  read_time?: string;
-};
+  id: string
+  title: string
+  excerpt: string
+  content: string
+  category: string
+  author: string
+  author_bio?: string
+  author_avatar?: string
+  image_url?: string
+  tags: string[]
+  featured: boolean
+  read_time?: string
+}
 
 const PackagesAdmin = () => {
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingPackage, setEditingPackage] = useState<Package | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toast } = useToast();
+  const [packages, setPackages] = useState<Package[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingPackage, setEditingPackage] = useState<Package | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { toast } = useToast()
 
   const [formData, setFormData] = useState({
     title: "",
@@ -44,82 +49,77 @@ const PackagesAdmin = () => {
     tags: "",
     featured: false,
     read_time: "5 min read",
-  });
+  })
 
   useEffect(() => {
-    fetchPackages();
-    
+    fetchPackages()
+
     const channel = supabase
-      .channel('packages-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'packages' }, () => {
-        fetchPackages();
+      .channel("packages-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "packages" }, () => {
+        fetchPackages()
       })
-      .subscribe();
+      .subscribe()
 
     return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const fetchPackages = async () => {
     try {
-      const { data, error } = await supabase
-        .from("packages")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("packages").select("*").order("created_at", { ascending: false })
 
-      if (error) throw error;
-      setPackages(data || []);
+      if (error) throw error
+      setPackages(data || [])
     } catch (error: any) {
       toast({
         title: "Error fetching packages",
         description: error.message,
         variant: "destructive",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     const packageData = {
       ...formData,
-      tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
-    };
+      tags: formData.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    }
 
     try {
       if (editingPackage) {
-        const { error } = await supabase
-          .from("packages")
-          .update(packageData)
-          .eq("id", editingPackage.id);
+        const { error } = await supabase.from("packages").update(packageData).eq("id", editingPackage.id)
 
-        if (error) throw error;
-        toast({ title: "Package updated successfully" });
+        if (error) throw error
+        toast({ title: "Package updated successfully" })
       } else {
-        const { error } = await supabase
-          .from("packages")
-          .insert([packageData]);
+        const { error } = await supabase.from("packages").insert([packageData])
 
-        if (error) throw error;
-        toast({ title: "Package created successfully" });
+        if (error) throw error
+        toast({ title: "Package created successfully" })
       }
 
-      resetForm();
-      setIsDialogOpen(false);
+      resetForm()
+      setIsDialogOpen(false)
     } catch (error: any) {
       toast({
         title: "Error saving package",
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const handleEdit = (pkg: Package) => {
-    setEditingPackage(pkg);
+    setEditingPackage(pkg)
     setFormData({
       title: pkg.title,
       excerpt: pkg.excerpt,
@@ -132,29 +132,26 @@ const PackagesAdmin = () => {
       tags: pkg.tags.join(", "),
       featured: pkg.featured,
       read_time: pkg.read_time || "5 min read",
-    });
-    setIsDialogOpen(true);
-  };
+    })
+    setIsDialogOpen(true)
+  }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this package?")) return;
+    if (!confirm("Are you sure you want to delete this package?")) return
 
     try {
-      const { error } = await supabase
-        .from("packages")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("packages").delete().eq("id", id)
 
-      if (error) throw error;
-      toast({ title: "Package deleted successfully" });
+      if (error) throw error
+      toast({ title: "Package deleted successfully" })
     } catch (error: any) {
       toast({
         title: "Error deleting package",
         description: error.message,
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const resetForm = () => {
     setFormData({
@@ -169,12 +166,12 @@ const PackagesAdmin = () => {
       tags: "",
       featured: false,
       read_time: "5 min read",
-    });
-    setEditingPackage(null);
-  };
+    })
+    setEditingPackage(null)
+  }
 
   if (loading) {
-    return <div className="text-center py-8">Loading packages...</div>;
+    return <div className="text-center py-8">Loading packages...</div>
   }
 
   return (
@@ -188,7 +185,7 @@ const PackagesAdmin = () => {
               Add Package
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingPackage ? "Edit Package" : "Add New Package"}</DialogTitle>
             </DialogHeader>
@@ -258,19 +255,17 @@ const PackagesAdmin = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="author_avatar">Author Avatar URL</Label>
-                <Input
-                  id="author_avatar"
+                <Label htmlFor="author_avatar">Author Avatar</Label>
+                <ImageUploader
                   value={formData.author_avatar}
-                  onChange={(e) => setFormData({ ...formData, author_avatar: e.target.value })}
+                  onChange={(url) => setFormData({ ...formData, author_avatar: url })}
                 />
               </div>
               <div>
-                <Label htmlFor="image_url">Featured Image URL</Label>
-                <Input
-                  id="image_url"
+                <Label htmlFor="image_url">Featured Image</Label>
+                <ImageUploader
                   value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
                 />
               </div>
               <div>
@@ -326,7 +321,7 @@ const PackagesAdmin = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PackagesAdmin;
+export default PackagesAdmin

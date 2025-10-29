@@ -227,7 +227,7 @@ const DestinationDetail = () => {
                                                 </div>
 
                                                 <motion.h1
-                                                        className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent"
+                                                        className="text-5xl md:text-7xl font-bold mb-6 text-luxury"
                                                         initial={{ opacity: 0, y: 40 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ duration: 0.8, delay: 0.2 }}

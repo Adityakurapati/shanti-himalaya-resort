@@ -148,7 +148,7 @@ const DestinationDetail = () => {
 
         if (loading) {
                 return (
-                        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+                        <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50/30">
                                 <Header />
                                 <div className="pt-32 pb-16 text-center">
                                         <div className="animate-pulse">
@@ -163,7 +163,7 @@ const DestinationDetail = () => {
 
         if (!destination) {
                 return (
-                        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+                        <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50/30">
                                 <Header />
                                 <div className="pt-32 pb-16 text-center">
                                         <motion.div
@@ -173,7 +173,7 @@ const DestinationDetail = () => {
                                         >
                                                 <h1 className="text-4xl font-bold text-foreground mb-4">Destination Not Found</h1>
                                                 <Link to="/destinations">
-                                                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                                                        <Button className="hero-gradient">
                                                                 Back to Destinations
                                                         </Button>
                                                 </Link>
@@ -189,13 +189,13 @@ const DestinationDetail = () => {
         const accommodationData = getAccommodationData();
 
         return (
-                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+                <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50/30">
                         <Header />
 
                         {/* Animated Hero Section */}
-                        <section className="pt-32 pb-20 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-500/20"></div>
-                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent"></div>
+                        <section className="pt-32 pb-20 relative overflow-hidden hero-gradient">
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-500/20"></div>
+                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
 
                                 <div className="container mx-auto px-4 relative z-10">
                                         <motion.div
@@ -213,7 +213,7 @@ const DestinationDetail = () => {
                                                 </Link>
 
                                                 <div className="flex flex-wrap gap-3 mb-6">
-                                                        <Badge className="bg-blue-100 text-blue-700 border-blue-200 px-3 py-1 text-sm">
+                                                        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-3 py-1 text-sm">
                                                                 {destination.category}
                                                         </Badge>
                                                         <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-3 py-1 text-sm">
@@ -253,8 +253,8 @@ const DestinationDetail = () => {
                                                 >
                                                         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
                                                                 <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-blue-100 rounded-lg">
-                                                                                <Clock className="w-5 h-5 text-blue-600" />
+                                                                        <div className="p-2 bg-emerald-100 rounded-lg">
+                                                                                <Clock className="w-5 h-5 text-emerald-600" />
                                                                         </div>
                                                                         <div>
                                                                                 <p className="text-sm text-muted-foreground">Duration</p>
@@ -277,8 +277,8 @@ const DestinationDetail = () => {
 
                                                         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
                                                                 <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-emerald-100 rounded-lg">
-                                                                                <Thermometer className="w-5 h-5 text-emerald-600" />
+                                                                        <div className="p-2 bg-teal-100 rounded-lg">
+                                                                                <Thermometer className="w-5 h-5 text-teal-600" />
                                                                         </div>
                                                                         <div>
                                                                                 <p className="text-sm text-muted-foreground">Best Time</p>
@@ -289,8 +289,8 @@ const DestinationDetail = () => {
 
                                                         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
                                                                 <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-purple-100 rounded-lg">
-                                                                                <Compass className="w-5 h-5 text-purple-600" />
+                                                                        <div className="p-2 bg-cyan-100 rounded-lg">
+                                                                                <Compass className="w-5 h-5 text-cyan-600" />
                                                                         </div>
                                                                         <div>
                                                                                 <p className="text-sm text-muted-foreground">Altitude</p>
@@ -308,7 +308,7 @@ const DestinationDetail = () => {
                                                 >
                                                         <Button
                                                                 size="lg"
-                                                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300"
+                                                                className="hero-gradient text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300"
                                                         >
                                                                 Book This Adventure
                                                         </Button>
@@ -330,28 +330,28 @@ const DestinationDetail = () => {
                                         <div className="max-w-6xl mx-auto">
                                                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
                                                         <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-2 bg-background/50 backdrop-blur-sm p-1 rounded-2xl border">
-                                                                <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="overview" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Overview
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="places" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="places" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Places
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="activities" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="activities" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Activities
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="itinerary" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="itinerary" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Itinerary
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="transport" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="transport" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Transport
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="seasons" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="seasons" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Seasons
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="accommodation" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="accommodation" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Stay
                                                                 </TabsTrigger>
-                                                                <TabsTrigger value="faqs" className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                                                                <TabsTrigger value="faqs" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         FAQs
                                                                 </TabsTrigger>
                                                         </TabsList>
@@ -397,19 +397,19 @@ const DestinationDetail = () => {
 
                                                                                 {/* Quick Facts Sidebar */}
                                                                                 <div className="space-y-6">
-                                                                                        <Card className="bg-gradient-to-br from-white to-blue-50/50 backdrop-blur-sm border-blue-100 shadow-lg">
+                                                                                        <Card className="bg-gradient-to-br from-white to-emerald-50/50 backdrop-blur-sm border-emerald-100 shadow-lg">
                                                                                                 <CardContent className="p-6">
                                                                                                         <h3 className="text-xl font-bold mb-4 text-foreground">Quick Facts</h3>
                                                                                                         <div className="space-y-4">
-                                                                                                                <div className="flex justify-between items-center py-2 border-b border-blue-100">
+                                                                                                                <div className="flex justify-between items-center py-2 border-b border-emerald-100">
                                                                                                                         <span className="text-sm text-muted-foreground">Duration</span>
                                                                                                                         <span className="font-semibold text-foreground">{destination.duration}</span>
                                                                                                                 </div>
-                                                                                                                <div className="flex justify-between items-center py-2 border-b border-blue-100">
+                                                                                                                <div className="flex justify-between items-center py-2 border-b border-emerald-100">
                                                                                                                         <span className="text-sm text-muted-foreground">Difficulty</span>
                                                                                                                         <Badge className="bg-amber-100 text-amber-700">{destination.difficulty}</Badge>
                                                                                                                 </div>
-                                                                                                                <div className="flex justify-between items-center py-2 border-b border-blue-100">
+                                                                                                                <div className="flex justify-between items-center py-2 border-b border-emerald-100">
                                                                                                                         <span className="text-sm text-muted-foreground">Best Season</span>
                                                                                                                         <span className="font-semibold text-foreground">{destination.best_time}</span>
                                                                                                                 </div>
@@ -422,10 +422,10 @@ const DestinationDetail = () => {
                                                                                         </Card>
 
                                                                                         {destination.travel_tips && destination.travel_tips.length > 0 && (
-                                                                                                <Card className="bg-gradient-to-br from-white to-emerald-50/50 backdrop-blur-sm border-emerald-100 shadow-lg">
+                                                                                                <Card className="bg-gradient-to-br from-white to-teal-50/50 backdrop-blur-sm border-teal-100 shadow-lg">
                                                                                                         <CardContent className="p-6">
                                                                                                                 <h3 className="text-xl font-bold mb-4 text-foreground flex items-center">
-                                                                                                                        <Lightbulb className="w-5 h-5 text-emerald-600 mr-2" />
+                                                                                                                        <Lightbulb className="w-5 h-5 text-teal-600 mr-2" />
                                                                                                                         Quick Tips
                                                                                                                 </h3>
                                                                                                                 <ul className="space-y-2">
@@ -457,10 +457,10 @@ const DestinationDetail = () => {
                                                                                                         <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
                                                                                                                 <CardContent className="p-6">
                                                                                                                         <div className="flex items-start space-x-3 mb-3">
-                                                                                                                                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                                                                                                                                <div className="p-2 hero-gradient rounded-lg group-hover:scale-110 transition-transform duration-300">
                                                                                                                                         <MapPin className="w-5 h-5 text-white" />
                                                                                                                                 </div>
-                                                                                                                                <h3 className="text-xl font-bold text-foreground group-hover:text-blue-600 transition-colors duration-300">
+                                                                                                                                <h3 className="text-xl font-bold text-foreground group-hover:text-emerald-600 transition-colors duration-300">
                                                                                                                                         {place.name}
                                                                                                                                 </h3>
                                                                                                                         </div>
@@ -471,7 +471,7 @@ const DestinationDetail = () => {
                                                                                                                                         <ul className="space-y-1">
                                                                                                                                                 {place.highlights.map((highlight: string, idx: number) => (
                                                                                                                                                         <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                                                                                                                                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                                                                                                                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
                                                                                                                                                                 <span>{highlight}</span>
                                                                                                                                                         </li>
                                                                                                                                                 ))}
@@ -505,7 +505,7 @@ const DestinationDetail = () => {
                                                                                                         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
                                                                                                                 <CardContent className="p-6">
                                                                                                                         <div className="flex items-center space-x-3 mb-3">
-                                                                                                                                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg">
+                                                                                                                                <div className="p-2 hero-gradient rounded-lg">
                                                                                                                                         <Activity className="w-5 h-5 text-white" />
                                                                                                                                 </div>
                                                                                                                                 <h3 className="text-lg font-bold text-foreground">{activity.title}</h3>
@@ -535,21 +535,21 @@ const DestinationDetail = () => {
                                                                                                         whileHover={{ x: 5 }}
                                                                                                         transition={{ type: "spring", stiffness: 300 }}
                                                                                                 >
-                                                                                                        <Card className="bg-gradient-to-r from-white to-blue-50/50 backdrop-blur-sm border-l-4 border-l-blue-500 shadow-lg">
+                                                                                                        <Card className="bg-gradient-to-r from-white to-emerald-50/50 backdrop-blur-sm border-l-4 border-l-emerald-500 shadow-lg">
                                                                                                                 <CardContent className="p-6">
                                                                                                                         <div className="flex items-start justify-between mb-4">
                                                                                                                                 <div>
-                                                                                                                                        <Badge className="bg-blue-100 text-blue-700 mb-2">Day {day.day}</Badge>
+                                                                                                                                        <Badge className="bg-emerald-100 text-emerald-700 mb-2">Day {day.day}</Badge>
                                                                                                                                         <h3 className="text-xl font-bold text-foreground">{day.title}</h3>
                                                                                                                                 </div>
-                                                                                                                                <div className="p-2 bg-blue-100 rounded-lg">
-                                                                                                                                        <Calendar className="w-5 h-5 text-blue-600" />
+                                                                                                                                <div className="p-2 bg-emerald-100 rounded-lg">
+                                                                                                                                        <Calendar className="w-5 h-5 text-emerald-600" />
                                                                                                                                 </div>
                                                                                                                         </div>
                                                                                                                         <ul className="space-y-2">
                                                                                                                                 {day.activities && day.activities.map((activity: string, idx: number) => (
                                                                                                                                         <li key={idx} className="flex items-center space-x-3 text-muted-foreground">
-                                                                                                                                                <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                                                                                                                                                <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0"></div>
                                                                                                                                                 <span>{activity}</span>
                                                                                                                                         </li>
                                                                                                                                 ))}
@@ -581,19 +581,19 @@ const DestinationDetail = () => {
                                                                                                         <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
                                                                                                                 <CardContent className="p-6">
                                                                                                                         <div className="flex items-center space-x-3 mb-4">
-                                                                                                                                <div className={`p-3 rounded-xl ${key === 'air' ? 'bg-blue-100' :
-                                                                                                                                        key === 'train' ? 'bg-green-100' : 'bg-orange-100'
+                                                                                                                                <div className={`p-3 rounded-xl ${key === 'air' ? 'bg-emerald-100' :
+                                                                                                                                        key === 'train' ? 'bg-teal-100' : 'bg-amber-100'
                                                                                                                                         }`}>
-                                                                                                                                        {key === 'air' && <Plane className="w-6 h-6 text-blue-600" />}
-                                                                                                                                        {key === 'train' && <Train className="w-6 h-6 text-green-600" />}
-                                                                                                                                        {key === 'road' && <Car className="w-6 h-6 text-orange-600" />}
+                                                                                                                                        {key === 'air' && <Plane className="w-6 h-6 text-emerald-600" />}
+                                                                                                                                        {key === 'train' && <Train className="w-6 h-6 text-teal-600" />}
+                                                                                                                                        {key === 'road' && <Car className="w-6 h-6 text-amber-600" />}
                                                                                                                                 </div>
                                                                                                                                 <h3 className="text-lg font-bold text-foreground">{value.title}</h3>
                                                                                                                         </div>
                                                                                                                         <ul className="space-y-2">
                                                                                                                                 {value.details && value.details.map((detail: string, idx: number) => (
                                                                                                                                         <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
-                                                                                                                                                <ChevronRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                                                                                                                                <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
                                                                                                                                                 <span>{detail}</span>
                                                                                                                                         </li>
                                                                                                                                 ))}
@@ -625,9 +625,9 @@ const DestinationDetail = () => {
                                                                                                         <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
                                                                                                                 <CardContent className="p-6">
                                                                                                                         <div className="text-center mb-4">
-                                                                                                                                <Badge className={`text-sm capitalize ${season === 'winter' ? 'bg-blue-100 text-blue-700' :
-                                                                                                                                        season === 'summer' ? 'bg-orange-100 text-orange-700' :
-                                                                                                                                                'bg-green-100 text-green-700'
+                                                                                                                                <Badge className={`text-sm capitalize ${season === 'winter' ? 'bg-cyan-100 text-cyan-700' :
+                                                                                                                                        season === 'summer' ? 'bg-amber-100 text-amber-700' :
+                                                                                                                                                'bg-emerald-100 text-emerald-700'
                                                                                                                                         }`}>
                                                                                                                                         {season}
                                                                                                                                 </Badge>
@@ -681,8 +681,8 @@ const DestinationDetail = () => {
                                                                                                         <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
                                                                                                                 <CardContent className="p-6">
                                                                                                                         <div className="flex items-center space-x-3 mb-4">
-                                                                                                                                <div className="p-2 bg-purple-100 rounded-lg">
-                                                                                                                                        <Hotel className="w-5 h-5 text-purple-600" />
+                                                                                                                                <div className="p-2 bg-teal-100 rounded-lg">
+                                                                                                                                        <Hotel className="w-5 h-5 text-teal-600" />
                                                                                                                                 </div>
                                                                                                                                 <h3 className="text-lg font-bold text-foreground capitalize">{category}</h3>
                                                                                                                         </div>
@@ -695,7 +695,7 @@ const DestinationDetail = () => {
                                                                                                                                         <ul className="space-y-1">
                                                                                                                                                 {details.options.map((option: string, idx: number) => (
                                                                                                                                                         <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                                                                                                                                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                                                                                                                                                                <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
                                                                                                                                                                 <span>{option}</span>
                                                                                                                                                         </li>
                                                                                                                                                 ))}
@@ -723,9 +723,9 @@ const DestinationDetail = () => {
                                                                                 {getFAQs().map((faq: any, index: number) => (
                                                                                         <FadeInSection key={faq.id || index} delay={index * 0.1}>
                                                                                                 <AccordionItem value={`faq-${faq.id || index}`} className="bg-white/80 backdrop-blur-sm rounded-xl border-0 shadow-lg px-6">
-                                                                                                        <AccordionTrigger className="hover:no-underline [&[data-state=open]]:text-blue-600">
+                                                                                                        <AccordionTrigger className="hover:no-underline [&[data-state=open]]:text-emerald-600">
                                                                                                                 <div className="flex items-center space-x-3 text-left">
-                                                                                                                        <HelpCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                                                                                                        <HelpCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                                                                                                                         <span className="font-semibold">{faq.question}</span>
                                                                                                                 </div>
                                                                                                         </AccordionTrigger>
@@ -750,7 +750,7 @@ const DestinationDetail = () => {
 
                         {/* Enhanced CTA Section */}
                         <FadeInSection>
-                                <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white relative overflow-hidden">
+                                <section className="py-20 hero-gradient text-white relative overflow-hidden">
                                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent"></div>
                                         <div className="container mx-auto px-4 relative z-10">
                                                 <div className="max-w-4xl mx-auto text-center">
@@ -778,14 +778,14 @@ const DestinationDetail = () => {
                                                         >
                                                                 <Button
                                                                         size="lg"
-                                                                        className="bg-white text-blue-600 hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl text-lg px-8 py-4"
+                                                                        className="bg-white text-emerald-600 hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl text-lg px-8 py-4"
                                                                 >
                                                                         Book Your Adventure Now
                                                                 </Button>
                                                                 <Button
                                                                         size="lg"
                                                                         variant="outline"
-                                                                        className="border-2 border-white text-white hover:bg-white hover:text-blue-600 bg-transparent hover:scale-105 transition-all duration-300 text-lg px-8 py-4"
+                                                                        className="border-2 border-white text-white hover:bg-white hover:text-emerald-600 bg-transparent hover:scale-105 transition-all duration-300 text-lg px-8 py-4"
                                                                 >
                                                                         <Users className="w-5 h-5 mr-2" />
                                                                         Custom Group Tour

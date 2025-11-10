@@ -1,0 +1,16 @@
+./app/blog/page.tsx
+./app/blog/[id]/page.tsx
+./app/destinations/page.tsx
+./app/experiences/page.tsx
+./app/experiences/[id]/page.tsx
+./app/journeys/page.tsx
+./app/journeys/[id]/page.tsx
+./app/not-found.tsx
+./components/ChatBot.tsx
+./components/Header.tsx
+./components/ui/carousel.tsx
+./components/ui/chart.tsx
+./components/ui/form.tsx
+./components/ui/input-otp.tsx
+./components/ui/sidebar.tsx
+./components/ui/toggle-group.tsx

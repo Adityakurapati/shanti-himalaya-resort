@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import { Plus, Edit, Trash2, Package } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
@@ -171,13 +170,39 @@ const PackagesAdmin = () => {
         }
 
         if (loading) {
-                return <div className="text-center py-8">Loading packages...</div>
+                return (
+                        <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                        <h2 className="text-2xl font-bold">Manage Packages</h2>
+                                        <Button disabled>
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Loading...
+                                        </Button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {[...Array(6)].map((_, i) => (
+                                                <Card key={i} className="animate-pulse">
+                                                        <CardContent className="p-4">
+                                                                <div className="h-48 bg-muted rounded-lg mb-4"></div>
+                                                                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                                                                <div className="h-3 bg-muted rounded w-1/2"></div>
+                                                        </CardContent>
+                                                </Card>
+                                        ))}
+                                </div>
+                        </div>
+                )
         }
 
         return (
                 <div className="space-y-6">
                         <div className="flex justify-between items-center">
-                                <h2 className="text-2xl font-bold">Manage Packages</h2>
+                                <div>
+                                        <h2 className="text-2xl font-bold">Manage Packages</h2>
+                                        <p className="text-muted-foreground">
+                                                Manage all packages ({packages.length} total)
+                                        </p>
+                                </div>
                                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                         <DialogTrigger asChild>
                                                 <Button onClick={resetForm}>
@@ -185,9 +210,10 @@ const PackagesAdmin = () => {
                                                         Add Package
                                                 </Button>
                                         </DialogTrigger>
-                                        <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none p-6 overflow-y-auto">                                                <DialogHeader>
-                                                <DialogTitle>{editingPackage ? "Edit Package" : "Add New Package"}</DialogTitle>
-                                        </DialogHeader>
+                                        <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none p-6 overflow-y-auto">
+                                                <DialogHeader>
+                                                        <DialogTitle>{editingPackage ? "Edit Package" : "Add New Package"}</DialogTitle>
+                                                </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
                                                                 <Label htmlFor="title">Title</Label>
@@ -292,33 +318,92 @@ const PackagesAdmin = () => {
                                 </Dialog>
                         </div>
 
-                        <div className="grid gap-4">
-                                {packages.map((pkg) => (
-                                        <Card key={pkg.id}>
-                                                <CardHeader>
-                                                        <CardTitle className="flex items-center justify-between">
-                                                                <span>{pkg.title}</span>
+                        {packages.length === 0 ? (
+                                <Card>
+                                        <CardContent className="text-center py-12">
+                                                <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                                <h3 className="text-lg font-semibold mb-2">No packages yet</h3>
+                                                <p className="text-muted-foreground mb-4">
+                                                        Get started by creating your first package.
+                                                </p>
+                                                <Button onClick={resetForm}>
+                                                        <Plus className="w-4 h-4 mr-2" />
+                                                        Create First Package
+                                                </Button>
+                                        </CardContent>
+                                </Card>
+                        ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {packages.map((pkg) => (
+                                                <Card key={pkg.id} className="overflow-hidden">
+                                                        <div className="relative">
+                                                                {pkg.image_url ? (
+                                                                        <img
+                                                                                src={pkg.image_url}
+                                                                                alt={pkg.title}
+                                                                                className="w-full h-48 object-cover"
+                                                                        />
+                                                                ) : (
+                                                                        <div className="w-full h-48 bg-muted flex items-center justify-center">
+                                                                                <Package className="w-12 h-12 text-muted-foreground" />
+                                                                        </div>
+                                                                )}
+                                                                {pkg.featured && (
+                                                                        <div className="absolute top-2 left-2">
+                                                                                <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
+                                                                                        Featured
+                                                                                </span>
+                                                                        </div>
+                                                                )}
+                                                        </div>
+
+                                                        <CardContent className="p-4">
+                                                                <div className="flex items-start justify-between mb-2">
+                                                                        <h3 className="font-semibold text-lg leading-tight">
+                                                                                {pkg.title}
+                                                                        </h3>
+                                                                </div>
+
+                                                                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                                                        {pkg.excerpt}
+                                                                </p>
+
+                                                                <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                                                                        <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+                                                                                {pkg.category}
+                                                                        </span>
+                                                                        <div className="flex gap-1">
+                                                                                <span className="bg-secondary/50 px-2 py-1 rounded">By {pkg.author}</span>
+                                                                                {pkg.read_time && (
+                                                                                        <span className="bg-accent/50 px-2 py-1 rounded">{pkg.read_time}</span>
+                                                                                )}
+                                                                        </div>
+                                                                </div>
+
                                                                 <div className="flex gap-2">
-                                                                        <Button variant="outline" size="sm" onClick={() => handleEdit(pkg)}>
-                                                                                <Edit className="h-4 w-4" />
+                                                                        <Button
+                                                                                variant="outline"
+                                                                                size="sm"
+                                                                                className="flex-1"
+                                                                                onClick={() => handleEdit(pkg)}
+                                                                        >
+                                                                                <Edit className="h-3 w-3 mr-1" />
+                                                                                Edit
                                                                         </Button>
-                                                                        <Button variant="destructive" size="sm" onClick={() => handleDelete(pkg.id)}>
-                                                                                <Trash2 className="h-4 w-4" />
+
+                                                                        <Button
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() => handleDelete(pkg.id)}
+                                                                        >
+                                                                                <Trash2 className="h-3 w-3" />
                                                                         </Button>
                                                                 </div>
-                                                        </CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                        <p className="text-sm text-muted-foreground mb-2">{pkg.excerpt}</p>
-                                                        <div className="flex flex-wrap gap-2 text-sm">
-                                                                <span className="bg-primary/10 px-2 py-1 rounded">{pkg.category}</span>
-                                                                <span className="bg-secondary/50 px-2 py-1 rounded">By {pkg.author}</span>
-                                                                {pkg.featured && <span className="bg-yellow-500/20 px-2 py-1 rounded">Featured</span>}
-                                                        </div>
-                                                </CardContent>
-                                        </Card>
-                                ))}
-                        </div>
+                                                        </CardContent>
+                                                </Card>
+                                        ))}
+                                </div>
+                        )}
                 </div>
         )
 }

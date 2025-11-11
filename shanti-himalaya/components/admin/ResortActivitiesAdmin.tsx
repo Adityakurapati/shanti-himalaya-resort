@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -43,6 +42,7 @@ interface Activity {
 
 export const ResortActivitiesAdmin = () => {
         const [activities, setActivities] = useState<Activity[]>([])
+        const [loading, setLoading] = useState(true)
         const [isDialogOpen, setIsDialogOpen] = useState(false)
         const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
         const { toast } = useToast()
@@ -77,53 +77,71 @@ export const ResortActivitiesAdmin = () => {
         }, [])
 
         const fetchActivities = async () => {
-                const { data, error } = await supabase
-                        .from("resort_activities")
-                        .select("*")
-                        .order("created_at", { ascending: false })
+                try {
+                        const { data, error } = await supabase
+                                .from("resort_activities")
+                                .select("*")
+                                .order("created_at", { ascending: false })
 
-                if (error) {
+                        if (error) {
+                                toast({
+                                        title: "Error fetching activities",
+                                        description: error.message,
+                                        variant: "destructive",
+                                })
+                        } else {
+                                setActivities(data || [])
+                        }
+                } catch (error: any) {
                         toast({
                                 title: "Error fetching activities",
                                 description: error.message,
                                 variant: "destructive",
                         })
-                } else {
-                        setActivities(data || [])
+                } finally {
+                        setLoading(false)
                 }
         }
 
         const handleSubmit = async (e: React.FormEvent) => {
                 e.preventDefault()
 
-                if (editingActivity) {
-                        const { error } = await supabase.from("resort_activities").update(formData).eq("id", editingActivity.id)
+                try {
+                        if (editingActivity) {
+                                const { error } = await supabase.from("resort_activities").update(formData).eq("id", editingActivity.id)
 
-                        if (error) {
-                                toast({
-                                        title: "Error updating activity",
-                                        description: error.message,
-                                        variant: "destructive",
-                                })
+                                if (error) {
+                                        toast({
+                                                title: "Error updating activity",
+                                                description: error.message,
+                                                variant: "destructive",
+                                        })
+                                } else {
+                                        toast({ title: "Activity updated successfully!" })
+                                        fetchActivities()
+                                        resetForm()
+                                }
                         } else {
-                                toast({ title: "Activity updated successfully!" })
-                                fetchActivities()
-                                resetForm()
-                        }
-                } else {
-                        const { error } = await supabase.from("resort_activities").insert([formData])
+                                const { error } = await supabase.from("resort_activities").insert([formData])
 
-                        if (error) {
-                                toast({
-                                        title: "Error creating activity",
-                                        description: error.message,
-                                        variant: "destructive",
-                                })
-                        } else {
-                                toast({ title: "Activity created successfully!" })
-                                fetchActivities()
-                                resetForm()
+                                if (error) {
+                                        toast({
+                                                title: "Error creating activity",
+                                                description: error.message,
+                                                variant: "destructive",
+                                        })
+                                } else {
+                                        toast({ title: "Activity created successfully!" })
+                                        fetchActivities()
+                                        resetForm()
+                                }
                         }
+                } catch (error: any) {
+                        toast({
+                                title: "Error saving activity",
+                                description: error.message,
+                                variant: "destructive",
+                        })
                 }
         }
 
@@ -141,17 +159,25 @@ export const ResortActivitiesAdmin = () => {
 
         const handleDelete = async (id: string) => {
                 if (confirm("Are you sure you want to delete this activity?")) {
-                        const { error } = await supabase.from("resort_activities").delete().eq("id", id)
+                        try {
+                                const { error } = await supabase.from("resort_activities").delete().eq("id", id)
 
-                        if (error) {
+                                if (error) {
+                                        toast({
+                                                title: "Error deleting activity",
+                                                description: error.message,
+                                                variant: "destructive",
+                                        })
+                                } else {
+                                        toast({ title: "Activity deleted successfully!" })
+                                        fetchActivities()
+                                }
+                        } catch (error: any) {
                                 toast({
                                         title: "Error deleting activity",
                                         description: error.message,
                                         variant: "destructive",
                                 })
-                        } else {
-                                toast({ title: "Activity deleted successfully!" })
-                                fetchActivities()
                         }
                 }
         }
@@ -168,13 +194,45 @@ export const ResortActivitiesAdmin = () => {
                 setIsDialogOpen(false)
         }
 
+        const getIconComponent = (iconName: string) => {
+                const iconOption = travelIconOptions.find(option => option.name === iconName)
+                return iconOption ? iconOption.Icon : Mountain
+        }
+
+        if (loading) {
+                return (
+                        <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                        <h2 className="text-2xl font-bold">Resort Activities</h2>
+                                        <Button disabled>
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Loading...
+                                        </Button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {[...Array(6)].map((_, i) => (
+                                                <Card key={i} className="animate-pulse">
+                                                        <CardContent className="p-4">
+                                                                <div className="h-48 bg-muted rounded-lg mb-4"></div>
+                                                                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                                                                <div className="h-3 bg-muted rounded w-1/2"></div>
+                                                        </CardContent>
+                                                </Card>
+                                        ))}
+                                </div>
+                        </div>
+                )
+        }
+
         return (
                 <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-bold flex items-center gap-2">
-                                        <Mountain className="w-6 h-6" />
-                                        Resort Activities Management
-                                </h2>
+                        <div className="flex justify-between items-center">
+                                <div>
+                                        <h2 className="text-2xl font-bold">Resort Activities</h2>
+                                        <p className="text-muted-foreground">
+                                                Manage all resort activities ({activities.length} total)
+                                        </p>
+                                </div>
                                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                         <DialogTrigger asChild>
                                                 <Button onClick={() => resetForm()}>
@@ -183,9 +241,10 @@ export const ResortActivitiesAdmin = () => {
                                                 </Button>
                                         </DialogTrigger>
 
-                                        <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none p-6 overflow-y-auto">                                                <DialogHeader>
-                                                <DialogTitle>{editingActivity ? "Edit Activity" : "Add New Activity"}</DialogTitle>
-                                        </DialogHeader>
+                                        <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 rounded-none p-6 overflow-y-auto">
+                                                <DialogHeader>
+                                                        <DialogTitle>{editingActivity ? "Edit Activity" : "Add New Activity"}</DialogTitle>
+                                                </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
                                                                 <Label htmlFor="title">Activity Title</Label>
@@ -265,31 +324,83 @@ export const ResortActivitiesAdmin = () => {
                                 </Dialog>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {activities.map((activity) => (
-                                        <Card key={activity.id}>
-                                                <CardHeader>
-                                                        <CardTitle className="flex items-center gap-2">
-                                                                <span>{activity.title}</span>
-                                                        </CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                        <p className="text-sm text-muted-foreground mb-2">{activity.description}</p>
-                                                        <p className="text-xs text-muted-foreground mb-3 line-clamp-3">{activity.full_description}</p>
-                                                        <div className="flex gap-2">
-                                                                <Button size="sm" variant="outline" onClick={() => handleEdit(activity)}>
-                                                                        <Edit className="w-4 h-4 mr-1" />
-                                                                        Edit
-                                                                </Button>
-                                                                <Button size="sm" variant="destructive" onClick={() => handleDelete(activity.id)}>
-                                                                        <Trash2 className="w-4 h-4 mr-1" />
-                                                                        Delete
-                                                                </Button>
-                                                        </div>
-                                                </CardContent>
-                                        </Card>
-                                ))}
-                        </div>
+                        {activities.length === 0 ? (
+                                <Card>
+                                        <CardContent className="text-center py-12">
+                                                <Mountain className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                                <h3 className="text-lg font-semibold mb-2">No activities yet</h3>
+                                                <p className="text-muted-foreground mb-4">
+                                                        Get started by creating your first resort activity.
+                                                </p>
+                                                <Button onClick={resetForm}>
+                                                        <Plus className="w-4 h-4 mr-2" />
+                                                        Create First Activity
+                                                </Button>
+                                        </CardContent>
+                                </Card>
+                        ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {activities.map((activity) => {
+                                                const IconComponent = getIconComponent(activity.icon)
+                                                return (
+                                                        <Card key={activity.id} className="overflow-hidden">
+                                                                <div className="relative">
+                                                                        {activity.image_url ? (
+                                                                                <img
+                                                                                        src={activity.image_url}
+                                                                                        alt={activity.title}
+                                                                                        className="w-full h-48 object-cover"
+                                                                                />
+                                                                        ) : (
+                                                                                <div className="w-full h-48 bg-muted flex items-center justify-center">
+                                                                                        <IconComponent className="w-12 h-12 text-muted-foreground" />
+                                                                                </div>
+                                                                        )}
+                                                                </div>
+
+                                                                <CardContent className="p-4">
+                                                                        <div className="flex items-start justify-between mb-2">
+                                                                                <div className="flex items-center gap-2">
+                                                                                        <IconComponent className="w-5 h-5 text-primary" />
+                                                                                        <h3 className="font-semibold text-lg leading-tight">
+                                                                                                {activity.title}
+                                                                                        </h3>
+                                                                                </div>
+                                                                        </div>
+
+                                                                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                                                                {activity.description}
+                                                                        </p>
+
+                                                                        <p className="text-xs text-muted-foreground mb-3 line-clamp-3">
+                                                                                {activity.full_description}
+                                                                        </p>
+
+                                                                        <div className="flex gap-2">
+                                                                                <Button
+                                                                                        variant="outline"
+                                                                                        size="sm"
+                                                                                        className="flex-1"
+                                                                                        onClick={() => handleEdit(activity)}
+                                                                                >
+                                                                                        <Edit className="h-3 w-3 mr-1" />
+                                                                                        Edit
+                                                                                </Button>
+
+                                                                                <Button
+                                                                                        variant="destructive"
+                                                                                        size="sm"
+                                                                                        onClick={() => handleDelete(activity.id)}
+                                                                                >
+                                                                                        <Trash2 className="h-3 w-3" />
+                                                                                </Button>
+                                                                        </div>
+                                                                </CardContent>
+                                                        </Card>
+                                                )
+                                        })}
+                                </div>
+                        )}
                 </div>
         )
 }

@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { LogOut, Package, MapPin, Crown, Compass, Route, Users, Utensils, Mountain, Calendar, Images } from "lucide-react"
+import { LogOut, Package, MapPin, Crown, Compass, Route, Users, Utensils, Mountain, Calendar, Images, Mail, Bell } from "lucide-react"
 import JourneysAdmin from "@/components/admin/JourneysAdmin"
 import DestinationsAdmin from "@/components/admin/DestinationsAdmin"
 import ExperiencesAdmin from "@/components/admin/ExperiencesAdmin"
@@ -18,16 +18,57 @@ import { ResortActivitiesAdmin } from "@/components/admin/ResortActivitiesAdmin"
 import ResortGalleryAdmin from "@/components/admin/ResortGalleryAdmin"
 import SitemapAdmin from "@/components/admin/SitemapAdmin"
 import ManageAdmins from "@/components/admin/ManageAdmins"
+import EnquiriesAdmin from "@/components/admin/EnquiriesAdmin"
 
 const AdminPanel = () => {
         const [loading, setLoading] = useState(true)
         const [isAdmin, setIsAdmin] = useState(false)
+        const [unreadEnquiries, setUnreadEnquiries] = useState(0)
         const router = useRouter()
         const { toast } = useToast()
 
         useEffect(() => {
                 checkAdminStatus()
         }, [])
+
+        useEffect(() => {
+                if (isAdmin) {
+                        fetchUnreadEnquiries()
+                        // Set up real-time subscription for enquiries
+                        const subscription = supabase
+                                .channel('enquiries-changes')
+                                .on(
+                                        'postgres_changes',
+                                        {
+                                                event: '*',
+                                                schema: 'public',
+                                                table: 'enquiries'
+                                        },
+                                        () => {
+                                                fetchUnreadEnquiries()
+                                        }
+                                )
+                                .subscribe()
+
+                        return () => {
+                                subscription.unsubscribe()
+                        }
+                }
+        }, [isAdmin])
+
+        const fetchUnreadEnquiries = async () => {
+                try {
+                        const { count, error } = await supabase
+                                .from('enquiries')
+                                .select('*', { count: 'exact', head: true })
+                                .eq('is_read', false)
+
+                        if (error) throw error
+                        setUnreadEnquiries(count || 0)
+                } catch (error) {
+                        console.error('Error fetching unread enquiries:', error)
+                }
+        }
 
         const checkAdminStatus = async () => {
                 try {
@@ -94,7 +135,15 @@ const AdminPanel = () => {
                 <div className="min-h-screen bg-background">
                         <header className="border-b bg-card">
                                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                                        <h1 className="text-2xl font-bold">Admin Panel</h1>
+                                        <div className="flex items-center space-x-4">
+                                                <h1 className="text-2xl font-bold">Admin Panel</h1>
+                                                {unreadEnquiries > 0 && (
+                                                        <div className="flex items-center space-x-2 bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+                                                                <Bell className="h-4 w-4" />
+                                                                <span>{unreadEnquiries} new enquiries</span>
+                                                        </div>
+                                                )}
+                                        </div>
                                         <Button onClick={handleLogout} variant="outline">
                                                 <LogOut className="mr-2 h-4 w-4" />
                                                 Logout
@@ -103,10 +152,17 @@ const AdminPanel = () => {
                         </header>
 
                         <main className="container mx-auto px-4 py-8">
-                                <Tabs defaultValue="pending" className="space-y-6">
-                                        <TabsList className="grid grid-cols-4 lg:grid-cols-10 w-full">
-
-
+                                <Tabs defaultValue="enquiries" className="space-y-6">
+                                        <TabsList className="grid grid-cols-4 lg:grid-cols-11 w-full">
+                                                <TabsTrigger value="enquiries" className="flex items-center gap-2 relative">
+                                                        <Mail className="h-4 w-4" />
+                                                        <span className="hidden sm:inline">Enquiries</span>
+                                                        {unreadEnquiries > 0 && (
+                                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                                                                        {unreadEnquiries}
+                                                                </span>
+                                                        )}
+                                                </TabsTrigger>
                                                 <TabsTrigger value="journeys" className="flex items-center gap-2">
                                                         <Route className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Journeys</span>
@@ -138,20 +194,20 @@ const AdminPanel = () => {
                                                 <TabsTrigger value="gallery" className="flex items-center gap-2">
                                                         <Images className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Gallery</span>
-                                                </TabsTrigger> <TabsTrigger value="manage-admins" className="flex items-center gap-2">
+                                                </TabsTrigger>
+                                                <TabsTrigger value="manage-admins" className="flex items-center gap-2">
                                                         <Crown className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Manage Admins</span>
                                                 </TabsTrigger>
                                                 <TabsTrigger value="pending" className="flex items-center gap-2">
-
                                                         <Users className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Pending</span>
                                                 </TabsTrigger>
-                                                <TabsTrigger value="sitemap" className="flex items-center gap-2">
-                                                        <Route className="h-4 w-4" />
-                                                        <span className="hidden sm:inline">Sitemap</span>
-                                                </TabsTrigger>
                                         </TabsList>
+
+                                        <TabsContent value="enquiries">
+                                                <EnquiriesAdmin />
+                                        </TabsContent>
 
                                         <TabsContent value="pending">
                                                 <PendingUsersAdmin />
@@ -191,10 +247,6 @@ const AdminPanel = () => {
 
                                         <TabsContent value="gallery">
                                                 <ResortGalleryAdmin />
-                                        </TabsContent>
-
-                                        <TabsContent value="sitemap">
-                                                <SitemapAdmin />
                                         </TabsContent>
                                 </Tabs>
                         </main>

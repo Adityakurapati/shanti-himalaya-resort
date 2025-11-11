@@ -1,6 +1,7 @@
 "use client"
 
-import { useParams, Link } from "react-router-dom"
+import { useParams } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -39,20 +40,48 @@ const DestinationDetail = () => {
         const [loading, setLoading] = React.useState(true)
         const [activeTab, setActiveTab] = React.useState("overview")
 
+        console.log("URL ID:", id)
+        console.log("Loading state:", loading)
+        console.log("Destination data:", destination)
+
         React.useEffect(() => {
+                console.log("useEffect triggered with id:", id)
                 if (id) {
                         fetchDestination()
+                } else {
+                        console.log("No ID found in URL")
+                        setLoading(false)
                 }
         }, [id])
 
+
         const fetchDestination = async () => {
                 try {
-                        const { data, error } = await supabase.from("destinations").select("*").eq("id", id).maybeSingle()
+                        console.log("Fetching destination with ID:", id)
 
-                        if (error) throw error
-                        setDestination(data)
+                        const { data, error, status } = await supabase
+                                .from("destinations")
+                                .select("*")
+                                .eq("id", id)
+                                .single() // Use single() instead of maybeSingle()
+
+                        console.log("Supabase response:", { data, error, status })
+
+                        if (error) {
+                                console.error("Supabase error:", error)
+                                throw error
+                        }
+
+                        if (data) {
+                                console.log("Destination found:", data)
+                                setDestination(data)
+                        } else {
+                                console.log("No destination found with ID:", id)
+                                setDestination(null)
+                        }
                 } catch (error) {
                         console.error("Error fetching destination:", error)
+                        setDestination(null)
                 } finally {
                         setLoading(false)
                 }
@@ -216,9 +245,7 @@ const DestinationDetail = () => {
                                                         <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-3 py-1 text-sm">
                                                                 {destination.category}
                                                         </Badge>
-                                                        <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-3 py-1 text-sm">
-                                                                {destination.difficulty}
-                                                        </Badge>
+
                                                         {destination.featured && (
                                                                 <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 px-3 py-1 text-sm">
                                                                         Featured
@@ -568,57 +595,67 @@ const DestinationDetail = () => {
                                                         </TabsContent>
 
                                                         {/* Itinerary Tab */}
+                                                        {/* Itinerary Tab - Alternative Design */}
                                                         <TabsContent value="itinerary">
-                                                                {destination.itinerary_image_url && (
-                                                                        <FadeInSection>
-                                                                                <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
-                                                                                        <img
-                                                                                                src={destination.itinerary_image_url}
-                                                                                                alt={`${destination.name} Itinerary`}
-                                                                                                className="w-full h-64 object-cover"
-                                                                                        />
-                                                                                </div>
-                                                                        </FadeInSection>
-                                                                )}
                                                                 {getItinerary().length > 0 ? (
-                                                                        <div className="space-y-6">
+                                                                        <div className="space-y-8">
                                                                                 {getItinerary().map((day: any, index: number) => (
                                                                                         <FadeInSection key={day.id || index} delay={index * 0.1}>
-                                                                                                <motion.div
-                                                                                                        whileHover={{ x: 5 }}
-                                                                                                        transition={{ type: "spring", stiffness: 300 }}
-                                                                                                >
-                                                                                                        <Card className="bg-gradient-to-r from-white to-emerald-50/50 backdrop-blur-sm border-l-4 border-l-emerald-500 shadow-lg">
-                                                                                                                <CardContent className="p-6">
-                                                                                                                        <div className="flex items-start justify-between mb-4">
-                                                                                                                                <div>
-                                                                                                                                        <Badge className="bg-emerald-100 text-emerald-700 mb-2">Day {day.day}</Badge>
-                                                                                                                                        <h3 className="text-xl font-bold text-foreground">{day.title}</h3>
-                                                                                                                                </div>
-                                                                                                                                <div className="p-2 bg-emerald-100 rounded-lg">
-                                                                                                                                        <Calendar className="w-5 h-5 text-emerald-600" />
-                                                                                                                                </div>
+                                                                                                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
+                                                                                                        {/* Left Content - Day Info */}
+                                                                                                        <div className="lg:col-span-2">
+                                                                                                                <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 rounded-2xl h-full shadow-lg">
+                                                                                                                        <Badge className="bg-white/20 text-white border-0 mb-3">Day {day.day}</Badge>
+                                                                                                                        <h3 className="text-xl font-bold mb-4">{day.title}</h3>
+                                                                                                                        <div className="flex items-center space-x-2 text-white/80">
+                                                                                                                                <Calendar className="w-4 h-4" />
+                                                                                                                                <span className="text-sm">Full Day Experience</span>
                                                                                                                         </div>
-                                                                                                                        {day.image_url && (
-                                                                                                                                <div className="mb-4 rounded-lg overflow-hidden">
-                                                                                                                                        <img
-                                                                                                                                                src={day.image_url}
-                                                                                                                                                alt={`Day ${day.day}`}
-                                                                                                                                                className="w-full h-48 object-cover"
-                                                                                                                                        />
+                                                                                                                </div>
+                                                                                                        </div>
+
+                                                                                                        {/* Right Content - Activities & Image */}
+                                                                                                        <div className="lg:col-span-3">
+                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                                                                                                                        <CardContent className="p-6">
+                                                                                                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                                                                                                        {/* Activities List */}
+                                                                                                                                        <div className="md:col-span-2">
+                                                                                                                                                <h4 className="font-semibold text-foreground mb-3 flex items-center">
+                                                                                                                                                        <Activity className="w-4 h-4 text-emerald-500 mr-2" />
+                                                                                                                                                        Activities
+                                                                                                                                                </h4>
+                                                                                                                                                <ul className="space-y-2">
+                                                                                                                                                        {day.activities && day.activities.map((activity: string, idx: number) => (
+                                                                                                                                                                <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
+                                                                                                                                                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                                                                                                                                                                        <span>{activity}</span>
+                                                                                                                                                                </li>
+                                                                                                                                                        ))}
+                                                                                                                                                </ul>
+                                                                                                                                        </div>
+
+                                                                                                                                        {/* Image */}
+                                                                                                                                        <div className="md:col-span-1">
+                                                                                                                                                {day.image_url ? (
+                                                                                                                                                        <div className="rounded-lg overflow-hidden h-32 md:h-full">
+                                                                                                                                                                <img
+                                                                                                                                                                        src={day.image_url}
+                                                                                                                                                                        alt={`Day ${day.day}`}
+                                                                                                                                                                        className="w-full h-full object-cover"
+                                                                                                                                                                />
+                                                                                                                                                        </div>
+                                                                                                                                                ) : (
+                                                                                                                                                        <div className="rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 h-32 md:h-full flex items-center justify-center">
+                                                                                                                                                                <Calendar className="w-8 h-8 text-gray-400" />
+                                                                                                                                                        </div>
+                                                                                                                                                )}
+                                                                                                                                        </div>
                                                                                                                                 </div>
-                                                                                                                        )}
-                                                                                                                        <ul className="space-y-2">
-                                                                                                                                {day.activities && day.activities.map((activity: string, idx: number) => (
-                                                                                                                                        <li key={idx} className="flex items-center space-x-3 text-muted-foreground">
-                                                                                                                                                <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0"></div>
-                                                                                                                                                <span>{activity}</span>
-                                                                                                                                        </li>
-                                                                                                                                ))}
-                                                                                                                        </ul>
-                                                                                                                </CardContent>
-                                                                                                        </Card>
-                                                                                                </motion.div>
+                                                                                                                        </CardContent>
+                                                                                                                </Card>
+                                                                                                        </div>
+                                                                                                </div>
                                                                                         </FadeInSection>
                                                                                 ))}
                                                                         </div>

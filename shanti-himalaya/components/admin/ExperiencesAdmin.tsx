@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import { Plus, Edit, Trash2, Compass } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
@@ -163,13 +162,39 @@ const ExperiencesAdmin = () => {
         }
 
         if (loading) {
-                return <div className="text-center py-8">Loading experiences...</div>
+                return (
+                        <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                        <h2 className="text-2xl font-bold">Manage Experiences</h2>
+                                        <Button disabled>
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Loading...
+                                        </Button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {[...Array(6)].map((_, i) => (
+                                                <Card key={i} className="animate-pulse">
+                                                        <CardContent className="p-4">
+                                                                <div className="h-48 bg-muted rounded-lg mb-4"></div>
+                                                                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                                                                <div className="h-3 bg-muted rounded w-1/2"></div>
+                                                        </CardContent>
+                                                </Card>
+                                        ))}
+                                </div>
+                        </div>
+                )
         }
 
         return (
                 <div className="space-y-6">
                         <div className="flex justify-between items-center">
-                                <h2 className="text-2xl font-bold">Manage Experiences</h2>
+                                <div>
+                                        <h2 className="text-2xl font-bold">Manage Experiences</h2>
+                                        <p className="text-muted-foreground">
+                                                Manage all travel experiences ({experiences.length} total)
+                                        </p>
+                                </div>
                                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                         <DialogTrigger asChild>
                                                 <Button onClick={resetForm}>
@@ -270,34 +295,90 @@ const ExperiencesAdmin = () => {
                                 </Dialog>
                         </div>
 
-                        <div className="grid gap-4">
-                                {experiences.map((experience) => (
-                                        <Card key={experience.id}>
-                                                <CardHeader>
-                                                        <CardTitle className="flex items-center justify-between">
-                                                                <span>{experience.title}</span>
+                        {experiences.length === 0 ? (
+                                <Card>
+                                        <CardContent className="text-center py-12">
+                                                <Compass className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                                <h3 className="text-lg font-semibold mb-2">No experiences yet</h3>
+                                                <p className="text-muted-foreground mb-4">
+                                                        Get started by creating your first experience.
+                                                </p>
+                                                <Button onClick={resetForm}>
+                                                        <Plus className="w-4 h-4 mr-2" />
+                                                        Create First Experience
+                                                </Button>
+                                        </CardContent>
+                                </Card>
+                        ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {experiences.map((experience) => (
+                                                <Card key={experience.id} className="overflow-hidden">
+                                                        <div className="relative">
+                                                                {experience.image_url ? (
+                                                                        <img
+                                                                                src={experience.image_url}
+                                                                                alt={experience.title}
+                                                                                className="w-full h-48 object-cover"
+                                                                        />
+                                                                ) : (
+                                                                        <div className="w-full h-48 bg-muted flex items-center justify-center">
+                                                                                <Compass className="w-12 h-12 text-muted-foreground" />
+                                                                        </div>
+                                                                )}
+                                                                {experience.featured && (
+                                                                        <div className="absolute top-2 left-2">
+                                                                                <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
+                                                                                        Featured
+                                                                                </span>
+                                                                        </div>
+                                                                )}
+                                                        </div>
+
+                                                        <CardContent className="p-4">
+                                                                <div className="flex items-start justify-between mb-2">
+                                                                        <h3 className="font-semibold text-lg leading-tight">
+                                                                                {experience.title}
+                                                                        </h3>
+                                                                </div>
+
+                                                                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                                                        {experience.description}
+                                                                </p>
+
+                                                                <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                                                                        <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+                                                                                {experience.category}
+                                                                        </span>
+                                                                        <div className="flex gap-1">
+                                                                                <span className="bg-secondary/50 px-2 py-1 rounded">{experience.duration}</span>
+                                                                                <span className="bg-accent/50 px-2 py-1 rounded">{experience.price}</span>
+                                                                        </div>
+                                                                </div>
+
                                                                 <div className="flex gap-2">
-                                                                        <Button variant="outline" size="sm" onClick={() => handleEdit(experience)}>
-                                                                                <Edit className="h-4 w-4" />
+                                                                        <Button
+                                                                                variant="outline"
+                                                                                size="sm"
+                                                                                className="flex-1"
+                                                                                onClick={() => handleEdit(experience)}
+                                                                        >
+                                                                                <Edit className="h-3 w-3 mr-1" />
+                                                                                Edit
                                                                         </Button>
-                                                                        <Button variant="destructive" size="sm" onClick={() => handleDelete(experience.id)}>
-                                                                                <Trash2 className="h-4 w-4" />
+
+                                                                        <Button
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() => handleDelete(experience.id)}
+                                                                        >
+                                                                                <Trash2 className="h-3 w-3" />
                                                                         </Button>
                                                                 </div>
-                                                        </CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                        <p className="text-sm text-muted-foreground mb-2">{experience.description}</p>
-                                                        <div className="flex flex-wrap gap-2 text-sm">
-                                                                <span className="bg-primary/10 px-2 py-1 rounded">{experience.category}</span>
-                                                                <span className="bg-secondary/50 px-2 py-1 rounded">{experience.duration}</span>
-                                                                <span className="bg-accent/50 px-2 py-1 rounded">{experience.price}</span>
-                                                                {experience.featured && <span className="bg-yellow-500/20 px-2 py-1 rounded">Featured</span>}
-                                                        </div>
-                                                </CardContent>
-                                        </Card>
-                                ))}
-                        </div>
+                                                        </CardContent>
+                                                </Card>
+                                        ))}
+                                </div>
+                        )}
                 </div>
         )
 }

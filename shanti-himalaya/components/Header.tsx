@@ -188,9 +188,6 @@ const Header = () => {
                                                         <Phone className="w-4 h-4" />
                                                         <span>+91 99107 75073</span>
                                                 </div>
-                                                <Button variant="default" className="hero-gradient hover-glow">
-                                                        Book Now
-                                                </Button>
                                                 {/* Admin Shield Button */}
                                                 <Link href="/admin">
                                                         <Button

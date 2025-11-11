@@ -24,7 +24,8 @@ import {
         ChevronUp,
         Play
 } from "lucide-react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -54,16 +55,16 @@ const DayCard = ({ day, isExpanded, onToggle, index }: {
                                 <CardContent className="p-0">
                                         {/* Day Header */}
                                         <div
-                                                className="p-6 cursor-pointer bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all"
+                                                className="p-6 cursor-pointer bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all relative z-10"
                                                 onClick={onToggle}
                                         >
                                                 <div className="flex items-center justify-between">
                                                         <div className="flex items-center space-x-4">
-                                                                <div className="flex items-center justify-center w-12 h-12 bg-primary text-primary-foreground rounded-full font-bold text-lg">
+                                                                <div className="flex items-center justify-center w-12 h-12 bg-primary text-primary-foreground rounded-full font-bold text-lg flex-shrink-0 relative z-20">
                                                                         {day.day_number}
                                                                 </div>
-                                                                <div>
-                                                                        <h3 className="text-xl font-bold text-foreground">
+                                                                <div className="min-w-0 flex-1">
+                                                                        <h3 className="text-xl font-bold text-foreground truncate">
                                                                                 {day.title || `Day ${day.day_number}`}
                                                                         </h3>
                                                                         {day.description && (
@@ -74,7 +75,7 @@ const DayCard = ({ day, isExpanded, onToggle, index }: {
                                                                 </div>
                                                         </div>
 
-                                                        <div className="flex items-center space-x-3">
+                                                        <div className="flex items-center space-x-3 flex-shrink-0">
                                                                 {day.image_url && (
                                                                         <Camera className="w-5 h-5 text-primary" />
                                                                 )}
@@ -96,7 +97,7 @@ const DayCard = ({ day, isExpanded, onToggle, index }: {
                                                                 animate={{ height: "auto", opacity: 1 }}
                                                                 exit={{ height: 0, opacity: 0 }}
                                                                 transition={{ duration: 0.3 }}
-                                                                className="overflow-hidden"
+                                                                className="overflow-hidden relative z-0"
                                                         >
                                                                 <div className="p-6 space-y-4 bg-background">
                                                                         {day.image_url && (
@@ -155,6 +156,103 @@ const DayCard = ({ day, isExpanded, onToggle, index }: {
         );
 };
 
+
+const EnquiryModal = ({ journey, isOpen, onClose }: { journey: any, isOpen: boolean, onClose: () => void }) => {
+        const [formData, setFormData] = React.useState({
+                name: '',
+                email: '',
+                message: ''
+        });
+        const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+        const handleSubmit = async (e: React.FormEvent) => {
+                e.preventDefault();
+                setIsSubmitting(true);
+
+                try {
+                        const { error } = await supabase
+                                .from('enquiries')
+                                .insert([
+                                        {
+                                                journey_id: journey.id,
+                                                journey_title: journey.title,
+                                                name: formData.name,
+                                                email: formData.email,
+                                                message: formData.message,
+                                                status: 'new'
+                                        }
+                                ]);
+
+                        if (error) throw error;
+
+                        // Reset form and close modal
+                        setFormData({ name: '', email: '', message: '' });
+                        onClose();
+                        alert('Thank you for your enquiry! We will get back to you soon.');
+                } catch (error) {
+                        console.error('Error submitting enquiry:', error);
+                        alert('There was an error submitting your enquiry. Please try again.');
+                } finally {
+                        setIsSubmitting(false);
+                }
+        };
+
+        if (!isOpen) return null;
+
+        return (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-background rounded-lg max-w-md w-full p-6"
+                        >
+                                <h3 className="text-2xl font-bold mb-4">Enquire About {journey.title}</h3>
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div>
+                                                <label className="text-sm font-medium mb-2 block">Name</label>
+                                                <input
+                                                        type="text"
+                                                        required
+                                                        value={formData.name}
+                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                        className="w-full p-2 border rounded-md"
+                                                        placeholder="Your name"
+                                                />
+                                        </div>
+                                        <div>
+                                                <label className="text-sm font-medium mb-2 block">Email</label>
+                                                <input
+                                                        type="email"
+                                                        required
+                                                        value={formData.email}
+                                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                        className="w-full p-2 border rounded-md"
+                                                        placeholder="Your email"
+                                                />
+                                        </div>
+                                        <div>
+                                                <label className="text-sm font-medium mb-2 block">Message</label>
+                                                <textarea
+                                                        value={formData.message}
+                                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                                        className="w-full p-2 border rounded-md h-24"
+                                                        placeholder="Any specific requirements or questions?"
+                                                />
+                                        </div>
+                                        <div className="flex gap-3 pt-4">
+                                                <Button type="submit" disabled={isSubmitting} className="flex-1">
+                                                        {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
+                                                </Button>
+                                                <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+                                                        Cancel
+                                                </Button>
+                                        </div>
+                                </form>
+                        </motion.div>
+                </div>
+        );
+};
+
 const JourneyTimeline = ({ days }: { days: DaySchedule[] }) => {
         const [expandedDay, setExpandedDay] = React.useState<number | null>(null);
 
@@ -183,6 +281,7 @@ const JourneyDetail = () => {
         const [days, setDays] = React.useState<DaySchedule[]>([]);
         const [loading, setLoading] = React.useState(true);
         const [daysLoading, setDaysLoading] = React.useState(true);
+        const [isEnquiryModalOpen, setIsEnquiryModalOpen] = React.useState(false);
 
         React.useEffect(() => {
                 if (id) {
@@ -222,6 +321,12 @@ const JourneyDetail = () => {
                         console.error('Error fetching days:', error);
                 } finally {
                         setDaysLoading(false);
+                }
+        };
+
+        const handleEnquireNow = () => {
+                if (journey) {
+                        window.location.href = `mailto:info@example.com?subject=Enquiry about ${journey.title}&body=Hello, I would like to get more information about the ${journey.title} journey.`;
                 }
         };
 
@@ -307,13 +412,13 @@ const JourneyDetail = () => {
                                                 </div>
 
                                                 <div className="flex flex-col sm:flex-row gap-4">
-                                                        <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4">
-                                                                <Phone className="w-5 h-5 mr-2" />
-                                                                Book This Journey
-                                                        </Button>
-                                                        <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-4">
+                                                        <Button
+                                                                size="lg"
+                                                                className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4"
+                                                                onClick={handleEnquireNow}
+                                                        >
                                                                 <Mail className="w-5 h-5 mr-2" />
-                                                                Get More Info
+                                                                Enquire Now
                                                         </Button>
                                                 </div>
                                         </div>
@@ -398,8 +503,11 @@ const JourneyDetail = () => {
                                                                                         </div>
                                                                                 </div>
 
-                                                                                <Button className="w-full hero-gradient hover-glow mt-4">
-                                                                                        Book Now
+                                                                                <Button
+                                                                                        className="w-full hero-gradient hover-glow mt-4"
+                                                                                        onClick={() => setIsEnquiryModalOpen(true)}
+                                                                                >
+                                                                                        Enquire Now
                                                                                 </Button>
                                                                         </CardContent>
                                                                 </Card>
@@ -412,9 +520,9 @@ const JourneyDetail = () => {
                                                                                         Journey Highlights
                                                                                 </h3>
                                                                                 <div className="space-y-3">
-                                                                                        {days.slice(0, 3).map((day) => (
+                                                                                        {days.map((day) => (
                                                                                                 <div key={day.id} className="flex items-start space-x-3">
-                                                                                                        <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold mt-0.5">
+                                                                                                        <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold mt-0.5 flex-shrink-0">
                                                                                                                 {day.day_number}
                                                                                                         </div>
                                                                                                         <span className="text-sm text-muted-foreground">
@@ -422,11 +530,6 @@ const JourneyDetail = () => {
                                                                                                         </span>
                                                                                                 </div>
                                                                                         ))}
-                                                                                        {days.length > 3 && (
-                                                                                                <div className="text-sm text-primary font-semibold pt-2">
-                                                                                                        + {days.length - 3} more days
-                                                                                                </div>
-                                                                                        )}
                                                                                 </div>
                                                                         </CardContent>
                                                                 </Card>
@@ -436,27 +539,11 @@ const JourneyDetail = () => {
                                 </div>
                         </section>
 
-                        {/* CTA Section */}
-                        <section className="py-20 hero-gradient text-white">
-                                <div className="container mx-auto px-4">
-                                        <div className="max-w-2xl mx-auto text-center">
-                                                <h2 className="text-3xl font-display font-bold mb-6">
-                                                        Ready for Your Journey?
-                                                </h2>
-                                                <p className="text-white/90 mb-8 leading-relaxed">
-                                                        Contact us to customize this journey according to your preferences.
-                                                </p>
-                                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                                        <Button size="lg" className="bg-white text-primary hover:bg-white/90 hover-glow">
-                                                                Book Now
-                                                        </Button>
-                                                        <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
-                                                                Call Us: +977 9876543210
-                                                        </Button>
-                                                </div>
-                                        </div>
-                                </div>
-                        </section>
+                        <EnquiryModal
+                                journey={journey}
+                                isOpen={isEnquiryModalOpen}
+                                onClose={() => setIsEnquiryModalOpen(false)}
+                        />
 
                         <Footer />
                 </div>

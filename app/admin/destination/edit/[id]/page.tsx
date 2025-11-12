@@ -1056,7 +1056,7 @@ const AdminDestinationEdit = () => {
                                                                                 id={`reach-${method}`}
                                                                                 value={formData.how_to_reach[method as keyof typeof formData.how_to_reach]?.details?.join("\n") || ""}
                                                                                 onChange={(e) => {
-                                                                                        const details = e.target.value.split("\n").filter((d) => d.trim())
+                                                                                        const details = e.target.value.split("\n").filter((d: string) => d.trim())
                                                                                         setFormData({
                                                                                                 ...formData,
                                                                                                 how_to_reach: {
@@ -1204,7 +1204,7 @@ const AdminDestinationEdit = () => {
                                                                                 placeholder="Options (one per line)"
                                                                                 value={formData.where_to_stay[category as keyof typeof formData.where_to_stay]?.options?.join("\n") || ""}
                                                                                 onChange={(e) => {
-                                                                                        const options = e.target.value.split("\n").filter((o) => o.trim())
+                                                                                        const options = e.target.value.split("\n").filter((o: string) => o.trim())
                                                                                         setFormData({
                                                                                                 ...formData,
                                                                                                 where_to_stay: {
@@ -1234,7 +1234,7 @@ const AdminDestinationEdit = () => {
                                                                 id="tips"
                                                                 value={formData.travel_tips.join("\n")}
                                                                 onChange={(e) => {
-                                                                        const tips = e.target.value.split("\n").filter((t) => t.trim())
+                                                                        const tips = e.target.value.split("\n").filter((t: string) => t.trim())
                                                                         setFormData({ ...formData, travel_tips: tips })
                                                                 }}
                                                                 placeholder="Enter travel tips, one per line"
@@ -1444,7 +1444,7 @@ function ItineraryForm({ onSubmit, initialData, isEdit = false }: {
                 const dayData = {
                         day: formData.day,
                         title: formData.title,
-                        activities: formData.activities.split("\n").filter((a) => a.trim()),
+                        activities: formData.activities.split("\n").filter((a: string) => a.trim()),
                         image_url: formData.image_url,
                 }
                 console.log("🎯 Submitting itinerary day:", dayData)

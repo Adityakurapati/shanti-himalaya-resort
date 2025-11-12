@@ -1313,8 +1313,7 @@ function PlaceForm({ onSubmit, initialData, isEdit = false }: {
                 const placeData = {
                         name: formData.name,
                         description: formData.description,
-                        highlights: formData.highlights.split("\n").filter((h) => h.trim()),
-                        image_url: formData.image_url,
+                        highlights: formData.highlights.split("\n").filter((h: string) => h.trim()), image_url: formData.image_url,
                 }
                 console.log("🎯 Submitting place:", placeData)
                 onSubmit(placeData)

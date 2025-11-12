@@ -16,7 +16,7 @@ import {
         ArrowLeft,
         Tag
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "next/navigation"; import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import React from "react";
 

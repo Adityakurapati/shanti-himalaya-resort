@@ -14,53 +14,187 @@ export type Database = {
   };
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
       destinations: {
         Row: {
+          activities_image_url: string | null;
           altitude: string | null;
           best_time: string;
+          best_time_details: Json | null;
           category: string;
           created_at: string | null;
           description: string;
           difficulty: string;
           duration: string;
+          faqs: Json | null;
           featured: boolean | null;
           highlights: string[];
+          how_to_reach: Json | null;
           id: string;
           image_url: string | null;
+          itinerary: Json | null;
+          itinerary_image_url: string | null;
           name: string;
+          overview: string | null;
+          overview_image_url: string | null;
+          places_image_url: string | null;
+          places_to_visit: Json | null;
+          slug: string | null;
+          things_to_do: Json | null;
+          travel_tips: string[] | null;
           updated_at: string | null;
+          where_to_stay: Json | null;
         };
         Insert: {
+          activities_image_url?: string | null;
           altitude?: string | null;
           best_time: string;
+          best_time_details?: Json | null;
           category: string;
           created_at?: string | null;
           description: string;
           difficulty: string;
           duration: string;
+          faqs?: Json | null;
           featured?: boolean | null;
           highlights?: string[];
+          how_to_reach?: Json | null;
           id?: string;
           image_url?: string | null;
+          itinerary?: Json | null;
+          itinerary_image_url?: string | null;
           name: string;
+          overview?: string | null;
+          overview_image_url?: string | null;
+          places_image_url?: string | null;
+          places_to_visit?: Json | null;
+          slug?: string | null;
+          things_to_do?: Json | null;
+          travel_tips?: string[] | null;
           updated_at?: string | null;
+          where_to_stay?: Json | null;
         };
         Update: {
+          activities_image_url?: string | null;
           altitude?: string | null;
           best_time?: string;
+          best_time_details?: Json | null;
           category?: string;
           created_at?: string | null;
           description?: string;
           difficulty?: string;
           duration?: string;
+          faqs?: Json | null;
           featured?: boolean | null;
           highlights?: string[];
+          how_to_reach?: Json | null;
           id?: string;
           image_url?: string | null;
+          itinerary?: Json | null;
+          itinerary_image_url?: string | null;
           name?: string;
+          overview?: string | null;
+          overview_image_url?: string | null;
+          places_image_url?: string | null;
+          places_to_visit?: Json | null;
+          slug?: string | null;
+          things_to_do?: Json | null;
+          travel_tips?: string[] | null;
           updated_at?: string | null;
+          where_to_stay?: Json | null;
         };
         Relationships: [];
+      };
+      dining_schedule: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          meal_type: string;
+          time: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          meal_type: string;
+          time: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          meal_type?: string;
+          time?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      enquiries: {
+        Row: {
+          created_at: string | null;
+          email: string;
+          id: string;
+          is_read: boolean | null;
+          journey_id: string | null;
+          journey_title: string;
+          message: string | null;
+          name: string;
+          status: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          email: string;
+          id?: string;
+          is_read?: boolean | null;
+          journey_id?: string | null;
+          journey_title: string;
+          message?: string | null;
+          name: string;
+          status?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          email?: string;
+          id?: string;
+          is_read?: boolean | null;
+          journey_id?: string | null;
+          journey_title?: string;
+          message?: string | null;
+          name?: string;
+          status?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "enquiries_journey_id_fkey";
+            columns: ["journey_id"];
+            isOneToOne: false;
+            referencedRelation: "journeys";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       experiences: {
         Row: {
@@ -106,6 +240,47 @@ export type Database = {
           updated_at?: string | null;
         };
         Relationships: [];
+      };
+      journey_days: {
+        Row: {
+          created_at: string | null;
+          day_number: number;
+          description: string | null;
+          id: string;
+          image_url: string | null;
+          journey_id: string;
+          title: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          day_number: number;
+          description?: string | null;
+          id?: string;
+          image_url?: string | null;
+          journey_id: string;
+          title?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          day_number?: number;
+          description?: string | null;
+          id?: string;
+          image_url?: string | null;
+          journey_id?: string;
+          title?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "journey_days_journey_id_fkey";
+            columns: ["journey_id"];
+            isOneToOne: false;
+            referencedRelation: "journeys";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       journeys: {
         Row: {
@@ -252,6 +427,7 @@ export type Database = {
           full_description: string;
           icon: string;
           id: string;
+          image_url: string | null;
           title: string;
           updated_at: string;
         };
@@ -261,6 +437,7 @@ export type Database = {
           full_description: string;
           icon?: string;
           id?: string;
+          image_url?: string | null;
           title: string;
           updated_at?: string;
         };
@@ -270,6 +447,7 @@ export type Database = {
           full_description?: string;
           icon?: string;
           id?: string;
+          image_url?: string | null;
           title?: string;
           updated_at?: string;
         };
@@ -313,6 +491,7 @@ export type Database = {
           duration: string;
           features: string[];
           id: string;
+          image_url: string | null;
           includes: string[];
           name: string;
           original_price: string;
@@ -326,6 +505,7 @@ export type Database = {
           duration: string;
           features?: string[];
           id?: string;
+          image_url?: string | null;
           includes?: string[];
           name: string;
           original_price: string;
@@ -339,32 +519,12 @@ export type Database = {
           duration?: string;
           features?: string[];
           id?: string;
+          image_url?: string | null;
           includes?: string[];
           name?: string;
           original_price?: string;
           price?: string;
           updated_at?: string;
-        };
-        Relationships: [];
-      };
-      categories: {
-        Row: {
-          id: string;
-          name: string;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          created_at?: string | null;
-          updated_at?: string | null;
         };
         Relationships: [];
       };
@@ -397,8 +557,20 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      generate_slug: { Args: { name_text: string }; Returns: string };
+      get_admin_users_with_emails: {
+        Args: never;
+        Returns: {
+          approved: boolean;
+          created_at: string;
+          email: string;
+          id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        }[];
+      };
       get_pending_admin_requests: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
           approved: boolean;
           created_at: string;
@@ -409,6 +581,7 @@ export type Database = {
           user_id: string;
         }[];
       };
+      get_user_id_by_email: { Args: { _email: string }; Returns: string };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];
@@ -418,7 +591,7 @@ export type Database = {
       };
     };
     Enums: {
-      app_role: "admin" | "user";
+      app_role: "admin" | "user" | "main_admin";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -549,7 +722,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "main_admin"],
     },
   },
 } as const;

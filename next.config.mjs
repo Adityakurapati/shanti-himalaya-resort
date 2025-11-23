@@ -5,7 +5,7 @@ const nextConfig={
                 domains: [ "localhost", "example.com" ], // add your actual domains here
         },
         experimental: {
-                typedRoutes: true,
+                typedRoutes: false,
         },
 };
 

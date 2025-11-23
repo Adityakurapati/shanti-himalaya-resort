@@ -36,7 +36,7 @@ import { supabase } from "@/integrations/supabase/client"
 const OurResort = () => {
         const [currentImageIndex, setCurrentImageIndex] = useState(0)
         const [selectedThumbnail, setSelectedThumbnail] = useState(0)
-        const [expandedActivity, setExpandedActivity] = useState<Tables<"packages"> | null>(null)
+        const [expandedActivity, setExpandedActivity] = useState<number | null>(null)
 
         const [gallery, setGallery] = React.useState<
                 Array<{ id: string; image_url: string; title: string | null; description: string | null }>

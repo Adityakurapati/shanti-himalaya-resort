@@ -276,7 +276,8 @@ const JourneyTimeline = ({ days }: { days: DaySchedule[] }) => {
 };
 
 const JourneyDetail = () => {
-        const { id } = useParams();
+        const params = useParams();
+        const id = Array.isArray(params.id) ? params.id[0] : params.id;;
         const [journey, setJourney] = React.useState<any>(null);
         const [days, setDays] = React.useState<DaySchedule[]>([]);
         const [loading, setLoading] = React.useState(true);

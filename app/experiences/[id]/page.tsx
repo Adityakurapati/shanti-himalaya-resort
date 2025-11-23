@@ -21,7 +21,8 @@ import { supabase } from "@/integrations/supabase/client";
 import React from "react";
 
 const ExperienceDetail = () => {
-        const { id } = useParams();
+        const params = useParams();
+        const id = Array.isArray(params.id) ? params.id[0] : params.id;;
         const [experience, setExperience] = React.useState<any>(null);
         const [loading, setLoading] = React.useState(true);
 

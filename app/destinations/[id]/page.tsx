@@ -35,7 +35,8 @@ import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 
 const DestinationDetail = () => {
-        const { id } = useParams()
+        const params = useParams();
+        const id = Array.isArray(params.id) ? params.id[0] : params.id;
         const [destination, setDestination] = React.useState<any>(null)
         const [loading, setLoading] = React.useState(true)
         const [activeTab, setActiveTab] = React.useState("overview")

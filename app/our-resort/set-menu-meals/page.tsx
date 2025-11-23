@@ -163,11 +163,10 @@ const SetMenuMeals = () => {
                                                                                         BREAKFAST
                                                                                 </h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {plan.breakfast.map((item, idx) => (
-                                                                                                <li key={idx} className="flex items-center space-x-2">
-                                                                                                        <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
-                                                                                                        <span>{item}</span>
-                                                                                                </li>
+                                                                                        {plan.breakfast.map((item: string, idx: number) => (<li key={idx} className="flex items-center space-x-2">
+                                                                                                <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+                                                                                                <span>{item}</span>
+                                                                                        </li>
                                                                                         ))}
                                                                                 </ul>
                                                                         </div>
@@ -181,7 +180,7 @@ const SetMenuMeals = () => {
                                                                                         LUNCH
                                                                                 </h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {plan.lunch.map((item, idx) => (
+                                                                                        {plan.lunch.map((item: string, idx: number) => (
                                                                                                 <li key={idx} className="flex items-center space-x-2">
                                                                                                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                                                                                                         <span>{item}</span>
@@ -199,11 +198,10 @@ const SetMenuMeals = () => {
                                                                                         DINNER
                                                                                 </h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {plan.dinner.map((item, idx) => (
-                                                                                                <li key={idx} className="flex items-center space-x-2">
-                                                                                                        <div className="w-1.5 h-1.5 bg-gold rounded-full"></div>
-                                                                                                        <span>{item}</span>
-                                                                                                </li>
+                                                                                        {plan.dinner.map((item: string, idx: number) => (<li key={idx} className="flex items-center space-x-2">
+                                                                                                <div className="w-1.5 h-1.5 bg-gold rounded-full"></div>
+                                                                                                <span>{item}</span>
+                                                                                        </li>
                                                                                         ))}
                                                                                 </ul>
                                                                         </div>

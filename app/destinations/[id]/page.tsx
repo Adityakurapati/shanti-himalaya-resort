@@ -798,7 +798,7 @@ const DestinationDetail = () => {
                                                                 {accommodationData && Object.keys(accommodationData).length > 0 ? (
                                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                                                 {Object.entries(accommodationData).map(([category, details]: [string, any], index) => (
-                                                                                        <SlideInSection key={category} direction="up" delay={index * 0.1}>
+                                                                                        <SlideInSection key={category} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
                                                                                                 <motion.div
                                                                                                         whileHover={{ y: -5 }}
                                                                                                         transition={{ type: "spring", stiffness: 300 }}

@@ -674,7 +674,7 @@ const DestinationDetail = () => {
                                                                 {transportData && Object.keys(transportData).length > 0 ? (
                                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                                                 {Object.entries(transportData).map(([key, value]: [string, any], index) => (
-                                                                                        <SlideInSection key={key} direction="up" delay={index * 0.1}>
+                                                                                        <SlideInSection key={key} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
                                                                                                 <motion.div
                                                                                                         whileHover={{ y: -5 }}
                                                                                                         transition={{ type: "spring", stiffness: 300 }}

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -263,7 +264,7 @@ const JourneyTimeline = ({ days }: { days: DaySchedule[] }) => {
 
         return (
                 <div className="space-y-4">
-                        {days.map((day, index) => (
+                        {days.map((day: string, index: number) => (
                                 <DayCard
                                         key={day.id}
                                         day={day}

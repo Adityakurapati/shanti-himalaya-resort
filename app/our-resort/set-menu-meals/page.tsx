@@ -225,7 +225,7 @@ const SetMenuMeals = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                                {specialFeatures.map((feature, index) => (
+                                                {specialFeatures.map((feature: string, index: number) => (
                                                         <Card key={index} className="shadow-card hover-lift bg-white text-center">
                                                                 <CardContent className="p-6">
                                                                         <feature.icon className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -304,7 +304,7 @@ const SetMenuMeals = () => {
                                                 </div>
 
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                                        {schedule.map((s, index) => (
+                                                        {schedule.map((s: string, index: number) => (
                                                                 <Card key={s.id} className="shadow-card hover-lift bg-white text-center">
                                                                         <CardContent className="p-6">
                                                                                 {s.meal_type.toLowerCase() === "breakfast" ? (

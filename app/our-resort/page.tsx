@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
 import React from "react"
 import { Button } from "@/components/ui/button"
@@ -464,7 +465,7 @@ const OurResort = () => {
                                                                 <ChevronRight className="w-6 h-6" />
                                                         </button>
                                                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {galleryImages.map((_, index) => (
+                                                                {galleryImages.map((_: string, index: number) => (
                                                                         <button
                                                                                 key={index}
                                                                                 onClick={() => setCurrentImageIndex(index)}
@@ -477,7 +478,7 @@ const OurResort = () => {
 
                                                 {/* Thumbnail Gallery */}
                                                 <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
-                                                        {gallery.map((g, index) => (
+                                                        {gallery.map((g: string, index: number) => (
                                                                 <button
                                                                         key={g.id}
                                                                         onClick={() => {
@@ -523,7 +524,7 @@ const OurResort = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                                {activitiesDb.map((activity, index) => {
+                                                {activitiesDb.map((activity: string, index: number) => {
                                                         const Icon = iconMap[activity.icon] || Mountain
                                                         return (
                                                                 <Card key={activity.id} className="shadow-card hover-lift bg-white overflow-hidden">

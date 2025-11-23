@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
 import { useParams } from "next/navigation"
 import Link from "next/link"

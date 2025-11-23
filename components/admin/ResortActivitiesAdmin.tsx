@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -210,7 +211,7 @@ export const ResortActivitiesAdmin = () => {
                                         </Button>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {[...Array(6)].map((_, i) => (
+                                        {[...Array(6)].map((_: string, i: number) => (
                                                 <Card key={i} className="animate-pulse">
                                                         <CardContent className="p-4">
                                                                 <div className="h-48 bg-muted rounded-lg mb-4"></div>

@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import type React from "react"
 import { useCallback, useRef, useState } from "react"
 import Cropper from "react-easy-crop"

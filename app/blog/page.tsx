@@ -285,7 +285,7 @@ const Blog = () => {
                                                                         </CardTitle>
                                                                 </CardHeader>
                                                                 <CardContent className="space-y-4">
-                                                                        {recentPosts.slice(0, 4).map((post, index) => (
+                                                                        {recentPosts.slice(0, 4).map((post: string, index: number) => (
                                                                                 <div key={post.id} className="flex space-x-3">
                                                                                         <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-semibold">
                                                                                                 {index + 1}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Complete TypeScript Type Fixer Script - Production Ready
-Fixes all useState, useParams, date handling, and type assignment issues
+Complete Production-Ready TypeScript Fixer
+Fixes: useState, useParams, dates, array vs single, map callbacks, image imports
 """
 
 import os
@@ -26,11 +26,9 @@ def add_types_import(content: str) -> Tuple[str, bool]:
     if 'from "@/integrations/supabase/types"' in content:
         return content, False
     
-    # Check if we need the import
     if 'Tables<' not in content and 'useState<any' not in content:
         return content, False
     
-    # Find the first import statement
     import_pattern = r'^(import\s+.*?from\s+.*?;?\n)'
     match = re.search(import_pattern, content, re.MULTILINE)
     
@@ -43,19 +41,103 @@ def add_types_import(content: str) -> Tuple[str, bool]:
     
     return content, False
 
-def fix_single_vs_array_types(content: str, file_path: str) -> Tuple[str, bool]:
-    """Fix cases where single item is assigned to array state or vice versa"""
+def fix_map_any_types(content: str) -> Tuple[str, bool]:
+    """Fix implicit 'any' in map callbacks"""
     modified = False
     
-    # Pattern 1: useState<Type[]>([]) but setting single item with .single()
-    # Look for: const [var, setVar] = useState<Tables<"x">[]>([])
-    # followed by: setVar(data) where data comes from .single()
+    # Pattern 1: .map((item, index) => where item has no type
+    # Common patterns to look for
+    patterns = [
+        # Array of strings
+        (r'\.map\(\((\w+),\s*(\w+)\)\s*=>', r'.map((\1: string, \2: number) =>'),
+        # Features, includes, activities, highlights, etc.
+        (r'(features|includes|activities|highlights|tags|travel_tips)\.map\(\((\w+),\s*(\w+)\)\s*=>', 
+         r'\1.map((\2: string, \3: number) =>'),
+    ]
     
-    # First, detect if file uses .single() or .maybeSingle()
+    for pattern, replacement in patterns:
+        if re.search(pattern, content):
+            # Check if already typed
+            check_pattern = pattern.replace(r'\(', r'\([^:)]+:')
+            if not re.search(check_pattern, content):
+                content = re.sub(pattern, replacement, content)
+                modified = True
+                log(f"  ✓ Fixed implicit 'any' in map callback", Colors.GREEN)
+    
+    # Pattern 2: Specific arrays we know the types of
+    specific_maps = {
+        r'breakfast\.map\(\((\w+),\s*(\w+)\)': r'breakfast.map((\1: string, \2: number)',
+        r'lunch\.map\(\((\w+),\s*(\w+)\)': r'lunch.map((\1: string, \2: number)',
+        r'dinner\.map\(\((\w+),\s*(\w+)\)': r'dinner.map((\1: string, \2: number)',
+        r'\[1,\s*2,\s*3,\s*4,\s*5\]\.map\(\((\w+)\s*:\s*any\)': r'[1, 2, 3, 4, 5].map((\1: number)',
+    }
+    
+    for pattern, replacement in specific_maps.items():
+        if re.search(pattern, content):
+            content = re.sub(pattern, replacement, content)
+            modified = True
+            log(f"  ✓ Fixed specific map type", Colors.GREEN)
+    
+    return content, modified
+
+def fix_image_imports(content: str) -> Tuple[str, bool]:
+    """Fix static image imports and regular <img> tags to use Next.js Image component"""
+    modified = False
+    
+    # Check if file imports images from assets
+    has_image_import = re.search(r'import\s+\w+\s+from\s+["\']@/assets/.*\.(jpg|png|jpeg|webp|gif)', content)
+    has_img_tag = '<img' in content
+    
+    if has_img_tag:
+        # Add Next.js Image import if not present
+        if 'import Image from "next/image"' not in content:
+            # Find first import
+            first_import = re.search(r'^(import\s+.*?;?\n)', content, re.MULTILINE)
+            if first_import:
+                content = content.replace(
+                    first_import.group(0),
+                    'import Image from "next/image";\n' + first_import.group(0),
+                    1
+                )
+                modified = True
+                log(f"  ✓ Added Next.js Image import", Colors.GREEN)
+        
+        # Pattern 1: <img src={staticImport} ... /> (static imports from @/assets)
+        if has_image_import:
+            patterns = [
+                # With className, self-closing
+                (r'<img\s+src={(\w+)}\s+alt="([^"]+)"\s+className="([^"]+)"\s*/?>',
+                 r'<Image src={\1} alt="\2" className="\3" width={800} height={600} />'),
+                # With className, without self-closing
+                (r'<img\s+src={(\w+)}\s+alt="([^"]+)"\s+className="([^"]+)">',
+                 r'<Image src={\1} alt="\2" className="\3" width={800} height={600} />'),
+                # Without className
+                (r'<img\s+src={(\w+)}\s+alt="([^"]+)"\s*/?>',
+                 r'<Image src={\1} alt="\2" width={800} height={600} />'),
+            ]
+            
+            for pattern, replacement in patterns:
+                if re.search(pattern, content):
+                    content = re.sub(pattern, replacement, content)
+                    modified = True
+                    log(f"  ✓ Converted static <img> to <Image>", Colors.GREEN)
+        
+        # Pattern 2: <img src={urlString || fallback} ... /> (dynamic URLs)
+        # These should stay as <img> or be handled differently
+        # Only convert if it's clearly a static import
+        
+        # Pattern 3: <img src="string" ... /> (string URLs should stay as <img>)
+        # We don't convert these as they're external URLs
+    
+    return content, modified
+
+def fix_single_vs_array_types(content: str, file_path: str) -> Tuple[str, bool]:
+    """Fix cases where single item is assigned to array state"""
+    modified = False
+    
     uses_single = '.single()' in content or '.maybeSingle()' in content
     
     if uses_single:
-        # Find useState declarations with array types
         pattern = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*(?:React\.)?useState<Tables<"(\w+)">\[\]>\(\[\]\)'
         matches = list(re.finditer(pattern, content))
         
@@ -63,12 +145,9 @@ def fix_single_vs_array_types(content: str, file_path: str) -> Tuple[str, bool]:
             var_name = match.group(1)
             table_name = match.group(2)
             
-            # Check if this variable is set with a single item (not an array)
-            # Look for patterns like: setVarName(data) where data is from .single()
             set_pattern = rf'set{var_name[0].upper()}{var_name[1:]}\(data\)'
             
             if re.search(set_pattern, content):
-                # Change from array type to single item with null
                 old_code = match.group(0)
                 new_code = old_code.replace(
                     f'useState<Tables<"{table_name}">[]>([])',
@@ -76,14 +155,12 @@ def fix_single_vs_array_types(content: str, file_path: str) -> Tuple[str, bool]:
                 )
                 content = content.replace(old_code, new_code, 1)
                 modified = True
-                log(f"  ✓ Fixed {var_name}: array type → single item type", Colors.GREEN)
+                log(f"  ✓ Fixed {var_name}: array → single item type", Colors.GREEN)
     
-    # Pattern 2: Also check for direct type mismatches
-    # useState<Type[]> but setting single Type
+    # Check singular variable names
     pattern2 = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*(?:React\.)?useState<Tables<"(\w+)">\[\]>\(\[\]\)'
     for match in re.finditer(pattern2, content):
         var_name = match.group(1)
-        # Check if variable name is singular (destination, experience, journey, blogPost)
         if var_name.lower() in ['destination', 'experience', 'journey', 'blogpost', 'post', 'package']:
             old_code = match.group(0)
             table_name = match.group(2)
@@ -93,7 +170,7 @@ def fix_single_vs_array_types(content: str, file_path: str) -> Tuple[str, bool]:
             )
             content = content.replace(old_code, new_code, 1)
             modified = True
-            log(f"  ✓ Fixed {var_name}: changed from array to single item type", Colors.GREEN)
+            log(f"  ✓ Fixed {var_name}: changed to single item type", Colors.GREEN)
     
     return content, modified
 
@@ -101,7 +178,6 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
     """Fix useState([]) with proper types"""
     modified = False
     
-    # Determine table type based on file path and variable names
     table_mappings = {
         'blog': 'packages',
         'package': 'packages',
@@ -115,25 +191,21 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
         'meal_plans': 'meal_plans',
     }
     
-    # Find appropriate table type
-    table_type = 'packages'  # Default fallback
+    table_type = 'packages'
     for key, value in table_mappings.items():
         if key in file_path.lower():
             table_type = value
             break
     
-    # Pattern 1: const [varName, setVarName] = React.useState([]);
     pattern1 = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*React\.useState\(\[\]\)'
     matches = re.finditer(pattern1, content)
     
     for match in matches:
         var_name = match.group(1).lower()
         
-        # Skip if already has type
         if 'useState<' in content[max(0, match.start()-50):match.start()]:
             continue
         
-        # Determine specific type based on variable name
         if 'post' in var_name or 'blog' in var_name or 'package' in var_name:
             specific_type = 'packages'
         elif 'destination' in var_name:
@@ -147,7 +219,7 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
         elif 'enquir' in var_name:
             specific_type = 'enquiries'
         elif 'categor' in var_name:
-            continue  # Skip categories as they're string[]
+            continue
         else:
             specific_type = table_type
         
@@ -160,14 +232,12 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
         modified = True
         log(f"  ✓ Fixed {match.group(1)} type → Tables<\"{specific_type}\">[]", Colors.GREEN)
     
-    # Pattern 2: const [varName, setVarName] = useState([]);
     pattern2 = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*useState\(\[\]\)'
     matches = re.finditer(pattern2, content)
     
     for match in matches:
         var_name = match.group(1).lower()
         
-        # Skip if already has type annotation
         if 'useState<' in content[max(0, match.start()-50):match.start()]:
             continue
         
@@ -179,7 +249,6 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
             log(f"  ✓ Fixed {match.group(1)} type → string[]", Colors.GREEN)
             continue
         
-        # Determine specific type
         if 'post' in var_name or 'blog' in var_name or 'package' in var_name:
             specific_type = 'packages'
         elif 'destination' in var_name:
@@ -210,7 +279,6 @@ def fix_use_state_null(content: str, file_path: str) -> Tuple[str, bool]:
     """Fix useState(null) with proper types"""
     modified = False
     
-    # Determine table type
     if 'blog' in file_path.lower() or 'package' in file_path.lower():
         table_type = 'packages'
     elif 'destination' in file_path.lower():
@@ -222,7 +290,6 @@ def fix_use_state_null(content: str, file_path: str) -> Tuple[str, bool]:
     else:
         table_type = 'packages'
     
-    # Pattern: const [varName, setVarName] = React.useState(null) or useState(null)
     patterns = [
         r'const\s+\[(\w+),\s*set\w+\]\s*=\s*React\.useState\(null\)',
         r'const\s+\[(\w+),\s*set\w+\]\s*=\s*useState\(null\)',
@@ -233,11 +300,9 @@ def fix_use_state_null(content: str, file_path: str) -> Tuple[str, bool]:
         for match in matches:
             var_name = match.group(1).lower()
             
-            # Skip if already has type
             if 'useState<' in content[max(0, match.start()-50):match.start()]:
                 continue
             
-            # Determine specific type
             if 'post' in var_name or 'blog' in var_name or 'package' in var_name:
                 specific_type = 'packages'
             elif 'destination' in var_name:
@@ -267,11 +332,27 @@ def fix_use_state_null(content: str, file_path: str) -> Tuple[str, bool]:
     
     return content, modified
 
+def fix_wrong_state_types(content: str) -> Tuple[str, bool]:
+    """Fix useState with wrong types (e.g., Tables<packages> when it should be number)"""
+    modified = False
+    
+    # Pattern: expandedActivity should be number | null, not Tables<"packages"> | null
+    pattern = r'const\s+\[expandedActivity,\s*setExpandedActivity\]\s*=\s*useState<Tables<"packages">\s*\|\s*null>\(null\)'
+    if re.search(pattern, content):
+        content = re.sub(
+            pattern,
+            'const [expandedActivity, setExpandedActivity] = useState<number | null>(null)',
+            content
+        )
+        modified = True
+        log(f"  ✓ Fixed expandedActivity type: Tables → number", Colors.GREEN)
+    
+    return content, modified
+
 def fix_use_params(content: str) -> Tuple[str, bool]:
     """Fix useParams() destructuring"""
     modified = False
     
-    # Pattern 1: const { id } = useParams()
     pattern1 = r'const\s+{\s*id\s*}\s*=\s*useParams\(\s*\)'
     if re.search(pattern1, content):
         if 'Array.isArray(params.id)' not in content:
@@ -283,7 +364,6 @@ def fix_use_params(content: str) -> Tuple[str, bool]:
             modified = True
             log(f"  ✓ Fixed useParams() destructuring", Colors.GREEN)
     
-    # Pattern 2: const { id } = useParams<{ id: string }>()
     pattern2 = r'const\s+{\s*id\s*}\s*=\s*useParams<{\s*id:\s*string\s*}>\(\s*\)'
     if re.search(pattern2, content):
         if 'Array.isArray(params.id)' not in content:
@@ -301,7 +381,6 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
     """Fix nullable date fields in new Date() and JSX"""
     modified = False
     
-    # Pattern 1: Inside JSX - {new Date(post.published_date).toLocaleDateString()}
     pattern1 = r'\{new Date\((\w+)\.(published_date|created_at|updated_at)\)\.toLocaleDateString\(\)\}'
     if re.search(pattern1, content):
         def replace_fn(match):
@@ -312,7 +391,6 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
         modified = True
         log(f"  ✓ Fixed nullable date in JSX with .toLocaleDateString()", Colors.GREEN)
     
-    # Pattern 2: Incomplete ternary - {post.published_date ? new Date(post.published_date) : ...}
     pattern2 = r'\{(\w+)\.(published_date|created_at|updated_at)\s*\?\s*new Date\(\1\.\2\)\s*:\s*new Date\(\)\.toLocaleDateString\(\)\}'
     if re.search(pattern2, content):
         def replace_fn(match):
@@ -323,7 +401,6 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
         modified = True
         log(f"  ✓ Fixed incomplete date ternary", Colors.GREEN)
     
-    # Pattern 3: Plain Date object in JSX - {new Date(post.published_date)}
     pattern3 = r'\{new Date\((\w+)\.(published_date|created_at|updated_at)\)\}'
     if re.search(pattern3, content):
         def replace_fn(match):
@@ -332,7 +409,7 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
             return f'{{{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\'}}'
         content = re.sub(pattern3, replace_fn, content)
         modified = True
-        log(f"  ✓ Fixed Date object in JSX - added null check and .toLocaleDateString()", Colors.GREEN)
+        log(f"  ✓ Fixed Date object in JSX", Colors.GREEN)
     
     return content, modified
 
@@ -345,11 +422,12 @@ def process_file(file_path: Path) -> bool:
         content = original_content
         file_modified = False
         
-        # Check if file needs processing
         needs_processing = (
             'useState(' in content or
             'useParams()' in content or
-            'new Date(' in content
+            'new Date(' in content or
+            '.map((' in content or
+            'import' in content and 'from "@/assets' in content
         )
         
         if not needs_processing:
@@ -357,7 +435,7 @@ def process_file(file_path: Path) -> bool:
         
         log(f"\n📝 Processing: {file_path.relative_to(Path.cwd())}", Colors.CYAN)
         
-        # Apply all fixes in order
+        # Apply all fixes
         content, modified = fix_use_params(content)
         file_modified = file_modified or modified
         
@@ -370,7 +448,16 @@ def process_file(file_path: Path) -> bool:
         content, modified = fix_use_state_null(content, str(file_path))
         file_modified = file_modified or modified
         
+        content, modified = fix_wrong_state_types(content)
+        file_modified = file_modified or modified
+        
         content, modified = fix_nullable_dates(content)
+        file_modified = file_modified or modified
+        
+        content, modified = fix_map_any_types(content)
+        file_modified = file_modified or modified
+        
+        content, modified = fix_image_imports(content)
         file_modified = file_modified or modified
         
         # Add imports if needed
@@ -400,7 +487,6 @@ def find_typescript_files(directory: Path) -> List[Path]:
     for pattern in patterns:
         files.extend(directory.glob(pattern))
     
-    # Filter excluded directories
     excluded = {'node_modules', '.next', 'dist', 'build', '.git'}
     files = [f for f in files if not any(ex in f.parts for ex in excluded)]
     
@@ -408,14 +494,13 @@ def find_typescript_files(directory: Path) -> List[Path]:
 
 def main():
     """Main execution"""
-    log("🚀 Production-Ready TypeScript Type Fixer", Colors.MAGENTA)
+    log("🚀 Complete Production TypeScript Fixer", Colors.MAGENTA)
     log("=" * 70, Colors.MAGENTA)
-    log("Fixes: useState types, useParams, nullable dates, array vs single items", Colors.CYAN)
+    log("Fixes: useState, useParams, dates, arrays, map callbacks, images", Colors.CYAN)
     log("=" * 70, Colors.MAGENTA)
     
     project_root = Path.cwd()
     
-    # Process app and components directories
     directories = []
     for dir_name in ['app', 'components']:
         dir_path = project_root / dir_name
@@ -426,7 +511,6 @@ def main():
         log("❌ No app or components directory found!", Colors.RED)
         return
     
-    # Find all files
     all_files = []
     for directory in directories:
         log(f"\n📂 Scanning: {directory.name}/", Colors.BLUE)
@@ -437,13 +521,11 @@ def main():
     log(f"\n📊 Total files to process: {len(all_files)}", Colors.BLUE)
     log("=" * 70, Colors.BLUE)
     
-    # Process files
     modified_count = 0
     for file_path in all_files:
         if process_file(file_path):
             modified_count += 1
     
-    # Summary
     log("\n" + "=" * 70, Colors.MAGENTA)
     log("📊 Summary:", Colors.MAGENTA)
     log(f"   Total files scanned: {len(all_files)}", Colors.BLUE)

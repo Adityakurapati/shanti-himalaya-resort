@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
+import Image from "next/image";
 import {
         Mountain,
         TreePine,
@@ -94,7 +95,7 @@ const Index = () => {
 
                                                 {/* Image indicators */}
                                                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                        {himalayanImages.map((_, index) => (
+                                                        {himalayanImages.map((_: string, index: number) => (
                                                                 <button
                                                                         key={index}
                                                                         onClick={() => setCurrentHeroImage(index)}
@@ -199,7 +200,7 @@ const Index = () => {
 
                                                         {/* Resort Controls */}
                                                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {[...Array(4)].map((_, index) => (
+                                                                {[...Array(4)].map((_: string, index: number) => (
                                                                         <div
                                                                                 key={index}
                                                                                 className={`w-3 h-3 rounded-full transition-all ${index === 0 ? "bg-white" : "bg-white/50"}`}
@@ -236,7 +237,7 @@ const Index = () => {
 
                                                         {/* Journey Controls */}
                                                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {[...Array(5)].map((_, index) => (
+                                                                {[...Array(5)].map((_: string, index: number) => (
                                                                         <div
                                                                                 key={index}
                                                                                 className={`w-3 h-3 rounded-full transition-all ${index === 0 ? "bg-white" : "bg-white/50"}`}
@@ -313,7 +314,7 @@ const Index = () => {
                                                                 category: "Culture",
                                                                 readTime: "6 min read",
                                                         },
-                                                ].map((post, index) => (
+                                                ].map((post: string, index: number) => (
                                                         <Link key={index} href={`/blog/${index + 1}`} className="group">
                                                                 <Card className="shadow-card hover-lift overflow-hidden">
                                                                         <div className="h-48 bg-gradient-to-br from-accent to-primary flex items-center justify-center">
@@ -404,7 +405,7 @@ const Index = () => {
 
                                                         {/* Destination Controls */}
                                                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {[...Array(4)].map((_, index) => (
+                                                                {[...Array(4)].map((_: string, index: number) => (
                                                                         <div
                                                                                 key={index}
                                                                                 className={`w-3 h-3 rounded-full transition-all ${index === 1 ? "bg-white" : "bg-white/50"}`}
@@ -502,7 +503,7 @@ const Index = () => {
 
                                                         {/* Carousel Controls */}
                                                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {[...Array(5)].map((_, index) => (
+                                                                {[...Array(5)].map((_: string, index: number) => (
                                                                         <div
                                                                                 key={index}
                                                                                 className={`w-3 h-3 rounded-full transition-all ${index === 0 ? "bg-white" : "bg-white/50"}`}
@@ -539,7 +540,7 @@ const Index = () => {
 
                                                         {/* Experience Controls */}
                                                         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {[...Array(3)].map((_, index) => (
+                                                                {[...Array(3)].map((_: string, index: number) => (
                                                                         <div
                                                                                 key={index}
                                                                                 className={`w-3 h-3 rounded-full transition-all ${index === 2 ? "bg-white" : "bg-white/50"}`}
@@ -604,10 +605,12 @@ const Index = () => {
                                 <div className="container mx-auto px-4">
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                                 <div>
-                                                        <img
-                                                                src={activitiesImage || "/placeholder.svg"}
+                                                        <Image
+                                                                src={activitiesImage}
                                                                 alt="Our story - Mountain heritage and hospitality"
                                                                 className="rounded-2xl shadow-card hover-lift"
+                                                                width={800}
+                                                                height={600}
                                                         />
                                                 </div>
 

@@ -140,7 +140,7 @@ const BlogPost = () => {
                                                                                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                                                                                         <div className="flex items-center space-x-1">
                                                                                                 <Calendar className="w-4 h-4" />
-                                                                                                <span>{new Date(blogPost.published_date).toLocaleDateString()}</span>
+                                                                                                <span>{blogPost.published_date ? new Date(blogPost.published_date).toLocaleDateString() : 'N/A'}</span>
                                                                                         </div>
                                                                                         <div className="flex items-center space-x-1">
                                                                                                 <Clock className="w-4 h-4" />

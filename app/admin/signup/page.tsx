@@ -44,7 +44,7 @@ const AdminSignup = () => {
                 setLoading(true)
 
                 try {
-                        const redirectUrl = (import.meta.env.VITE_SUPABASE_REDIRECT_URL as string) || `${window.location.origin}/`
+                        const redirectUrl = (process.env.NEXT_SUPABASE_REDIRECT_URL as string) || `${window.location.origin}/`
 
                         const { data, error } = await supabase.auth.signUp({
                                 email,

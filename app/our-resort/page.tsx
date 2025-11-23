@@ -267,7 +267,7 @@ const OurResort = () => {
                                                                                 </div>
                                                                         </div>
                                                                         <div className="flex items-center space-x-1">
-                                                                                {[1, 2, 3, 4, 5].map((star: any) => (
+                                                                                {[1, 2, 3, 4, 5].map((star: number) => (
                                                                                         <Star key={star} className="w-4 h-4 fill-gold text-gold" />
                                                                                 ))}
                                                                                 <span className="text-sm text-muted-foreground ml-2">Luxury Experience</span>
@@ -390,7 +390,7 @@ const OurResort = () => {
                                                                         <div className="space-y-2">
                                                                                 <h4 className="font-semibold text-sm">Package Includes:</h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {pkg.includes.map((item, index) => (
+                                                                                        {pkg.includes.map((item: string, index: number) => (
                                                                                                 <li key={index} className="flex items-center space-x-2">
                                                                                                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                                                                                                         <span>{item}</span>
@@ -399,7 +399,7 @@ const OurResort = () => {
                                                                                 </ul>
                                                                         </div>
                                                                         <div className="flex flex-wrap gap-1">
-                                                                                {pkg.features.map((feature, index) => (
+                                                                                {pkg.features.map((feature: string, index: number) => (
                                                                                         <Badge key={index} variant="secondary" className="text-xs">
                                                                                                 {feature}
                                                                                         </Badge>

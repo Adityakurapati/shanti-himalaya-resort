@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Complete TypeScript Type Fixer Script
-Fixes all useState, useParams, and date handling issues
+Complete TypeScript Type Fixer Script - Production Ready
+Fixes all useState, useParams, date handling, and type assignment issues
 """
 
 import os
@@ -15,6 +15,7 @@ class Colors:
     RED = '\033[91m'
     BLUE = '\033[94m'
     CYAN = '\033[96m'
+    MAGENTA = '\033[95m'
     END = '\033[0m'
 
 def log(message: str, color: str = Colors.BLUE):
@@ -42,6 +43,60 @@ def add_types_import(content: str) -> Tuple[str, bool]:
     
     return content, False
 
+def fix_single_vs_array_types(content: str, file_path: str) -> Tuple[str, bool]:
+    """Fix cases where single item is assigned to array state or vice versa"""
+    modified = False
+    
+    # Pattern 1: useState<Type[]>([]) but setting single item with .single()
+    # Look for: const [var, setVar] = useState<Tables<"x">[]>([])
+    # followed by: setVar(data) where data comes from .single()
+    
+    # First, detect if file uses .single() or .maybeSingle()
+    uses_single = '.single()' in content or '.maybeSingle()' in content
+    
+    if uses_single:
+        # Find useState declarations with array types
+        pattern = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*(?:React\.)?useState<Tables<"(\w+)">\[\]>\(\[\]\)'
+        matches = list(re.finditer(pattern, content))
+        
+        for match in matches:
+            var_name = match.group(1)
+            table_name = match.group(2)
+            
+            # Check if this variable is set with a single item (not an array)
+            # Look for patterns like: setVarName(data) where data is from .single()
+            set_pattern = rf'set{var_name[0].upper()}{var_name[1:]}\(data\)'
+            
+            if re.search(set_pattern, content):
+                # Change from array type to single item with null
+                old_code = match.group(0)
+                new_code = old_code.replace(
+                    f'useState<Tables<"{table_name}">[]>([])',
+                    f'useState<Tables<"{table_name}"> | null>(null)'
+                )
+                content = content.replace(old_code, new_code, 1)
+                modified = True
+                log(f"  ✓ Fixed {var_name}: array type → single item type", Colors.GREEN)
+    
+    # Pattern 2: Also check for direct type mismatches
+    # useState<Type[]> but setting single Type
+    pattern2 = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*(?:React\.)?useState<Tables<"(\w+)">\[\]>\(\[\]\)'
+    for match in re.finditer(pattern2, content):
+        var_name = match.group(1)
+        # Check if variable name is singular (destination, experience, journey, blogPost)
+        if var_name.lower() in ['destination', 'experience', 'journey', 'blogpost', 'post', 'package']:
+            old_code = match.group(0)
+            table_name = match.group(2)
+            new_code = old_code.replace(
+                f'useState<Tables<"{table_name}">[]>([])',
+                f'useState<Tables<"{table_name}"> | null>(null)'
+            )
+            content = content.replace(old_code, new_code, 1)
+            modified = True
+            log(f"  ✓ Fixed {var_name}: changed from array to single item type", Colors.GREEN)
+    
+    return content, modified
+
 def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
     """Fix useState([]) with proper types"""
     modified = False
@@ -61,14 +116,11 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
     }
     
     # Find appropriate table type
-    table_type = None
+    table_type = 'packages'  # Default fallback
     for key, value in table_mappings.items():
         if key in file_path.lower():
             table_type = value
             break
-    
-    if not table_type:
-        table_type = 'packages'  # Default fallback
     
     # Pattern 1: const [varName, setVarName] = React.useState([]);
     pattern1 = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*React\.useState\(\[\]\)'
@@ -76,6 +128,10 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
     
     for match in matches:
         var_name = match.group(1).lower()
+        
+        # Skip if already has type
+        if 'useState<' in content[max(0, match.start()-50):match.start()]:
+            continue
         
         # Determine specific type based on variable name
         if 'post' in var_name or 'blog' in var_name or 'package' in var_name:
@@ -102,7 +158,7 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
         )
         content = content.replace(old_match, new_code, 1)
         modified = True
-        log(f"  ✓ Fixed {match.group(1)} type -> Tables<\"{specific_type}\">[]", Colors.GREEN)
+        log(f"  ✓ Fixed {match.group(1)} type → Tables<\"{specific_type}\">[]", Colors.GREEN)
     
     # Pattern 2: const [varName, setVarName] = useState([]);
     pattern2 = r'const\s+\[(\w+),\s*set\w+\]\s*=\s*useState\(\[\]\)'
@@ -120,7 +176,7 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
             new_code = old_match.replace('useState([])', 'useState<string[]>([])')
             content = content.replace(old_match, new_code, 1)
             modified = True
-            log(f"  ✓ Fixed {match.group(1)} type -> string[]", Colors.GREEN)
+            log(f"  ✓ Fixed {match.group(1)} type → string[]", Colors.GREEN)
             continue
         
         # Determine specific type
@@ -146,7 +202,7 @@ def fix_use_state_empty_array(content: str, file_path: str) -> Tuple[str, bool]:
         )
         content = content.replace(old_match, new_code, 1)
         modified = True
-        log(f"  ✓ Fixed {match.group(1)} type -> Tables<\"{specific_type}\">[]", Colors.GREEN)
+        log(f"  ✓ Fixed {match.group(1)} type → Tables<\"{specific_type}\">[]", Colors.GREEN)
     
     return content, modified
 
@@ -207,7 +263,7 @@ def fix_use_state_null(content: str, file_path: str) -> Tuple[str, bool]:
             
             content = content.replace(old_match, new_code, 1)
             modified = True
-            log(f"  ✓ Fixed {match.group(1)} type -> Tables<\"{specific_type}\"> | null", Colors.GREEN)
+            log(f"  ✓ Fixed {match.group(1)} type → Tables<\"{specific_type}\"> | null", Colors.GREEN)
     
     return content, modified
 
@@ -242,12 +298,11 @@ def fix_use_params(content: str) -> Tuple[str, bool]:
     return content, modified
 
 def fix_nullable_dates(content: str) -> Tuple[str, bool]:
-    """Fix nullable date fields in new Date()"""
+    """Fix nullable date fields in new Date() and JSX"""
     modified = False
     
-    # Pattern 1: Inside JSX with .toLocaleDateString() - Fix incomplete ternary
-    # {post.published_date ? new Date(post.published_date) : new Date().toLocaleDateString()}
-    pattern1 = r'\{(\w+)\.(published_date|created_at|updated_at)\s*\?\s*new Date\(\1\.\2\)\s*:\s*new Date\(\)\.toLocaleDateString\(\)\}'
+    # Pattern 1: Inside JSX - {new Date(post.published_date).toLocaleDateString()}
+    pattern1 = r'\{new Date\((\w+)\.(published_date|created_at|updated_at)\)\.toLocaleDateString\(\)\}'
     if re.search(pattern1, content):
         def replace_fn(match):
             var_name = match.group(1)
@@ -255,11 +310,10 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
             return f'{{{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\'}}'
         content = re.sub(pattern1, replace_fn, content)
         modified = True
-        log(f"  ✓ Fixed incomplete date ternary with .toLocaleDateString()", Colors.GREEN)
+        log(f"  ✓ Fixed nullable date in JSX with .toLocaleDateString()", Colors.GREEN)
     
-    # Pattern 2: Inside JSX without method call - Missing .toLocaleDateString()
-    # {new Date(post.published_date)}
-    pattern2 = r'\{new Date\((\w+)\.(published_date|created_at|updated_at)\)\}'
+    # Pattern 2: Incomplete ternary - {post.published_date ? new Date(post.published_date) : ...}
+    pattern2 = r'\{(\w+)\.(published_date|created_at|updated_at)\s*\?\s*new Date\(\1\.\2\)\s*:\s*new Date\(\)\.toLocaleDateString\(\)\}'
     if re.search(pattern2, content):
         def replace_fn(match):
             var_name = match.group(1)
@@ -267,24 +321,18 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
             return f'{{{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\'}}'
         content = re.sub(pattern2, replace_fn, content)
         modified = True
-        log(f"  ✓ Fixed Date object in JSX - added .toLocaleDateString()", Colors.GREEN)
+        log(f"  ✓ Fixed incomplete date ternary", Colors.GREEN)
     
-    # Pattern 3: Regular new Date() calls that might have nullable fields
-    pattern3 = r'new Date\((\w+)\.(published_date|created_at|updated_at)\)(?!\.)'
+    # Pattern 3: Plain Date object in JSX - {new Date(post.published_date)}
+    pattern3 = r'\{new Date\((\w+)\.(published_date|created_at|updated_at)\)\}'
     if re.search(pattern3, content):
-        # Check if not inside a ternary already
-        for match in re.finditer(pattern3, content):
-            # Get context to check if already in ternary
-            start = max(0, match.start() - 50)
-            context = content[start:match.end() + 20]
-            if ' ? ' not in context or 'new Date(' in context[:30]:
-                var_name = match.group(1)
-                field = match.group(2)
-                old_text = match.group(0)
-                new_text = f'{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\''
-                content = content.replace(old_text, new_text, 1)
-                modified = True
-                log(f"  ✓ Fixed nullable date: {field}", Colors.GREEN)
+        def replace_fn(match):
+            var_name = match.group(1)
+            field = match.group(2)
+            return f'{{{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\'}}'
+        content = re.sub(pattern3, replace_fn, content)
+        modified = True
+        log(f"  ✓ Fixed Date object in JSX - added null check and .toLocaleDateString()", Colors.GREEN)
     
     return content, modified
 
@@ -309,8 +357,11 @@ def process_file(file_path: Path) -> bool:
         
         log(f"\n📝 Processing: {file_path.relative_to(Path.cwd())}", Colors.CYAN)
         
-        # Apply all fixes
+        # Apply all fixes in order
         content, modified = fix_use_params(content)
+        file_modified = file_modified or modified
+        
+        content, modified = fix_single_vs_array_types(content, str(file_path))
         file_modified = file_modified or modified
         
         content, modified = fix_use_state_empty_array(content, str(file_path))
@@ -325,7 +376,6 @@ def process_file(file_path: Path) -> bool:
         # Add imports if needed
         if file_modified:
             content, modified = add_types_import(content)
-            file_modified = file_modified or modified
         
         # Write back if modified
         if file_modified and content != original_content:
@@ -358,8 +408,10 @@ def find_typescript_files(directory: Path) -> List[Path]:
 
 def main():
     """Main execution"""
-    log("🚀 Complete TypeScript Type Fixer", Colors.BLUE)
-    log("=" * 60, Colors.BLUE)
+    log("🚀 Production-Ready TypeScript Type Fixer", Colors.MAGENTA)
+    log("=" * 70, Colors.MAGENTA)
+    log("Fixes: useState types, useParams, nullable dates, array vs single items", Colors.CYAN)
+    log("=" * 70, Colors.MAGENTA)
     
     project_root = Path.cwd()
     
@@ -383,7 +435,7 @@ def main():
         log(f"   Found {len(files)} TypeScript files", Colors.BLUE)
     
     log(f"\n📊 Total files to process: {len(all_files)}", Colors.BLUE)
-    log("=" * 60, Colors.BLUE)
+    log("=" * 70, Colors.BLUE)
     
     # Process files
     modified_count = 0
@@ -392,13 +444,13 @@ def main():
             modified_count += 1
     
     # Summary
-    log("\n" + "=" * 60, Colors.BLUE)
-    log("📊 Summary:", Colors.BLUE)
+    log("\n" + "=" * 70, Colors.MAGENTA)
+    log("📊 Summary:", Colors.MAGENTA)
     log(f"   Total files scanned: {len(all_files)}", Colors.BLUE)
     log(f"   Files modified: {modified_count}", Colors.GREEN)
     log(f"   Files unchanged: {len(all_files) - modified_count}", Colors.YELLOW)
     log("\n✨ Done! Now run: npm run build", Colors.GREEN)
-    log("=" * 60, Colors.BLUE)
+    log("=" * 70, Colors.MAGENTA)
 
 if __name__ == "__main__":
     main()

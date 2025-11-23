@@ -24,7 +24,7 @@ import React from "react";
 const ExperienceDetail = () => {
         const params = useParams();
         const id = Array.isArray(params.id) ? params.id[0] : params.id;;
-        const [experience, setExperience] = React.useState<Tables<"experiences">[]>([]);
+        const [experience, setExperience] = React.useState<Tables<"experiences"> | null>(null);
         const [loading, setLoading] = React.useState(true);
 
         React.useEffect(() => {

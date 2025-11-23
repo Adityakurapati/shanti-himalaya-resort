@@ -195,7 +195,7 @@ export const ResortActivitiesAdmin = () => {
         }
 
         const getIconComponent = (iconName: string) => {
-                const iconOption = travelIconOptions.find(option => option.name === iconName)
+                const iconOption = travelIconOptions.find((option: any) => option.name === iconName)
                 return iconOption ? iconOption.Icon : Mountain
         }
 
@@ -340,7 +340,7 @@ export const ResortActivitiesAdmin = () => {
                                 </Card>
                         ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {activities.map((activity) => {
+                                        {activities.map((activity: any) => {
                                                 const IconComponent = getIconComponent(activity.icon)
                                                 return (
                                                         <Card key={activity.id} className="overflow-hidden">

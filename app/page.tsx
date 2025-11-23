@@ -429,7 +429,7 @@ const Index = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                                                {experientialPackages.map((pkg) => (
+                                                {experientialPackages.map((pkg: any) => (
                                                         <Card key={pkg.id} className="shadow-card hover-lift overflow-hidden">
                                                                 <div className="h-40 bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                                                                         <Camera className="w-12 h-12 text-white/30" />

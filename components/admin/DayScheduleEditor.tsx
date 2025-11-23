@@ -158,7 +158,7 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
       </form>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {days.map((d) => (
+        {days.map((d: any) => (
           <Card key={d.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">

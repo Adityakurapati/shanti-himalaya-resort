@@ -60,10 +60,10 @@ const Journeys = () => {
                 }
         };
 
-        const featuredJourneys = journeys.filter(journey => journey.featured);
+        const featuredJourneys = journeys.filter((journey: any) => journey.featured);
         const filteredJourneys = selectedCategory === "All"
                 ? journeys
-                : journeys.filter(journey => journey.category === selectedCategory);
+                : journeys.filter((journey: any) => journey.category === selectedCategory);
 
         if (loading) {
                 return (
@@ -115,7 +115,7 @@ const Journeys = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                                                {featuredJourneys.map((journey) => (
+                                                {featuredJourneys.map((journey: any) => (
                                                         <Card key={journey.id} className="shadow-card hover-lift overflow-hidden">
                                                                 <div className="relative h-48 bg-gradient-to-br from-primary to-accent">
                                                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -142,7 +142,7 @@ const Journeys = () => {
                                                                         </div>
 
                                                                         <div className="flex flex-wrap gap-1">
-                                                                                {journey.activities.slice(0, 3).map((activity) => (
+                                                                                {journey.activities.slice(0, 3).map((activity: any) => (
                                                                                         <Badge key={activity} variant="secondary" className="text-xs">
                                                                                                 {activity}
                                                                                         </Badge>
@@ -177,7 +177,7 @@ const Journeys = () => {
 
                                                 {/* Category Filter */}
                                                 <div className="flex flex-wrap justify-center gap-2 mb-8">
-                                                        {categories.map((category) => (
+                                                        {categories.map((category: any) => (
                                                                 <Button
                                                                         key={category}
                                                                         variant={category === selectedCategory ? "default" : "outline"}
@@ -197,7 +197,7 @@ const Journeys = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                                {filteredJourneys.map((journey) => (
+                                                {filteredJourneys.map((journey: any) => (
                                                         <Card key={journey.id} className="shadow-card hover-lift overflow-hidden bg-white">
                                                                 <div className="relative h-32 bg-gradient-to-br from-primary/10 to-accent/10">
                                                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -227,7 +227,7 @@ const Journeys = () => {
                                                                         </div>
 
                                                                         <div className="flex flex-wrap gap-1 mb-4">
-                                                                                {journey.activities.slice(0, 2).map((activity) => (
+                                                                                {journey.activities.slice(0, 2).map((activity: any) => (
                                                                                         <Badge key={activity} variant="outline" className="text-xs">
                                                                                                 {activity}
                                                                                         </Badge>

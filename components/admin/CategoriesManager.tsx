@@ -32,7 +32,7 @@ export default function CategoriesManager() {
                         }
 
                         if (data) {
-                                setCategories(data.map(item => item.name))
+                                setCategories(data.map((item: any) => item.name))
                         } else {
                                 // Initialize with default categories if table doesn't exist
                                 const defaultCategories = ["Trekking", "Wildlife", "Culture", "Adventure", "Pilgrimage", "Nature"]
@@ -53,7 +53,7 @@ export default function CategoriesManager() {
                         // Create categories table
                         const { error: createError } = await supabase
                                 .from('categories')
-                                .insert(defaultCategories.map(name => ({ name })))
+                                .insert(defaultCategories.map((name: any) => ({ name })))
 
                         if (createError) throw createError
                 } catch (error) {
@@ -100,7 +100,7 @@ export default function CategoriesManager() {
 
                         if (error) throw error
 
-                        setCategories(prev => prev.filter(c => c !== category))
+                        setCategories(prev => prev.filter((c: any) => c !== category))
                         toast({
                                 title: "Category deleted",
                                 description: `${category} has been removed.`
@@ -137,7 +137,7 @@ export default function CategoriesManager() {
                                 </div>
 
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {categories.map((category) => (
+                                        {categories.map((category: any) => (
                                                 <div key={category} className="flex items-center justify-between p-2 border rounded">
                                                         <span className="text-sm">{category}</span>
                                                         <Button

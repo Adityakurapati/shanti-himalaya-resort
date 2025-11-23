@@ -89,7 +89,7 @@ const PackagesAdmin = () => {
                         ...formData,
                         tags: formData.tags
                                 .split(",")
-                                .map((t) => t.trim())
+                                .map((t: any) => t.trim())
                                 .filter(Boolean),
                 }
 
@@ -334,7 +334,7 @@ const PackagesAdmin = () => {
                                 </Card>
                         ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {packages.map((pkg) => (
+                                        {packages.map((pkg: any) => (
                                                 <Card key={pkg.id} className="overflow-hidden">
                                                         <div className="relative">
                                                                 {pkg.image_url ? (

@@ -96,7 +96,7 @@ const UserApproval = () => {
           <p className="text-muted-foreground text-center py-8">No pending requests</p>
         ) : (
           <div className="space-y-4">
-            {pendingUsers.map((user) => (
+            {pendingUsers.map((user: any) => (
               <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="space-y-1">
                   <p className="font-medium">{user.email}</p>

@@ -520,7 +520,7 @@ const JourneyDetail = () => {
                                                                                         Journey Highlights
                                                                                 </h3>
                                                                                 <div className="space-y-3">
-                                                                                        {days.map((day) => (
+                                                                                        {days.map((day: any) => (
                                                                                                 <div key={day.id} className="flex items-start space-x-3">
                                                                                                         <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold mt-0.5 flex-shrink-0">
                                                                                                                 {day.day_number}

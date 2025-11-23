@@ -62,7 +62,7 @@ const Destinations = () => {
                         }
 
                         if (data) {
-                                setCategories(["All", ...data.map(item => item.name)])
+                                setCategories(["All", ...data.map((item: any) => item.name)])
                         } else {
                                 setCategories(["All", "Trekking", "Wildlife", "Culture", "Adventure", "Pilgrimage", "Nature"])
                         }
@@ -88,10 +88,10 @@ const Destinations = () => {
                 }
         };
 
-        const featuredDestinations = destinations.filter(dest => dest.featured);
+        const featuredDestinations = destinations.filter((dest: any) => dest.featured);
         const filteredDestinations = selectedCategory === "All"
                 ? destinations
-                : destinations.filter(dest => dest.category === selectedCategory);
+                : destinations.filter((dest: any) => dest.category === selectedCategory);
 
         return (
                 <div className="min-h-screen bg-background">
@@ -139,7 +139,7 @@ const Destinations = () => {
                                                 </div>
                                         ) : (
                                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                                        {featuredDestinations.map((destination) => (
+                                                        {featuredDestinations.map((destination: any) => (
                                                                 <Card key={destination.id} className="shadow-card hover-lift overflow-hidden">
                                                                         <div className="relative h-64 bg-gradient-to-br from-primary to-accent">
                                                                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -222,7 +222,7 @@ const Destinations = () => {
 
                                                 {/* Category Filter */}
                                                 <div className="flex flex-wrap justify-center gap-2 mb-8">
-                                                        {categories.map((category) => (
+                                                        {categories.map((category: any) => (
                                                                 <Button
                                                                         key={category}
                                                                         variant={category === selectedCategory ? "default" : "outline"}
@@ -246,7 +246,7 @@ const Destinations = () => {
                                                 </div>
                                         ) : (
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                                        {filteredDestinations.map((destination) => (
+                                                        {filteredDestinations.map((destination: any) => (
                                                                 <Card key={destination.id} className="shadow-card hover-lift bg-white">
                                                                         <CardHeader className="pb-4">
                                                                                 <div className="flex items-start justify-between">

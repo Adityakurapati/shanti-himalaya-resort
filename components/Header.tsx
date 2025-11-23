@@ -84,7 +84,7 @@ const Header = () => {
                                         {/* Desktop Navigation */}
                                         <nav className="hidden md:flex items-center space-x-8">
                                                 {/* Main Navigation Links */}
-                                                {mainNavLinks.map((link) => (
+                                                {mainNavLinks.map((link: any) => (
                                                         <Link
                                                                 key={link.href}
                                                                 href={link.href}
@@ -103,7 +103,7 @@ const Header = () => {
                                                 ))}
 
                                                 {/* Resort-specific Navigation */}
-                                                {resortNavLinks.map((link) => (
+                                                {resortNavLinks.map((link: any) => (
                                                         <a
                                                                 key={link.href}
                                                                 href={link.href}
@@ -122,7 +122,7 @@ const Header = () => {
                                                                                 <ChevronDown className="w-4 h-4" />
                                                                         </DropdownMenuTrigger>
                                                                         <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
-                                                                                {topJourneys.map((journey) => (
+                                                                                {topJourneys.map((journey: any) => (
                                                                                         <DropdownMenuItem key={journey.id} asChild>
                                                                                                 <Link href={`/journeys/${journey.id}`} className="cursor-pointer">
                                                                                                         {journey.name}
@@ -143,7 +143,7 @@ const Header = () => {
                                                                                 <ChevronDown className="w-4 h-4" />
                                                                         </DropdownMenuTrigger>
                                                                         <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
-                                                                                {topDestinations.map((destination) => (
+                                                                                {topDestinations.map((destination: any) => (
                                                                                         <DropdownMenuItem key={destination.id} asChild>
                                                                                                 <Link href={`/destinations/${destination.id}`} className="cursor-pointer">
                                                                                                         {destination.name}
@@ -164,7 +164,7 @@ const Header = () => {
                                                                                 <ChevronDown className="w-4 h-4" />
                                                                         </DropdownMenuTrigger>
                                                                         <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
-                                                                                {topExperiences.map((experience) => (
+                                                                                {topExperiences.map((experience: any) => (
                                                                                         <DropdownMenuItem key={experience.id} asChild>
                                                                                                 <Link href={`/experiences/${experience.id}`} className="cursor-pointer">
                                                                                                         {experience.name}
@@ -214,7 +214,7 @@ const Header = () => {
                                 {isMenuOpen && (
                                         <div className="md:hidden py-4 border-t border-border">
                                                 <nav className="flex flex-col space-y-3">
-                                                        {mainNavLinks.map((link) => (
+                                                        {mainNavLinks.map((link: any) => (
                                                                 <Link
                                                                         key={link.href}
                                                                         href={link.href}
@@ -229,7 +229,7 @@ const Header = () => {
                                                         ))}
 
                                                         {/* Resort Navigation in Mobile */}
-                                                        {resortNavLinks.map((link) => (
+                                                        {resortNavLinks.map((link: any) => (
                                                                 <a
                                                                         key={link.href}
                                                                         href={link.href}
@@ -245,7 +245,7 @@ const Header = () => {
                                                                 <>
                                                                         <div className="px-4 py-2">
                                                                                 <h4 className="font-semibold text-sm text-muted-foreground mb-2">Journeys</h4>
-                                                                                {topJourneys.slice(0, 3).map((journey) => (
+                                                                                {topJourneys.slice(0, 3).map((journey: any) => (
                                                                                         <Link
                                                                                                 key={journey.id}
                                                                                                 href={`/journeys/${journey.id}`}
@@ -266,7 +266,7 @@ const Header = () => {
 
                                                                         <div className="px-4 py-2">
                                                                                 <h4 className="font-semibold text-sm text-muted-foreground mb-2">Destinations</h4>
-                                                                                {topDestinations.slice(0, 3).map((destination) => (
+                                                                                {topDestinations.slice(0, 3).map((destination: any) => (
                                                                                         <Link
                                                                                                 key={destination.id}
                                                                                                 href={`/destinations/${destination.id}`}
@@ -287,7 +287,7 @@ const Header = () => {
 
                                                                         <div className="px-4 py-2">
                                                                                 <h4 className="font-semibold text-sm text-muted-foreground mb-2">Experiences</h4>
-                                                                                {topExperiences.slice(0, 3).map((experience) => (
+                                                                                {topExperiences.slice(0, 3).map((experience: any) => (
                                                                                         <Link
                                                                                                 key={experience.id}
                                                                                                 href={`/experiences/${experience.id}`}

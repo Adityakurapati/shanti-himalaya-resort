@@ -132,7 +132,7 @@ const ManageAdmins = () => {
                                         <p className="text-center text-muted-foreground py-8">No admin users found</p>
                                 ) : (
                                         <div className="space-y-4">
-                                                {adminUsers.map((user) => (
+                                                {adminUsers.map((user: any) => (
                                                         <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
                                                                 <div className="space-y-1">
                                                                         <div className="flex items-center gap-2">

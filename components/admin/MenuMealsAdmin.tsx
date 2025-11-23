@@ -86,9 +86,9 @@ export const MenuMealsAdmin = () => {
                         name: formData.name,
                         price: formData.price,
                         description: formData.description,
-                        breakfast: formData.breakfast.split("\n").filter((item) => item.trim()),
-                        lunch: formData.lunch.split("\n").filter((item) => item.trim()),
-                        dinner: formData.dinner.split("\n").filter((item) => item.trim()),
+                        breakfast: formData.breakfast.split("\n").filter((item: any) => item.trim()),
+                        lunch: formData.lunch.split("\n").filter((item: any) => item.trim()),
+                        dinner: formData.dinner.split("\n").filter((item: any) => item.trim()),
                         badge: formData.badge,
                 }
 
@@ -317,7 +317,7 @@ export const MenuMealsAdmin = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {mealPlans.map((plan) => (
+                                        {mealPlans.map((plan: any) => (
                                                 <Card key={plan.id}>
                                                         <CardHeader>
                                                                 <CardTitle className="flex items-center justify-between">
@@ -416,7 +416,7 @@ export const MenuMealsAdmin = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        {schedules.map((s) => (
+                                        {schedules.map((s: any) => (
                                                 <Card key={s.id}>
                                                         <CardHeader>
                                                                 <CardTitle className="flex items-center justify-between">

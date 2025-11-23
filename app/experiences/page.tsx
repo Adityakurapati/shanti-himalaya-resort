@@ -55,7 +55,7 @@ const Experiences = () => {
                         setExperiences(data || []);
 
                         // Extract unique categories
-                        const uniqueCategories = ["All", ...new Set(data?.map(exp => exp.category) || [])];
+                        const uniqueCategories = ["All", ...new Set(data?.map((exp: any) => exp.category) || [])];
                         setCategories(uniqueCategories);
                 } catch (error) {
                         console.error('Error fetching experiences:', error);
@@ -167,10 +167,11 @@ const Experiences = () => {
                 }
         ];
 
-        const featuredExperiences = experiences.filter(exp => exp.featured);
+
+        const featuredExperiences = experiences.filter((exp: any) => exp.featured);
         const filteredExperiences = selectedCategory === "All"
                 ? experiences
-                : experiences.filter(exp => exp.category === selectedCategory);
+                : experiences.filter((exp: any) => exp.category === selectedCategory);
 
         return (
                 <div className="min-h-screen bg-background">
@@ -209,7 +210,7 @@ const Experiences = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                                {featuredExperiences.map((experience) => (
+                                                {featuredExperiences.map((experience: any) => (
                                                         <Card key={experience.id} className="shadow-card hover-lift overflow-hidden">
                                                                 <div className="relative h-48 bg-gradient-to-br from-primary via-accent to-gold">
                                                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -251,7 +252,7 @@ const Experiences = () => {
                                                                         <div className="space-y-2 mb-4">
                                                                                 <h4 className="font-semibold text-sm">Includes:</h4>
                                                                                 <div className="flex flex-wrap gap-1">
-                                                                                        {experience.highlights.slice(0, 3).map((highlight) => (
+                                                                                        {experience.highlights.slice(0, 3).map((highlight: any) => (
                                                                                                 <Badge key={highlight} variant="secondary" className="text-xs">
                                                                                                         {highlight}
                                                                                                 </Badge>
@@ -287,7 +288,7 @@ const Experiences = () => {
 
                                                 {/* Category Filter */}
                                                 <div className="flex flex-wrap justify-center gap-2 mb-8">
-                                                        {categories.map((category) => (
+                                                        {categories.map((category: any) => (
                                                                 <Button
                                                                         key={category}
                                                                         variant={category === selectedCategory ? "default" : "outline"}
@@ -302,7 +303,7 @@ const Experiences = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                                {filteredExperiences.map((experience) => (
+                                                {filteredExperiences.map((experience: any) => (
                                                         <Card key={experience.id} className="shadow-card hover-lift bg-white">
                                                                 <div className="relative h-32 bg-gradient-to-br from-primary/10 to-accent/10">
                                                                         <div className="absolute inset-0 flex items-center justify-center">

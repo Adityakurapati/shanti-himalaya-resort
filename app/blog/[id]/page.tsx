@@ -231,7 +231,7 @@ const BlogPost = () => {
                                                                         <CardContent className="p-6">
                                                                                 <h3 className="font-semibold mb-4">Related Articles</h3>
                                                                                 <div className="space-y-4">
-                                                                                        {relatedPosts.map((post) => (
+                                                                                        {relatedPosts.map((post: any) => (
                                                                                                 <div key={post.id}>
                                                                                                         <Link href={`/blog/${post.id}`}>
                                                                                                                 <h4 className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors mb-1">

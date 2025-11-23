@@ -78,7 +78,7 @@ const AdminDestinationNew = () => {
                         }
 
                         if (data) {
-                                setCategories(data.map(item => item.name))
+                                setCategories(data.map((item: any) => item.name))
                         } else {
                                 setCategories(["Trekking", "Wildlife", "Culture", "Adventure", "Pilgrimage", "Nature"])
                         }
@@ -161,7 +161,7 @@ const AdminDestinationNew = () => {
                         const destinationData = {
                                 name: formData.name,
                                 description: formData.description,
-                                highlights: formData.highlights.split(",").map(h => h.trim()).filter(Boolean),
+                                highlights: formData.highlights.split(",").map((h: any) => h.trim()).filter(Boolean),
                                 duration: formData.duration,
                                 difficulty: formData.difficulty,
                                 best_time: formData.best_time,
@@ -399,7 +399,7 @@ const AdminDestinationNew = () => {
 
                         <div>
                                 <div className="flex flex-wrap gap-1 border-b mb-6">
-                                        {tabs.map((tab) => (
+                                        {tabs.map((tab: any) => (
                                                 <button
                                                         key={tab.id}
                                                         type="button"
@@ -512,7 +512,7 @@ const AdminDestinationNew = () => {
                                                                 required
                                                         >
                                                                 <option value="">Select a category</option>
-                                                                {categories.map((category) => (
+                                                                {categories.map((category: any) => (
                                                                         <option key={category} value={category}>
                                                                                 {category}
                                                                         </option>
@@ -859,7 +859,7 @@ const AdminDestinationNew = () => {
                                 {activeTab === "reach" && (
                                         <form onSubmit={handleSubmit} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {["air", "train", "road"].map((method) => (
+                                                        {["air", "train", "road"].map((method: any) => (
                                                                 <div key={method}>
                                                                         <Label htmlFor={`reach-${method}`} className="capitalize">
                                                                                 By {method}
@@ -868,7 +868,7 @@ const AdminDestinationNew = () => {
                                                                                 id={`reach-${method}`}
                                                                                 value={formData.how_to_reach[method as keyof typeof formData.how_to_reach]?.details?.join("\n") || ""}
                                                                                 onChange={(e) => {
-                                                                                        const details = e.target.value.split("\n").filter((d) => d.trim())
+                                                                                        const details = e.target.value.split("\n").filter((d: string) => d.trim())
                                                                                         setFormData({
                                                                                                 ...formData,
                                                                                                 how_to_reach: {
@@ -893,7 +893,7 @@ const AdminDestinationNew = () => {
                                 {activeTab === "besttime" && (
                                         <form onSubmit={handleSubmit} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {["winter", "summer", "monsoon"].map((season) => (
+                                                        {["winter", "summer", "monsoon"].map((season: any) => (
                                                                 <div key={season}>
                                                                         <Label className="capitalize font-semibold mb-2 block">{season}</Label>
                                                                         <div className="space-y-2">
@@ -992,7 +992,7 @@ const AdminDestinationNew = () => {
                                 {activeTab === "stay" && (
                                         <form onSubmit={handleSubmit} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {["budget", "midrange", "luxury"].map((category) => (
+                                                        {["budget", "midrange", "luxury"].map((category: any) => (
                                                                 <div key={category}>
                                                                         <Label className="capitalize font-semibold mb-2 block">{category}</Label>
                                                                         <Textarea
@@ -1016,7 +1016,7 @@ const AdminDestinationNew = () => {
                                                                                 placeholder="Options (one per line)"
                                                                                 value={formData.where_to_stay[category as keyof typeof formData.where_to_stay]?.options?.join("\n") || ""}
                                                                                 onChange={(e) => {
-                                                                                        const options = e.target.value.split("\n").filter((o) => o.trim())
+                                                                                        const options = e.target.value.split("\n").filter((o: string) => o.trim())
                                                                                         setFormData({
                                                                                                 ...formData,
                                                                                                 where_to_stay: {
@@ -1046,7 +1046,7 @@ const AdminDestinationNew = () => {
                                                                 id="tips"
                                                                 value={formData.travel_tips.join("\n")}
                                                                 onChange={(e) => {
-                                                                        const tips = e.target.value.split("\n").filter((t) => t.trim())
+                                                                        const tips = e.target.value.split("\n").filter((t: string) => t.trim())
                                                                         setFormData({ ...formData, travel_tips: tips })
                                                                 }}
                                                                 placeholder="Enter travel tips, one per line"
@@ -1125,7 +1125,7 @@ function PlaceForm({ onSubmit, initialData, isEdit = false }: {
                 const placeData = {
                         name: formData.name,
                         description: formData.description,
-                        highlights: formData.highlights.split("\n").filter((h) => h.trim()),
+                        highlights: formData.highlights.split("\n").filter((h: string) => h.trim()),
                         image_url: formData.image_url,
                 }
                 console.log("🎯 Submitting place:", placeData)
@@ -1257,7 +1257,7 @@ function ItineraryForm({ onSubmit, initialData, isEdit = false }: {
                 const dayData = {
                         day: formData.day,
                         title: formData.title,
-                        activities: formData.activities.split("\n").filter((a) => a.trim()),
+                        activities: formData.activities.split("\n").filter((a: string) => a.trim()),
                         image_url: formData.image_url,
                 }
                 console.log("🎯 Submitting itinerary day:", dayData)

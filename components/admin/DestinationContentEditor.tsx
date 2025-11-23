@@ -26,7 +26,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
 
         // Notify parent when any sub-dialog opens or closes
         useEffect(() => {
-                const isAnyDialogOpen = Object.values(openDialogs).some(isOpen => isOpen)
+                const isAnyDialogOpen = Object.values(openDialogs).some((isOpen: any) => isOpen)
                 onSubDialogChange?.(isAnyDialogOpen)
         }, [openDialogs, onSubDialogChange])
 
@@ -92,7 +92,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                         { id: "itinerary", label: "Itinerary" },
                                         { id: "tips", label: "Travel Tips" },
                                         { id: "faqs", label: "FAQs" },
-                                ].map((tab) => (
+                                ].map((tab: any) => (
                                         <button
                                                 key={tab.id}
                                                 onClick={() => setActiveTab(tab.id)}
@@ -232,7 +232,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                         {activeTab === "reach" && (
                                 <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {["air", "train", "road"].map((method) => (
+                                                {["air", "train", "road"].map((method: any) => (
                                                         <div key={method}>
                                                                 <Label htmlFor={`reach-${method}`} className="capitalize">
                                                                         {method}
@@ -241,7 +241,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                                                         id={`reach-${method}`}
                                                                         value={data.how_to_reach?.[method]?.details?.join("\n") || ""}
                                                                         onChange={(e) => {
-                                                                                const details = e.target.value.split("\n").filter((d) => d.trim())
+                                                                                const details = e.target.value.split("\n").filter((d: any) => d.trim())
                                                                                 onChange({
                                                                                         ...data,
                                                                                         how_to_reach: {
@@ -266,7 +266,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                         {activeTab === "besttime" && (
                                 <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {["winter", "summer", "monsoon"].map((season) => (
+                                                {["winter", "summer", "monsoon"].map((season: any) => (
                                                         <div key={season}>
                                                                 <Label className="capitalize font-semibold mb-2 block">{season}</Label>
                                                                 <div className="space-y-2">
@@ -365,7 +365,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                         {activeTab === "stay" && (
                                 <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {["budget", "midrange", "luxury"].map((category) => (
+                                                {["budget", "midrange", "luxury"].map((category: any) => (
                                                         <div key={category}>
                                                                 <Label className="capitalize font-semibold mb-2 block">{category}</Label>
                                                                 <Textarea
@@ -390,7 +390,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                                                         placeholder="Options (one per line)"
                                                                         value={data.where_to_stay?.[category]?.options?.join("\n") || ""}
                                                                         onChange={(e) => {
-                                                                                const options = e.target.value.split("\n").filter((o) => o.trim())
+                                                                                const options = e.target.value.split("\n").filter((o: any) => o.trim())
                                                                                 onChange({
                                                                                         ...data,
                                                                                         where_to_stay: {
@@ -475,7 +475,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                                         id="tips"
                                                         value={(data.travel_tips || []).join("\n")}
                                                         onChange={(e) => {
-                                                                const tips = e.target.value.split("\n").filter((t) => t.trim())
+                                                                const tips = e.target.value.split("\n").filter((t: any) => t.trim())
                                                                 onChange({ ...data, travel_tips: tips })
                                                         }}
                                                         placeholder="Enter travel tips, one per line"
@@ -548,7 +548,7 @@ function PlaceForm({ onSubmit }: { onSubmit: (place: any) => void }) {
                 onSubmit({
                         name: formData.name,
                         description: formData.description,
-                        highlights: formData.highlights.split("\n").filter((h) => h.trim()),
+                        highlights: formData.highlights.split("\n").filter((h: any) => h.trim()),
                 })
                 setFormData({ name: "", description: "", highlights: "" })
         }
@@ -641,7 +641,7 @@ function ItineraryForm({ onSubmit }: { onSubmit: (day: any) => void }) {
                 onSubmit({
                         day: formData.day,
                         title: formData.title,
-                        activities: formData.activities.split("\n").filter((a) => a.trim()),
+                        activities: formData.activities.split("\n").filter((a: any) => a.trim()),
                 })
                 setFormData({ day: 1, title: "", activities: "" })
         }

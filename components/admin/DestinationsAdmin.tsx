@@ -156,7 +156,7 @@ const DestinationsAdmin = () => {
                                 </Card>
                         ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {destinations.map((destination) => (
+                                        {destinations.map((destination: any) => (
                                                 <Card key={destination.id} className="overflow-hidden">
                                                         <div className="relative">
                                                                 {destination.image_url ? (

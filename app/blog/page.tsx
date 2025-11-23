@@ -54,7 +54,7 @@ const Blog = () => {
                         setBlogPosts(data || []);
 
                         // Extract unique categories
-                        const uniqueCategories = ["All Posts", ...new Set(data?.map(post => post.category) || [])];
+                        const uniqueCategories = ["All Posts", ...new Set(data?.map((post: any) => post.category) || [])];
                         setCategories(uniqueCategories);
                 } catch (error) {
                         console.error('Error fetching blog posts:', error);
@@ -75,13 +75,13 @@ const Blog = () => {
                 );
         }
 
-        const featuredPosts = blogPosts.filter(post => post.featured);
+        const featuredPosts = blogPosts.filter((post: any) => post.featured);
         const recentPosts = blogPosts.slice(0, 5);
-        const popularTags = [...new Set(blogPosts.flatMap(post => post.tags || []))].slice(0, 8);
+        const popularTags = [...new Set(blogPosts.flatMap((post: any) => post.tags || []))].slice(0, 8);
 
         const filteredPosts = selectedCategory === "All Posts"
                 ? blogPosts
-                : blogPosts.filter(post => post.category === selectedCategory);
+                : blogPosts.filter((post: any) => post.category === selectedCategory);
 
         return (
                 <div className="min-h-screen bg-background">
@@ -131,7 +131,7 @@ const Blog = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                                {featuredPosts.map((post) => (
+                                                {featuredPosts.map((post: any) => (
                                                         <Card key={post.id} className="shadow-card hover-lift overflow-hidden">
                                                                 <div className="relative h-48 bg-gradient-to-br from-primary to-accent">
                                                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -204,7 +204,7 @@ const Blog = () => {
 
                                                                 {/* Category Filter */}
                                                                 <div className="flex flex-wrap gap-2">
-                                                                        {categories.slice(0, 4).map((category) => (
+                                                                        {categories.slice(0, 4).map((category: any) => (
                                                                                 <Button
                                                                                         key={category}
                                                                                         variant={category === selectedCategory ? "default" : "outline"}
@@ -219,7 +219,7 @@ const Blog = () => {
                                                         </div>
 
                                                         <div className="space-y-6">
-                                                                {filteredPosts.map((post) => (
+                                                                {filteredPosts.map((post: any) => (
                                                                         <Card key={post.id} className="shadow-card hover-lift overflow-hidden">
                                                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
                                                                                         <div className="relative h-48 md:h-auto bg-gradient-to-br from-primary/20 to-accent/20">
@@ -314,8 +314,8 @@ const Blog = () => {
                                                                 </CardHeader>
                                                                 <CardContent>
                                                                         <div className="space-y-2">
-                                                                                {categories.slice(1).map((category) => {
-                                                                                        const count = blogPosts.filter(post => post.category === category).length;
+                                                                                {categories.slice(1).map((category: any) => {
+                                                                                        const count = blogPosts.filter((post: any) => post.category === category).length;
                                                                                         return (
                                                                                                 <div key={category} className="flex items-center justify-between">
                                                                                                         <span
@@ -341,7 +341,7 @@ const Blog = () => {
                                                                 </CardHeader>
                                                                 <CardContent>
                                                                         <div className="flex flex-wrap gap-2">
-                                                                                {popularTags.map((tag) => (
+                                                                                {popularTags.map((tag: any) => (
                                                                                         <Badge key={tag} variant="outline" className="text-xs cursor-pointer hover:bg-primary hover:text-white transition-colors">
                                                                                                 {tag}
                                                                                         </Badge>

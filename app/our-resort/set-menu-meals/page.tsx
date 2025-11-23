@@ -139,7 +139,7 @@ const SetMenuMeals = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                                {mealPlans.map((plan) => (
+                                                {mealPlans.map((plan: any) => (
                                                         <Card key={plan.id} className="shadow-card hover-lift overflow-hidden relative">
                                                                 <div className="absolute top-4 right-4">
                                                                         <Badge

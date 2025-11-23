@@ -70,8 +70,8 @@ const OurResort = () => {
                 }>
         >([])
 
-        const galleryImages = gallery.map((g) => g.image_url)
-        const thumbnails = gallery.map((g) => g.image_url)
+        const galleryImages = gallery.map((g: any) => g.image_url)
+        const thumbnails = gallery.map((g: any) => g.image_url)
 
         const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
                 Mountain,
@@ -266,7 +266,7 @@ const OurResort = () => {
                                                                                 </div>
                                                                         </div>
                                                                         <div className="flex items-center space-x-1">
-                                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                                {[1, 2, 3, 4, 5].map((star: any) => (
                                                                                         <Star key={star} className="w-4 h-4 fill-gold text-gold" />
                                                                                 ))}
                                                                                 <span className="text-sm text-muted-foreground ml-2">Luxury Experience</span>
@@ -361,7 +361,7 @@ const OurResort = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                                {packagesDb.map((pkg) => (
+                                                {packagesDb.map((pkg: any) => (
                                                         <Card key={pkg.id} className="shadow-card hover-lift overflow-hidden relative">
                                                                 <div className="absolute top-4 right-4">
                                                                         <Badge
@@ -565,7 +565,7 @@ const OurResort = () => {
                                                 <div className="mt-16">
                                                         <h3 className="text-2xl font-display font-bold mb-6 text-foreground text-center">Featured Experiences</h3>
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                                {featuredExperiences.map((exp) => (
+                                                                {featuredExperiences.map((exp: any) => (
                                                                         <Card key={exp.id} className="shadow-card hover-lift bg-white">
                                                                                 <div className="relative h-32 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
                                                                                         <Badge className="absolute top-2 left-2 bg-white/20 text-foreground border-white/30">

@@ -82,8 +82,8 @@ export const ResortPackagesAdmin = () => {
                         price: formData.price,
                         original_price: formData.original_price,
                         description: formData.description,
-                        includes: formData.includes.split("\n").filter((item) => item.trim()),
-                        features: formData.features.split("\n").filter((item) => item.trim()),
+                        includes: formData.includes.split("\n").filter((item: any) => item.trim()),
+                        features: formData.features.split("\n").filter((item: any) => item.trim()),
                         badge: formData.badge,
                         image_url: formData.image_url || null,
                 }
@@ -349,7 +349,7 @@ export const ResortPackagesAdmin = () => {
                                 </Card>
                         ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {packages.map((pkg) => (
+                                        {packages.map((pkg: any) => (
                                                 <Card key={pkg.id} className="overflow-hidden">
                                                         <div className="relative">
                                                                 {pkg.image_url ? (

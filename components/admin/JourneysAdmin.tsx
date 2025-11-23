@@ -84,7 +84,7 @@ const JourneysAdmin = () => {
                         ...formData,
                         activities: formData.activities
                                 .split(",")
-                                .map((a) => a.trim())
+                                .map((a: any) => a.trim())
                                 .filter(Boolean),
                 }
 
@@ -299,7 +299,7 @@ const JourneysAdmin = () => {
                                 </Card>
                         ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {journeys.map((journey) => (
+                                        {journeys.map((journey: any) => (
                                                 <Card key={journey.id} className="overflow-hidden">
                                                         <div className="relative">
                                                                 {journey.image_url ? (

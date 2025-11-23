@@ -113,7 +113,7 @@ const AdminDestinationEdit = () => {
                         }
 
                         if (data) {
-                                setCategories(data.map(item => item.name))
+                                setCategories(data.map((item: any) => item.name))
                         } else {
                                 setCategories(["Trekking", "Wildlife", "Culture", "Adventure", "Pilgrimage", "Nature"])
                         }
@@ -323,7 +323,7 @@ const AdminDestinationEdit = () => {
                         const destinationData = {
                                 name: formData.name,
                                 description: formData.description,
-                                highlights: formData.highlights.split(",").map(h => h.trim()).filter(Boolean),
+                                highlights: formData.highlights.split(",").map((h: any) => h.trim()).filter(Boolean),
                                 duration: formData.duration,
                                 difficulty: formData.difficulty,
                                 best_time: formData.best_time,
@@ -578,7 +578,7 @@ const AdminDestinationEdit = () => {
 
                         <div>
                                 <div className="flex flex-wrap gap-1 border-b mb-6">
-                                        {tabs.map((tab) => (
+                                        {tabs.map((tab: any) => (
                                                 <button
                                                         key={tab.id}
                                                         type="button"
@@ -686,7 +686,7 @@ const AdminDestinationEdit = () => {
                                                 <div>
                                                         <Label className="mb-2 block">Category *</Label>
                                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-                                                                {categories.map((category) => (
+                                                                {categories.map((category: any) => (
                                                                         <div
                                                                                 key={category}
                                                                                 className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${formData.category === category
@@ -1047,7 +1047,7 @@ const AdminDestinationEdit = () => {
                                 {activeTab === "reach" && (
                                         <form onSubmit={handleSubmit} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {["air", "train", "road"].map((method) => (
+                                                        {["air", "train", "road"].map((method: any) => (
                                                                 <div key={method}>
                                                                         <Label htmlFor={`reach-${method}`} className="capitalize">
                                                                                 By {method}
@@ -1081,7 +1081,7 @@ const AdminDestinationEdit = () => {
                                 {activeTab === "besttime" && (
                                         <form onSubmit={handleSubmit} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {["winter", "summer", "monsoon"].map((season) => (
+                                                        {["winter", "summer", "monsoon"].map((season: any) => (
                                                                 <div key={season}>
                                                                         <Label className="capitalize font-semibold mb-2 block">{season}</Label>
                                                                         <div className="space-y-2">
@@ -1180,7 +1180,7 @@ const AdminDestinationEdit = () => {
                                 {activeTab === "stay" && (
                                         <form onSubmit={handleSubmit} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        {["budget", "midrange", "luxury"].map((category) => (
+                                                        {["budget", "midrange", "luxury"].map((category: any) => (
                                                                 <div key={category}>
                                                                         <Label className="capitalize font-semibold mb-2 block">{category}</Label>
                                                                         <Textarea

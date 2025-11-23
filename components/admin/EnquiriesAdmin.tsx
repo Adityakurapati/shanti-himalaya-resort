@@ -59,7 +59,7 @@ const EnquiriesAdmin = () => {
 
                         if (error) throw error
 
-                        setEnquiries(prev => prev.map(enq =>
+                        setEnquiries(prev => prev.map((enq: any) =>
                                 enq.id === id ? { ...enq, is_read: true } : enq
                         ))
 
@@ -86,7 +86,7 @@ const EnquiriesAdmin = () => {
 
                         if (error) throw error
 
-                        setEnquiries(prev => prev.map(enq =>
+                        setEnquiries(prev => prev.map((enq: any) =>
                                 enq.id === id ? { ...enq, is_read: false } : enq
                         ))
 
@@ -115,7 +115,7 @@ const EnquiriesAdmin = () => {
 
                         if (error) throw error
 
-                        setEnquiries(prev => prev.filter(enq => enq.id !== id))
+                        setEnquiries(prev => prev.filter((enq: any) => enq.id !== id))
 
                         toast({
                                 title: "Success",
@@ -175,7 +175,7 @@ const EnquiriesAdmin = () => {
                                         <p className="text-muted-foreground">Manage customer enquiries and respond to them</p>
                                 </div>
                                 <Badge variant="secondary">
-                                        Total: {enquiries.length} | Unread: {enquiries.filter(e => !e.is_read).length}
+                                        Total: {enquiries.length} | Unread: {enquiries.filter((e: any) => !e.is_read).length}
                                 </Badge>
                         </div>
 
@@ -193,7 +193,7 @@ const EnquiriesAdmin = () => {
                                                 </CardContent>
                                         </Card>
                                 ) : (
-                                        enquiries.map((enquiry) => (
+                                        enquiries.map((enquiry: any) => (
                                                 <Card key={enquiry.id} className={!enquiry.is_read ? "border-primary bg-primary/5" : ""}>
                                                         <CardHeader>
                                                                 <div className="flex justify-between items-start">

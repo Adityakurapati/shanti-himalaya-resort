@@ -1,5 +1,6 @@
 "use client";
 
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Destinations = () => {
         const [selectedCategory, setSelectedCategory] = React.useState("All");
-        const [destinations, setDestinations] = React.useState<any[]>([]);
+        const [destinations, setDestinations] = React.useState<Tables<"destinations">[]>([]);
         const [loading, setLoading] = React.useState(true);
         const [categories, setCategories] = React.useState<string[]>([]);
 

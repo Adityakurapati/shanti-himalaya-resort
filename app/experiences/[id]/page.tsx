@@ -1,5 +1,6 @@
 "use client";
 
+import type { Tables } from "@/integrations/supabase/types";
 import { useParams } from "next/navigation"; import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +24,7 @@ import React from "react";
 const ExperienceDetail = () => {
         const params = useParams();
         const id = Array.isArray(params.id) ? params.id[0] : params.id;;
-        const [experience, setExperience] = React.useState<any>(null);
+        const [experience, setExperience] = React.useState<Tables<"experiences">[]>([]);
         const [loading, setLoading] = React.useState(true);
 
         React.useEffect(() => {
@@ -37,7 +38,7 @@ const ExperienceDetail = () => {
                         const { data, error } = await supabase
                                 .from('experiences')
                                 .select('*')
-                                .eq('id', id)
+                                .eq("id", id as string)
                                 .maybeSingle();
 
                         if (error) throw error;

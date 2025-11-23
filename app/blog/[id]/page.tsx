@@ -1,5 +1,6 @@
 "use client";
 
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,8 +24,8 @@ import React from "react";
 const BlogPost = () => {
         const params = useParams();
         const id = Array.isArray(params.id) ? params.id[0] : params.id;;
-        const [blogPost, setBlogPost] = React.useState<any>(null);
-        const [relatedPosts, setRelatedPosts] = React.useState<any[]>([]);
+        const [blogPost, setBlogPost] = React.useState<Tables<"packages"> | null>(null);
+        const [relatedPosts, setRelatedPosts] = React.useState<Tables<"packages">[]>([]);
         const [loading, setLoading] = React.useState(true);
 
         React.useEffect(() => {
@@ -39,7 +40,7 @@ const BlogPost = () => {
                         const { data, error } = await supabase
                                 .from('packages')
                                 .select('*')
-                                .eq('id', id)
+                                .eq("id", id as string)
                                 .maybeSingle();
 
                         if (error) throw error;

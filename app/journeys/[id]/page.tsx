@@ -1,5 +1,6 @@
 "use client";
 
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -278,7 +279,7 @@ const JourneyTimeline = ({ days }: { days: DaySchedule[] }) => {
 const JourneyDetail = () => {
         const params = useParams();
         const id = Array.isArray(params.id) ? params.id[0] : params.id;;
-        const [journey, setJourney] = React.useState<any>(null);
+        const [journey, setJourney] = React.useState<Tables<"journeys">[]>([]);
         const [days, setDays] = React.useState<DaySchedule[]>([]);
         const [loading, setLoading] = React.useState(true);
         const [daysLoading, setDaysLoading] = React.useState(true);
@@ -296,7 +297,7 @@ const JourneyDetail = () => {
                         const { data, error } = await supabase
                                 .from('journeys')
                                 .select('*')
-                                .eq('id', id)
+                                .eq("id", id as string)
                                 .maybeSingle();
 
                         if (error) throw error;

@@ -221,7 +221,7 @@ const AdminDestinationNew = () => {
                                 // Redirect to edit page for the new destination
                                 if (data && data[0]) {
                                         setTimeout(() => {
-                                                router.push('/admin/destinations/edit' + data[0].id)
+                                                router.push(`/admin/destinations/edit/${data[0].id}`);
                                         }, 1000)
                                 }
                         }

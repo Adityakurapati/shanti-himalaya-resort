@@ -1,5 +1,6 @@
 "use client"
 
+import type { Tables } from "@/integrations/supabase/types";
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -35,7 +36,7 @@ import { supabase } from "@/integrations/supabase/client"
 const OurResort = () => {
         const [currentImageIndex, setCurrentImageIndex] = useState(0)
         const [selectedThumbnail, setSelectedThumbnail] = useState(0)
-        const [expandedActivity, setExpandedActivity] = useState(null)
+        const [expandedActivity, setExpandedActivity] = useState<Tables<"packages"> | null>(null)
 
         const [gallery, setGallery] = React.useState<
                 Array<{ id: string; image_url: string; title: string | null; description: string | null }>

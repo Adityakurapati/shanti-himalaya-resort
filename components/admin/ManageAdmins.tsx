@@ -147,7 +147,7 @@ const ManageAdmins = () => {
                                                                                 )}
                                                                         </div>
                                                                         <div className="text-sm text-muted-foreground">
-                                                                                <span>Added: {new Date(user.created_at).toLocaleDateString()}</span>
+                                                                                <span>Added: {user.created_at ? new Date(user.created_at) : new Date().toLocaleDateString()}</span>
                                                                                 {!user.approved && (
                                                                                         <Badge variant="outline" className="ml-2">
                                                                                                 Pending

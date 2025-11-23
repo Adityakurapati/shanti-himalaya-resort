@@ -1,5 +1,6 @@
 "use client";
 
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Blog = () => {
-        const [blogPosts, setBlogPosts] = React.useState([]);
+        const [blogPosts, setBlogPosts] = React.useState<Tables<"packages">[]>([]);
         const [loading, setLoading] = React.useState(true);
         const [categories, setCategories] = React.useState(["All Posts"]);
         const [selectedCategory, setSelectedCategory] = React.useState("All Posts");
@@ -161,7 +162,7 @@ const Blog = () => {
                                                                                         </div>
                                                                                         <div className="flex items-center space-x-1">
                                                                                                 <Calendar className="w-4 h-4" />
-                                                                                                <span>{new Date(post.published_date).toLocaleDateString()}</span>
+                                                                                                <span>{post.published_date ? new Date(post.published_date) : new Date().toLocaleDateString()}</span>
                                                                                         </div>
                                                                                 </div>
                                                                         </div>
@@ -239,7 +240,7 @@ const Blog = () => {
                                                                                                                 {post.category}
                                                                                                         </Badge>
                                                                                                         <span className="text-xs text-muted-foreground">
-                                                                                                                {new Date(post.published_date).toLocaleDateString()}
+                                                                                                                {post.published_date ? new Date(post.published_date) : new Date().toLocaleDateString()}
                                                                                                         </span>
                                                                                                 </div>
 

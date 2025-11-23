@@ -102,7 +102,7 @@ const UserApproval = () => {
                   <p className="font-medium">{user.email}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Badge variant="outline">{user.role}</Badge>
-                    <span>Requested: {new Date(user.created_at).toLocaleDateString()}</span>
+                    <span>Requested: {user.created_at ? new Date(user.created_at) : new Date().toLocaleDateString()}</span>
                   </div>
                 </div>
                 <div className="flex gap-2">

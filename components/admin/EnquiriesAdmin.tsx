@@ -215,7 +215,7 @@ const EnquiriesAdmin = () => {
                                                                                         </span>
                                                                                         <span className="flex items-center gap-1">
                                                                                                 <Calendar className="w-4 h-4" />
-                                                                                                {enquiry.created_at ? new Date(enquiry.created_at) : new Date().toLocaleDateString()}
+                                                                                                {enquiry.created_at ? new Date(enquiry.created_at).toLocaleDateString() : 'N/A'}
                                                                                         </span>
                                                                                 </CardDescription>
                                                                         </div>

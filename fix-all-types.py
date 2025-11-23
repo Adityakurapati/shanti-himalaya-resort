@@ -245,21 +245,46 @@ def fix_nullable_dates(content: str) -> Tuple[str, bool]:
     """Fix nullable date fields in new Date()"""
     modified = False
     
-    # Pattern: new Date(something.published_date)
-    patterns = [
-        (r'new Date\((\w+)\.published_date\)', r'\1.published_date ? new Date(\1.published_date) : new Date()'),
-        (r'new Date\((\w+)\.created_at\)', r'\1.created_at ? new Date(\1.created_at) : new Date()'),
-        (r'new Date\((\w+)\.updated_at\)', r'\1.updated_at ? new Date(\1.updated_at) : new Date()'),
-    ]
+    # Pattern 1: Inside JSX with .toLocaleDateString() - Fix incomplete ternary
+    # {post.published_date ? new Date(post.published_date) : new Date().toLocaleDateString()}
+    pattern1 = r'\{(\w+)\.(published_date|created_at|updated_at)\s*\?\s*new Date\(\1\.\2\)\s*:\s*new Date\(\)\.toLocaleDateString\(\)\}'
+    if re.search(pattern1, content):
+        def replace_fn(match):
+            var_name = match.group(1)
+            field = match.group(2)
+            return f'{{{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\'}}'
+        content = re.sub(pattern1, replace_fn, content)
+        modified = True
+        log(f"  ✓ Fixed incomplete date ternary with .toLocaleDateString()", Colors.GREEN)
     
-    for pattern, replacement in patterns:
-        if re.search(pattern, content):
-            # Check if not already handled
-            check_pattern = pattern.replace(r'new Date\(', r'\w+\.\w+ \? new Date\(')
-            if not re.search(check_pattern, content):
-                content = re.sub(pattern, replacement, content)
+    # Pattern 2: Inside JSX without method call - Missing .toLocaleDateString()
+    # {new Date(post.published_date)}
+    pattern2 = r'\{new Date\((\w+)\.(published_date|created_at|updated_at)\)\}'
+    if re.search(pattern2, content):
+        def replace_fn(match):
+            var_name = match.group(1)
+            field = match.group(2)
+            return f'{{{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\'}}'
+        content = re.sub(pattern2, replace_fn, content)
+        modified = True
+        log(f"  ✓ Fixed Date object in JSX - added .toLocaleDateString()", Colors.GREEN)
+    
+    # Pattern 3: Regular new Date() calls that might have nullable fields
+    pattern3 = r'new Date\((\w+)\.(published_date|created_at|updated_at)\)(?!\.)'
+    if re.search(pattern3, content):
+        # Check if not inside a ternary already
+        for match in re.finditer(pattern3, content):
+            # Get context to check if already in ternary
+            start = max(0, match.start() - 50)
+            context = content[start:match.end() + 20]
+            if ' ? ' not in context or 'new Date(' in context[:30]:
+                var_name = match.group(1)
+                field = match.group(2)
+                old_text = match.group(0)
+                new_text = f'{var_name}.{field} ? new Date({var_name}.{field}).toLocaleDateString() : \'N/A\''
+                content = content.replace(old_text, new_text, 1)
                 modified = True
-                log(f"  ✓ Fixed nullable date handling", Colors.GREEN)
+                log(f"  ✓ Fixed nullable date: {field}", Colors.GREEN)
     
     return content, modified
 

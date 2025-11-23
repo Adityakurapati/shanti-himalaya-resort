@@ -162,7 +162,7 @@ const Blog = () => {
                                                                                         </div>
                                                                                         <div className="flex items-center space-x-1">
                                                                                                 <Calendar className="w-4 h-4" />
-                                                                                                <span>{post.published_date ? new Date(post.published_date) : new Date().toLocaleDateString()}</span>
+                                                                                                <span>{post.published_date ? new Date(post.published_date).toLocaleDateString() : 'N/A'}</span>
                                                                                         </div>
                                                                                 </div>
                                                                         </div>
@@ -240,7 +240,7 @@ const Blog = () => {
                                                                                                                 {post.category}
                                                                                                         </Badge>
                                                                                                         <span className="text-xs text-muted-foreground">
-                                                                                                                {post.published_date ? new Date(post.published_date) : new Date().toLocaleDateString()}
+                                                                                                                {post.published_date ? new Date(post.published_date).toLocaleDateString() : 'N/A'}
                                                                                                         </span>
                                                                                                 </div>
 

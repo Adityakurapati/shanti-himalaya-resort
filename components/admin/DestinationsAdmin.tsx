@@ -195,7 +195,7 @@ const DestinationsAdmin = () => {
                                                                                 {destination.category}
                                                                         </span>
                                                                         <span>
-                                                                                {destination.created_at ? new Date(destination.created_at) : new Date().toLocaleDateString()}
+                                                                                {destination.created_at ? new Date(destination.created_at).toLocaleDateString() : 'N/A'}
                                                                         </span>
                                                                 </div>
 

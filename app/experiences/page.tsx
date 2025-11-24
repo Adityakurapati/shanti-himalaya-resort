@@ -27,9 +27,10 @@ const Experiences = () => {
         const [selectedCategory, setSelectedCategory] = React.useState("All");
         const [experiences, setExperiences] = React.useState<Tables<"experiences">[]>([]);
         const [loading, setLoading] = React.useState(true);
-        const [categories, setCategories] = React.useState(["All"]);
+        const [categories, setCategories] = React.useState<string[]>([]);
 
         React.useEffect(() => {
+                fetchCategories();
                 fetchExperiences();
 
                 const channel = supabase
@@ -44,6 +45,30 @@ const Experiences = () => {
                 };
         }, []);
 
+        const fetchCategories = async () => {
+                try {
+                        const { data, error } = await supabase
+                                .from('categories')
+                                .select('name')
+                                .order('name', { ascending: true })
+
+                        if (error && error.code !== 'PGRST116') {
+                                throw error
+                        }
+
+                        if (data) {
+                                setCategories(["All", ...data.map((item: any) => item.name)])
+                        } else {
+                                // Fallback categories if no categories table exists
+                                setCategories(["All", "Wellness", "Cultural", "Adventure", "Wildlife", "Culinary", "Luxury"])
+                        }
+                } catch (error) {
+                        console.error("Error fetching categories:", error)
+                        // Fallback categories
+                        setCategories(["All", "Wellness", "Cultural", "Adventure", "Wildlife", "Culinary", "Luxury"])
+                }
+        }
+
         const fetchExperiences = async () => {
                 try {
                         const { data, error } = await supabase
@@ -54,10 +79,6 @@ const Experiences = () => {
                         if (error) throw error;
 
                         setExperiences(data || []);
-
-                        // Extract unique categories
-                        const uniqueCategories = ["All", ...new Set(data?.map((exp: any) => exp.category) || [])];
-                        setCategories(uniqueCategories);
                 } catch (error) {
                         console.error('Error fetching experiences:', error);
                 } finally {
@@ -73,17 +94,6 @@ const Experiences = () => {
                         case 'wildlife': return <TreePine className="w-6 h-6" />;
                         case 'culinary': return <Utensils className="w-6 h-6" />;
                         default: return <Star className="w-6 h-6" />;
-                }
-        };
-
-        const getCategoryDescription = (category: string) => {
-                switch (category?.toLowerCase()) {
-                        case 'wellness': return "Rejuvenate your mind and body with transformative healing practices amidst Himalayan serenity";
-                        case 'cultural': return "Immerse yourself in ancient traditions and authentic local life experiences";
-                        case 'adventure': return "Embrace the thrill of Himalayan adventures and nature's raw beauty";
-                        case 'wildlife': return "Connect with nature's wonders through intimate wildlife encounters";
-                        case 'culinary': return "Savor the rich flavors and culinary heritage of Nepal";
-                        default: return "Discover extraordinary moments crafted for your soul";
                 }
         };
 
@@ -106,17 +116,6 @@ const Experiences = () => {
         }
 
         const featuredExperiences = experiences.filter((exp: any) => exp.featured);
-
-        // Group experiences by category
-        const experiencesByCategory = experiences.reduce((acc: any, experience: any) => {
-                const category = experience.category;
-                if (!acc[category]) {
-                        acc[category] = [];
-                }
-                acc[category].push(experience);
-                return acc;
-        }, {});
-
         const filteredExperiences = selectedCategory === "All"
                 ? experiences
                 : experiences.filter((exp: any) => exp.category === selectedCategory);
@@ -211,7 +210,7 @@ const Experiences = () => {
                                                                                         <span className="font-semibold text-primary text-lg">
                                                                                                 {experience.price}
                                                                                         </span>
-                                                                                        <Link href={`/experience/${experience.id}`}>
+                                                                                        <Link href={`/experiences/${experience.id}`}>
                                                                                                 <Button className="hero-gradient hover-glow">
                                                                                                         View Experience
                                                                                                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -250,96 +249,12 @@ const Experiences = () => {
                                                 </div>
                                         </div>
 
-                                        {/* All Experiences Grid */}
-                                        {selectedCategory === "All" ? (
-                                                // Show categories with their experiences
-                                                Object.entries(experiencesByCategory).map(([category, categoryExperiences]: [string, any]) => (
-                                                        <div key={category} className="mb-16">
-                                                                <div className="flex items-center space-x-4 mb-8">
-                                                                        <div className="p-3 bg-primary rounded-xl text-white">
-                                                                                {getCategoryIcon(category)}
-                                                                        </div>
-                                                                        <div>
-                                                                                <h3 className="text-2xl font-display font-bold text-foreground">
-                                                                                        {category} Experiences
-                                                                                </h3>
-                                                                                <p className="text-muted-foreground">
-                                                                                        {getCategoryDescription(category)}
-                                                                                </p>
-                                                                        </div>
-                                                                </div>
-
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                                        {categoryExperiences.map((experience: any) => (
-                                                                                <Card key={experience.id} className="shadow-card hover-lift bg-white overflow-hidden group">
-                                                                                        <div className="relative h-48 overflow-hidden">
-                                                                                                <img
-                                                                                                        src={experience.image_url}
-                                                                                                        alt={experience.title}
-                                                                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                                                                />
-                                                                                                <div className="absolute inset-0 bg-black/10"></div>
-                                                                                                {experience.featured && (
-                                                                                                        <Badge className="absolute top-3 right-3 bg-gold text-white text-xs">
-                                                                                                                Popular
-                                                                                                        </Badge>
-                                                                                                )}
-                                                                                        </div>
-
-                                                                                        <CardContent className="p-4">
-                                                                                                <div className="flex items-start justify-between mb-2">
-                                                                                                        <Badge variant="outline" className="text-xs">
-                                                                                                                {experience.category}
-                                                                                                        </Badge>
-                                                                                                        <span className="text-primary font-semibold text-sm">
-                                                                                                                {experience.price}
-                                                                                                        </span>
-                                                                                                </div>
-
-                                                                                                <h3 className="font-display font-semibold text-lg mb-2 line-clamp-2">
-                                                                                                        {experience.title}
-                                                                                                </h3>
-
-                                                                                                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                                                                                                        {shortenDescription(experience.description, 20)}
-                                                                                                </p>
-
-                                                                                                {experience.highlights && (
-                                                                                                        <div className="space-y-1 mb-3">
-                                                                                                                <div className="flex flex-wrap gap-1">
-                                                                                                                        {experience.highlights.slice(0, 2).map((highlight: any, index: number) => (
-                                                                                                                                <Badge key={index} variant="secondary" className="text-xs">
-                                                                                                                                        {highlight}
-                                                                                                                                </Badge>
-                                                                                                                        ))}
-                                                                                                                </div>
-                                                                                                        </div>
-                                                                                                )}
-
-                                                                                                <div className="space-y-1 text-xs text-muted-foreground mb-3">
-                                                                                                        <div className="flex items-center space-x-1">
-                                                                                                                <Clock className="w-3 h-3" />
-                                                                                                                <span>{experience.duration}</span>
-                                                                                                        </div>
-                                                                                                        <div className="flex items-center space-x-1">
-                                                                                                                <Users className="w-3 h-3" />
-                                                                                                                <span>{experience.group_size}</span>
-                                                                                                        </div>
-                                                                                                </div>
-
-                                                                                                <Link href={`/experiences/${experience.id}`}>
-                                                                                                        <Button variant="outline" size="sm" className="w-full text-xs">
-                                                                                                                View Details
-                                                                                                        </Button>
-                                                                                                </Link>
-                                                                                        </CardContent>
-                                                                                </Card>
-                                                                        ))}
-                                                                </div>
-                                                        </div>
-                                                ))
+                                        {/* Experiences Grid */}
+                                        {filteredExperiences.length === 0 ? (
+                                                <div className="text-center py-12">
+                                                        <p className="text-muted-foreground">No experiences found in this category.</p>
+                                                </div>
                                         ) : (
-                                                // Show filtered experiences for selected category
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                                         {filteredExperiences.map((experience: any) => (
                                                                 <Card key={experience.id} className="shadow-card hover-lift bg-white overflow-hidden group">
@@ -398,7 +313,7 @@ const Experiences = () => {
                                                                                         </div>
                                                                                 </div>
 
-                                                                                <Link href={`/experience/${experience.id}`}>
+                                                                                <Link href={`/experiences/${experience.id}`}>
                                                                                         <Button variant="outline" size="sm" className="w-full text-xs">
                                                                                                 View Details
                                                                                         </Button>

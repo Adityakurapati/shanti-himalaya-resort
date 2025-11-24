@@ -12,8 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import ImageUploader from "./ImageUploader"
-import {
 import type { Tables } from "@/integrations/supabase/types";
+import {
         Plus,
         Edit,
         Trash2,

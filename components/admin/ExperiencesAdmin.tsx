@@ -114,7 +114,7 @@ const ExperiencesAdmin = () => {
                         group_size: experience.group_size,
                         highlights: experience.highlights.join(", "),
                         price: experience.price,
-                        featured: experience.featured,
+                        featured: experience.featured ?? false,
                         image_url: experience.image_url || "",
                 })
                 setIsDialogOpen(true)

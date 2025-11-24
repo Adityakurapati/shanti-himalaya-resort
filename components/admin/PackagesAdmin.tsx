@@ -118,7 +118,7 @@ const PackagesAdmin = () => {
                         author_avatar: pkg.author_avatar || "",
                         image_url: pkg.image_url || "",
                         tags: pkg.tags.join(", "),
-                        featured: pkg.featured,
+                        featured: pkg.featured ?? false,
                         read_time: pkg.read_time || "5 min read",
                 })
                 setIsDialogOpen(true)

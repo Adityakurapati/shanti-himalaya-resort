@@ -112,7 +112,7 @@ const JourneysAdmin = () => {
                         duration: journey.duration,
                         difficulty: journey.difficulty,
                         activities: journey.activities.join(", "),
-                        featured: journey.featured,
+                        featured: journey.featured ?? false,
                         category: journey.category,
                         image_url: journey.image_url || "",
                 })

@@ -74,6 +74,24 @@ def replace_type_definitions(content: str) -> str:
     return content
 
 
+def add_null_coalescing_for_booleans(content: str) -> str:
+    """Add null coalescing operator (?? false) for boolean fields that can be null."""
+    
+    # Fields that are boolean | null in Supabase types
+    nullable_boolean_fields = ['featured', 'approved', 'is_read']
+    
+    for field in nullable_boolean_fields:
+        # Pattern: field: object.field
+        # Replace with: field: object.field ?? false
+        pattern = rf'(\s+{field}:\s+\w+\.{field})(?!\s*\?\?)'
+        replacement = rf'\1 ?? false'
+        if re.search(pattern, content):
+            content = re.sub(pattern, replacement, content)
+            print(f"  ✓ Added null coalescing for {field}")
+    
+    return content
+
+
 def process_file(file_path: Path) -> bool:
     """Process a single TypeScript file."""
     try:
@@ -87,6 +105,9 @@ def process_file(file_path: Path) -> bool:
         
         # Replace type definitions
         content = replace_type_definitions(content)
+        
+        # Add null coalescing for nullable booleans
+        content = add_null_coalescing_for_booleans(content)
         
         # Only write if changes were made
         if content != original_content:

@@ -409,7 +409,7 @@ const DestinationDetail = () => {
                                                                                                                 Key Highlights
                                                                                                         </h3>
                                                                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                                                                {destination.highlights.map((highlight: string, index: number) => (
+                                                                                                                {destination.highlights.map((highlight: any, index: number) => (
                                                                                                                         <motion.div
                                                                                                                                 key={index}
                                                                                                                                 className="flex items-start space-x-3 p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-shadow duration-300"
@@ -521,7 +521,7 @@ const DestinationDetail = () => {
                                                                                                                                 <div className="space-y-2">
                                                                                                                                         <p className="text-sm font-semibold text-foreground">Highlights:</p>
                                                                                                                                         <ul className="space-y-1">
-                                                                                                                                                {place.highlights.map((highlight: string, idx: number) => (
+                                                                                                                                                {place.highlights.map((highlight: any, idx: number) => (
                                                                                                                                                         <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
                                                                                                                                                                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
                                                                                                                                                                 <span>{highlight}</span>
@@ -629,7 +629,7 @@ const DestinationDetail = () => {
                                                                                                                                                         Activities
                                                                                                                                                 </h4>
                                                                                                                                                 <ul className="space-y-2">
-                                                                                                                                                        {day.activities && day.activities.map((activity: string, idx: number) => (
+                                                                                                                                                        {day.activities && day.activities.map((activity: any, idx: number) => (
                                                                                                                                                                 <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
                                                                                                                                                                         <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 flex-shrink-0"></div>
                                                                                                                                                                         <span>{activity}</span>
@@ -693,7 +693,7 @@ const DestinationDetail = () => {
                                                                                                                                 <h3 className="text-lg font-bold text-foreground">{value.title}</h3>
                                                                                                                         </div>
                                                                                                                         <ul className="space-y-2">
-                                                                                                                                {value.details && value.details.map((detail: string, idx: number) => (
+                                                                                                                                {value.details && value.details.map((detail: any, idx: number) => (
                                                                                                                                         <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
                                                                                                                                                 <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
                                                                                                                                                 <span>{detail}</span>
@@ -819,7 +819,7 @@ const DestinationDetail = () => {
                                                                                                                                 <div>
                                                                                                                                         <p className="font-semibold text-foreground text-sm mb-2">Options:</p>
                                                                                                                                         <ul className="space-y-1">
-                                                                                                                                                {details.options.map((option: string, idx: number) => (
+                                                                                                                                                {details.options.map((option: any, idx: number) => (
                                                                                                                                                         <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
                                                                                                                                                                 <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
                                                                                                                                                                 <span>{option}</span>

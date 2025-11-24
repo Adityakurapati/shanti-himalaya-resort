@@ -391,7 +391,7 @@ const OurResort = () => {
                                                                         <div className="space-y-2">
                                                                                 <h4 className="font-semibold text-sm">Package Includes:</h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {pkg.includes.map((item: string, index: number) => (
+                                                                                        {pkg.includes.map((item: any, index: number) => (
                                                                                                 <li key={index} className="flex items-center space-x-2">
                                                                                                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                                                                                                         <span>{item}</span>
@@ -400,7 +400,7 @@ const OurResort = () => {
                                                                                 </ul>
                                                                         </div>
                                                                         <div className="flex flex-wrap gap-1">
-                                                                                {pkg.features.map((feature: string, index: number) => (
+                                                                                {pkg.features.map((feature: any, index: number) => (
                                                                                         <Badge key={index} variant="secondary" className="text-xs">
                                                                                                 {feature}
                                                                                         </Badge>

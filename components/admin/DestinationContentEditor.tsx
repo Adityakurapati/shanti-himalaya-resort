@@ -97,8 +97,8 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                                 key={tab.id}
                                                 onClick={() => setActiveTab(tab.id)}
                                                 className={`px-4 py-2 font-medium text-sm transition-colors ${activeTab === tab.id
-                                                                ? "border-b-2 border-primary text-primary"
-                                                                : "text-muted-foreground hover:text-foreground"
+                                                        ? "border-b-2 border-primary text-primary"
+                                                        : "text-muted-foreground hover:text-foreground"
                                                         }`}
                                         >
                                                 {tab.label}
@@ -162,7 +162,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                                                                                 <div className="mt-2 text-xs">
                                                                                                         <p className="font-medium">Highlights:</p>
                                                                                                         <ul className="list-disc list-inside">
-                                                                                                                {place.highlights.map((h: string, i: number) => (
+                                                                                                                {place.highlights.map((h: any, i: number) => (
                                                                                                                         <li key={i}>{h}</li>
                                                                                                                 ))}
                                                                                                         </ul>

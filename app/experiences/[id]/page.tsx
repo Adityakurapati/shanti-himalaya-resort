@@ -209,7 +209,7 @@ const ExperienceDetail = () => {
 
                                                                         <h3 className="text-2xl font-display font-bold mb-4 text-foreground">Experience Highlights</h3>
                                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                                {experience.highlights && experience.highlights.map((highlight: string, index: number) => (
+                                                                                {experience.highlights && experience.highlights.map((highlight: any, index: number) => (
                                                                                         <div key={index} className="flex items-start space-x-3">
                                                                                                 <Star className="w-5 h-5 text-gold mt-1 flex-shrink-0" />
                                                                                                 <span className="text-muted-foreground">{highlight}</span>

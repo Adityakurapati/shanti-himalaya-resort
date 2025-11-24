@@ -314,7 +314,7 @@ const Index = () => {
                                                                 category: "Culture",
                                                                 readTime: "6 min read",
                                                         },
-                                                ].map((post: string, index: number) => (
+                                                ].map((post: any, index: number) => (
                                                         <Link key={index} href={`/blog/${index + 1}`} className="group">
                                                                 <Card className="shadow-card hover-lift overflow-hidden">
                                                                         <div className="h-48 bg-gradient-to-br from-accent to-primary flex items-center justify-center">

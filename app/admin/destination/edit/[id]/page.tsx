@@ -48,7 +48,7 @@ type Destination = {
 
 const AdminDestinationEdit = () => {
         const params = useParams<{ id: string }>();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id
+        const id = Array.isArray(params.id) ? params.id[0] : params.id
         const router = useRouter()
         const { toast } = useToast()
         const [loading, setLoading] = useState(true)
@@ -1013,7 +1013,7 @@ const AdminDestinationEdit = () => {
                                                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                                                         <div className="md:col-span-2">
                                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                                        {day.activities?.map((activity: string, i: number) => (
+                                                                                                        {day.activities?.map((activity: any, i: number) => (
                                                                                                                 <li key={i}>• {activity}</li>
                                                                                                         ))}
                                                                                                 </ul>

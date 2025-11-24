@@ -163,7 +163,7 @@ const SetMenuMeals = () => {
                                                                                         BREAKFAST
                                                                                 </h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {plan.breakfast.map((item: string, idx: number) => (<li key={idx} className="flex items-center space-x-2">
+                                                                                        {plan.breakfast.map((item: any, idx: number) => (<li key={idx} className="flex items-center space-x-2">
                                                                                                 <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
                                                                                                 <span>{item}</span>
                                                                                         </li>
@@ -180,7 +180,7 @@ const SetMenuMeals = () => {
                                                                                         LUNCH
                                                                                 </h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {plan.lunch.map((item: string, idx: number) => (
+                                                                                        {plan.lunch.map((item: any, idx: number) => (
                                                                                                 <li key={idx} className="flex items-center space-x-2">
                                                                                                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                                                                                                         <span>{item}</span>
@@ -198,7 +198,7 @@ const SetMenuMeals = () => {
                                                                                         DINNER
                                                                                 </h4>
                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {plan.dinner.map((item: string, idx: number) => (<li key={idx} className="flex items-center space-x-2">
+                                                                                        {plan.dinner.map((item: any, idx: number) => (<li key={idx} className="flex items-center space-x-2">
                                                                                                 <div className="w-1.5 h-1.5 bg-gold rounded-full"></div>
                                                                                                 <span>{item}</span>
                                                                                         </li>
@@ -225,7 +225,7 @@ const SetMenuMeals = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                                {specialFeatures.map((feature: string, index: number) => (
+                                                {specialFeatures.map((feature: any, index: number) => (
                                                         <Card key={index} className="shadow-card hover-lift bg-white text-center">
                                                                 <CardContent className="p-6">
                                                                         <feature.icon className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -304,7 +304,7 @@ const SetMenuMeals = () => {
                                                 </div>
 
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                                        {schedule.map((s: string, index: number) => (
+                                                        {schedule.map((s: any, index: number) => (
                                                                 <Card key={s.id} className="shadow-card hover-lift bg-white text-center">
                                                                         <CardContent className="p-6">
                                                                                 {s.meal_type.toLowerCase() === "breakfast" ? (

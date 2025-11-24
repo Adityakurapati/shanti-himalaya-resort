@@ -397,7 +397,7 @@ const Experiences = () => {
                                                                 description: "Discover the rich flavors and cooking traditions of Nepal",
                                                                 count: "4 Experiences"
                                                         }
-                                                ].map((category: string, index: number) => (
+                                                ].map((category: any, index: number) => (
                                                         <Card key={index} className="text-center shadow-card hover-lift">
                                                                 <CardContent className="p-6">
                                                                         <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white">

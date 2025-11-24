@@ -20,16 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { Tables } from "@/integrations/supabase/types";
 
-type Destination = {
-        id: string
-        name: string
-        description: string
-        category: string
-        featured: boolean
-        image_url?: string
-        slug: string
-        created_at: string
-}
+type Destination = Tables<"destinations">
 
 const DestinationsAdmin = () => {
         const [destinations, setDestinations] = useState<Destination[]>([])

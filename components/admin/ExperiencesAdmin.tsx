@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
 import type { Tables } from "@/integrations/supabase/types";
+import CategoriesManager from "@/components/admin/CategoriesManager"
 
 type Experience = Tables<"experiences">
 
@@ -24,6 +25,8 @@ const ExperiencesAdmin = () => {
         const [editingExperience, setEditingExperience] = useState<Experience | null>(null)
         const [isDialogOpen, setIsDialogOpen] = useState(false)
         const { toast } = useToast()
+
+        const [categories, setCategories] = useState<string[]>([])
 
         const [formData, setFormData] = useState({
                 title: "",
@@ -39,7 +42,7 @@ const ExperiencesAdmin = () => {
 
         useEffect(() => {
                 fetchExperiences()
-
+                fetchCategories()
                 const channel = supabase
                         .channel("experiences-changes")
                         .on("postgres_changes", { event: "*", schema: "public", table: "experiences" }, () => {
@@ -51,6 +54,28 @@ const ExperiencesAdmin = () => {
                         supabase.removeChannel(channel)
                 }
         }, [])
+
+        const fetchCategories = async () => {
+                try {
+                        const { data, error } = await supabase
+                                .from('categories')
+                                .select('name')
+                                .order('name', { ascending: true })
+
+                        if (error && error.code !== 'PGRST116') {
+                                throw error
+                        }
+
+                        if (data) {
+                                setCategories(data.map((item: any) => item.name))
+                        } else {
+                                setCategories(["Trekking", "Wildlife", "Culture", "Adventure", "Pilgrimage", "Nature"])
+                        }
+                } catch (error) {
+                        console.error("Error fetching categories:", error)
+                        setCategories(["Trekking", "Wildlife", "Culture", "Adventure", "Pilgrimage", "Nature"])
+                }
+        }
 
         const fetchExperiences = async () => {
                 try {
@@ -217,14 +242,29 @@ const ExperiencesAdmin = () => {
                                                                 />
                                                         </div>
                                                         <div>
-                                                                <Label htmlFor="category">Category</Label>
-                                                                <Input
-                                                                        id="category"
-                                                                        value={formData.category}
-                                                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                                                        required
-                                                                />
+                                                                <Label className="mb-2 block">Category *</Label>
+                                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+                                                                        {categories.map((category: any) => (
+                                                                                <div
+                                                                                        key={category}
+                                                                                        className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${formData.category === category
+                                                                                                ? "border-primary bg-primary/10 text-primary"
+                                                                                                : "border-border hover:border-primary/50"
+                                                                                                }`}
+                                                                                        onClick={() => setFormData({ ...formData, category })}
+                                                                                >
+                                                                                        <span className="text-sm font-medium">{category}</span>
+                                                                                        {formData.category === category && (
+                                                                                                <div className="w-2 h-2 rounded-full bg-primary" />
+                                                                                        )}
+                                                                                </div>
+                                                                        ))}
+                                                                </div>
+                                                                {!formData.category && (
+                                                                        <p className="text-sm text-destructive">Please select a category</p>
+                                                                )}
                                                         </div>
+                                                        <CategoriesManager />
                                                         <div className="grid grid-cols-2 gap-4">
                                                                 <div>
                                                                         <Label htmlFor="duration">Duration</Label>

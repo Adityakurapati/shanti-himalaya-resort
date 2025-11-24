@@ -327,7 +327,7 @@ const Experiences = () => {
                                                                                                         </div>
                                                                                                 </div>
 
-                                                                                                <Link href={`/experience/${experience.id}`}>
+                                                                                                <Link href={`/experiences/${experience.id}`}>
                                                                                                         <Button variant="outline" size="sm" className="w-full text-xs">
                                                                                                                 View Details
                                                                                                         </Button>

@@ -631,7 +631,7 @@ const AdminDestinationNew = () => {
                                                                                                                         <div className="mt-2">
                                                                                                                                 <p className="font-medium text-sm mb-1">Highlights:</p>
                                                                                                                                 <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                                                                                                                                        {place.highlights.map((h: string, i: number) => (
+                                                                                                                                        {place.highlights.map((h: any, i: number) => (
                                                                                                                                                 <li key={i}>{h}</li>
                                                                                                                                         ))}
                                                                                                                                 </ul>
@@ -824,7 +824,7 @@ const AdminDestinationNew = () => {
                                                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                                                         <div className="md:col-span-2">
                                                                                                 <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                                        {day.activities?.map((activity: string, i: number) => (
+                                                                                                        {day.activities?.map((activity: any, i: number) => (
                                                                                                                 <li key={i}>• {activity}</li>
                                                                                                         ))}
                                                                                                 </ul>

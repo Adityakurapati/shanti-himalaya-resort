@@ -478,7 +478,7 @@ const OurResort = () => {
 
                                                 {/* Thumbnail Gallery */}
                                                 <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
-                                                        {gallery.map((g: string, index: number) => (
+                                                        {gallery.map((g: any, index: number) => (
                                                                 <button
                                                                         key={g.id}
                                                                         onClick={() => {
@@ -524,7 +524,7 @@ const OurResort = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                                {activitiesDb.map((activity: string, index: number) => {
+                                                {activitiesDb.map((activity: any, index: number) => {
                                                         const Icon = iconMap[activity.icon] || Mountain
                                                         return (
                                                                 <Card key={activity.id} className="shadow-card hover-lift bg-white overflow-hidden">

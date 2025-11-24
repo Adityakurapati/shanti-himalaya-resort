@@ -191,7 +191,7 @@ const Destinations = () => {
                                                                                 <div className="space-y-2 mb-4">
                                                                                         <h4 className="font-semibold text-sm">Highlights:</h4>
                                                                                         <div className="flex flex-wrap gap-1">
-                                                                                                {destination.highlights && destination.highlights.slice(0, 3).map((highlight: string, idx: number) => (
+                                                                                                {destination.highlights && destination.highlights.slice(0, 3).map((highlight: any, idx: number) => (
                                                                                                         <Badge key={idx} variant="secondary" className="text-xs">
                                                                                                                 {highlight}
                                                                                                         </Badge>
@@ -288,7 +288,7 @@ const Destinations = () => {
                                                                                 <div>
                                                                                         <h4 className="text-xs font-medium mb-2">Top Highlights:</h4>
                                                                                         <div className="flex flex-wrap gap-1">
-                                                                                                {destination.highlights && destination.highlights.slice(0, 2).map((highlight: string, idx: number) => (
+                                                                                                {destination.highlights && destination.highlights.slice(0, 2).map((highlight: any, idx: number) => (
                                                                                                         <Badge key={idx} variant="secondary" className="text-xs">
                                                                                                                 {highlight}
                                                                                                         </Badge>

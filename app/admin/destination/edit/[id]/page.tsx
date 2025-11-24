@@ -820,7 +820,7 @@ const AdminDestinationEdit = () => {
                                                                                                                         <div className="mt-2">
                                                                                                                                 <p className="font-medium text-sm mb-1">Highlights:</p>
                                                                                                                                 <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                                                                                                                                        {place.highlights.map((h: string, i: number) => (
+                                                                                                                                        {place.highlights.map((h: any, i: number) => (
                                                                                                                                                 <li key={i}>{h}</li>
                                                                                                                                         ))}
                                                                                                                                 </ul>

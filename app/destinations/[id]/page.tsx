@@ -461,7 +461,7 @@ const DestinationDetail = () => {
                                                                                                                         Quick Tips
                                                                                                                 </h3>
                                                                                                                 <ul className="space-y-2">
-                                                                                                                        {destination.travel_tips.slice(0, 3).map((tip: string, index: number) => (
+                                                                                                                        {destination.travel_tips.slice(0, 3).map((tip: any, index: number) => (
                                                                                                                                 <li key={index} className="flex items-start space-x-2 text-sm">
                                                                                                                                         <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
                                                                                                                                         <span className="text-muted-foreground">{tip}</span>

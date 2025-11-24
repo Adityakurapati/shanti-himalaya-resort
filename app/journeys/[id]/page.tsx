@@ -264,7 +264,7 @@ const JourneyTimeline = ({ days }: { days: DaySchedule[] }) => {
 
         return (
                 <div className="space-y-4">
-                        {days.map((day: string, index: number) => (
+                        {days.map((day: any, index: number) => (
                                 <DayCard
                                         key={day.id}
                                         day={day}
@@ -442,7 +442,7 @@ const JourneyDetail = () => {
 
                                                                         <h3 className="text-2xl font-display font-bold mb-4 text-foreground">Activities</h3>
                                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                                {journey.activities && journey.activities.map((activity: string, index: number) => (
+                                                                                {journey.activities && journey.activities.map((activity: any, index: number) => (
                                                                                         <div key={index} className="flex items-start space-x-3">
                                                                                                 <CheckCircle className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
                                                                                                 <span className="text-muted-foreground">{activity}</span>

@@ -450,7 +450,7 @@ export const DestinationContentEditor: React.FC<DestinationContentEditorProps> =
                                                                                                 Day {day.day}: {day.title}
                                                                                         </h4>
                                                                                         <ul className="mt-2 text-sm text-muted-foreground space-y-1">
-                                                                                                {day.activities?.map((activity: string, i: number) => (
+                                                                                                {day.activities?.map((activity: any, i: number) => (
                                                                                                         <li key={i}>• {activity}</li>
                                                                                                 ))}
                                                                                         </ul>

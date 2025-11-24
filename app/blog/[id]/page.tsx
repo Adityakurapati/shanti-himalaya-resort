@@ -197,7 +197,7 @@ const BlogPost = () => {
                                                                         Tags
                                                                 </h3>
                                                                 <div className="flex flex-wrap gap-2">
-                                                                        {blogPost.tags && blogPost.tags.map((tag: string) => (
+                                                                        {blogPost.tags && blogPost.tags.map((tag: any) => (
                                                                                 <Badge key={tag} variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">
                                                                                         {tag}
                                                                                 </Badge>

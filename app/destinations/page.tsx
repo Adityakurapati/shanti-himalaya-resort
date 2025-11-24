@@ -142,14 +142,24 @@ const Destinations = () => {
                                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                                         {featuredDestinations.map((destination: any) => (
                                                                 <Card key={destination.id} className="shadow-card hover-lift overflow-hidden">
-                                                                        <div className="relative h-64 bg-gradient-to-br from-primary to-accent">
-                                                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                                                        {destination.category === 'Trekking' && <Mountain className="w-20 h-20 text-white/20" />}
-                                                                                        {destination.category === 'Wildlife' && <TreePine className="w-20 h-20 text-white/20" />}
-                                                                                        {destination.category === 'Culture' && <Camera className="w-20 h-20 text-white/20" />}
-                                                                                </div>
+                                                                        <div className="relative h-64 overflow-hidden">
+                                                                                {destination.image_url ? (
+                                                                                        <img
+                                                                                                src={destination.image_url}
+                                                                                                alt={destination.name}
+                                                                                                className="w-full h-full object-cover"
+                                                                                        />
+                                                                                ) : (
+                                                                                        <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                                                                                                {destination.category === 'Trekking' && <Mountain className="w-20 h-20 text-white/20" />}
+                                                                                                {destination.category === 'Wildlife' && <TreePine className="w-20 h-20 text-white/20" />}
+                                                                                                {destination.category === 'Culture' && <Camera className="w-20 h-20 text-white/20" />}
+                                                                                                {!['Trekking', 'Wildlife', 'Culture'].includes(destination.category) && <Mountain className="w-20 h-20 text-white/20" />}
+                                                                                        </div>
+                                                                                )}
+                                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                                                                                 <div className="absolute top-4 left-4">
-                                                                                        <Badge className="bg-white/20 text-white border-white/30">
+                                                                                        <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
                                                                                                 {destination.category}
                                                                                         </Badge>
                                                                                 </div>
@@ -162,7 +172,7 @@ const Destinations = () => {
                                                                                         <h3 className="text-2xl font-display font-bold text-white mb-2">
                                                                                                 {destination.name}
                                                                                         </h3>
-                                                                                        <p className="text-white/90 text-sm">
+                                                                                        <p className="text-white/90 text-sm line-clamp-2">
                                                                                                 {destination.description}
                                                                                         </p>
                                                                                 </div>
@@ -248,40 +258,59 @@ const Destinations = () => {
                                         ) : (
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                                         {filteredDestinations.map((destination: any) => (
-                                                                <Card key={destination.id} className="shadow-card hover-lift bg-white">
+                                                                <Card key={destination.id} className="shadow-card hover-lift bg-white overflow-hidden">
+                                                                        {/* Image Section */}
+                                                                        {destination.image_url && (
+                                                                                <div className="relative h-48 overflow-hidden">
+                                                                                        <img
+                                                                                                src={destination.image_url}
+                                                                                                alt={destination.name}
+                                                                                                className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                                                                                        />
+                                                                                        <Badge className="absolute top-3 right-3 bg-white/90 text-foreground backdrop-blur-sm">
+                                                                                                {destination.category}
+                                                                                        </Badge>
+                                                                                </div>
+                                                                        )}
+
                                                                         <CardHeader className="pb-4">
                                                                                 <div className="flex items-start justify-between">
                                                                                         <div>
                                                                                                 <CardTitle className="text-xl font-display mb-1">
                                                                                                         {destination.name}
                                                                                                 </CardTitle>
-                                                                                                <Badge variant="outline" className="text-xs">
-                                                                                                        {destination.category}
-                                                                                                </Badge>
+                                                                                                {!destination.image_url && (
+                                                                                                        <Badge variant="outline" className="text-xs">
+                                                                                                                {destination.category}
+                                                                                                        </Badge>
+                                                                                                )}
                                                                                         </div>
                                                                                         <div className="text-right text-sm text-muted-foreground">
                                                                                                 <div className="flex items-center space-x-1">
                                                                                                         <Mountain className="w-3 h-3" />
-                                                                                                        <span>{destination.altitude}</span>
+                                                                                                        <span className="text-xs">{destination.altitude}</span>
                                                                                                 </div>
                                                                                         </div>
                                                                                 </div>
                                                                         </CardHeader>
 
                                                                         <CardContent className="space-y-4">
-                                                                                <p className="text-muted-foreground text-sm">
+                                                                                <p className="text-muted-foreground text-sm line-clamp-2">
                                                                                         {destination.description}
                                                                                 </p>
 
                                                                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                                                                        <div>
-                                                                                                <span className="font-medium">Duration:</span> {destination.duration}
+                                                                                        <div className="flex items-center space-x-1">
+                                                                                                <Clock className="w-3 h-3 text-muted-foreground" />
+                                                                                                <span>{destination.duration}</span>
                                                                                         </div>
-                                                                                        <div>
-                                                                                                <span className="font-medium">Level:</span> {destination.difficulty}
+                                                                                        <div className="flex items-center space-x-1">
+                                                                                                <Mountain className="w-3 h-3 text-muted-foreground" />
+                                                                                                <span>{destination.difficulty}</span>
                                                                                         </div>
-                                                                                        <div className="col-span-2">
-                                                                                                <span className="font-medium">Best Time:</span> {destination.best_time}
+                                                                                        <div className="col-span-2 flex items-center space-x-1">
+                                                                                                <Star className="w-3 h-3 text-muted-foreground" />
+                                                                                                <span>{destination.best_time}</span>
                                                                                         </div>
                                                                                 </div>
 
@@ -293,11 +322,16 @@ const Destinations = () => {
                                                                                                                 {highlight}
                                                                                                         </Badge>
                                                                                                 ))}
+                                                                                                {destination.highlights && destination.highlights.length > 2 && (
+                                                                                                        <Badge variant="secondary" className="text-xs">
+                                                                                                                +{destination.highlights.length - 2}
+                                                                                                        </Badge>
+                                                                                                )}
                                                                                         </div>
                                                                                 </div>
 
                                                                                 <Link href={`/destinations/${destination.id}`}>
-                                                                                        <Button variant="outline" size="sm" className="w-full">
+                                                                                        <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-white transition-colors">
                                                                                                 Learn More
                                                                                         </Button>
                                                                                 </Link>

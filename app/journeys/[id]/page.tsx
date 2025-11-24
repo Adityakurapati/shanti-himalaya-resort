@@ -436,6 +436,17 @@ const JourneyDetail = () => {
                                                         <div className="lg:col-span-2 space-y-8">
                                                                 <div>
                                                                         <h2 className="text-3xl font-display font-bold mb-6 text-foreground">About This Journey</h2>
+
+                                                                        {/* Journey Banner Image */}
+                                                                        {journey.image_url && (
+                                                                                <div className="mb-8 rounded-2xl overflow-hidden shadow-xl">
+                                                                                        <img
+                                                                                                src={journey.image_url}
+                                                                                                alt={journey.title}
+                                                                                                className="w-full h-64 md:h-80 lg:h-96 object-cover"
+                                                                                        />
+                                                                                </div>
+                                                                        )}
                                                                         <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                                                                                 {journey.description}
                                                                         </p>

@@ -350,6 +350,28 @@ const DestinationDetail = () => {
                                 </div>
                         </section>
 
+                        {/* Destination Banner Image */}
+                        {destination.image_url && (
+                                <section className="py-8 bg-transparent">
+                                        <div className="container mx-auto px-4">
+                                                <div className="max-w-6xl mx-auto">
+                                                        <motion.div
+                                                                initial={{ opacity: 0, y: 20 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ duration: 0.6 }}
+                                                                className="rounded-2xl overflow-hidden shadow-2xl"
+                                                        >
+                                                                <img
+                                                                        src={destination.image_url}
+                                                                        alt={destination.name}
+                                                                        className="w-full h-48 md:h-64 lg:h-80 object-cover"
+                                                                />
+                                                        </motion.div>
+                                                </div>
+                                        </div>
+                                </section>
+                        )}
+
                         {/* Interactive Tabs Section */}
                         <section className="py-16 bg-transparent">
                                 <div className="container mx-auto px-4">

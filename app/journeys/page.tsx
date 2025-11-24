@@ -118,10 +118,18 @@ const Journeys = () => {
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                                                 {featuredJourneys.map((journey: any) => (
                                                         <Card key={journey.id} className="shadow-card hover-lift overflow-hidden">
-                                                                <div className="relative h-48 bg-gradient-to-br from-primary to-accent">
-                                                                        <div className="absolute inset-0 flex items-center justify-center">
-                                                                                <Camera className="w-16 h-16 text-white/30" />
-                                                                        </div>
+                                                                <div className="relative h-48 overflow-hidden">
+                                                                        {journey.image_url ? (
+                                                                                <img
+                                                                                        src={journey.image_url}
+                                                                                        alt={journey.title}
+                                                                                        className="w-full h-full object-cover"
+                                                                                />
+                                                                        ) : (
+                                                                                <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                                                                                        <Camera className="w-16 h-16 text-white/30" />
+                                                                                </div>
+                                                                        )}
                                                                         <Badge className="absolute top-4 right-4 bg-gold text-white">
                                                                                 Featured
                                                                         </Badge>
@@ -200,15 +208,18 @@ const Journeys = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                                 {filteredJourneys.map((journey: any) => (
                                                         <Card key={journey.id} className="shadow-card hover-lift overflow-hidden bg-white">
-                                                                <div className="relative h-32 bg-gradient-to-br from-primary/10 to-accent/10">
-                                                                        <div className="absolute inset-0 flex items-center justify-center">
-                                                                                {journey.id === 'adventure' && <Mountain className="w-12 h-12 text-primary/30" />}
-                                                                                {journey.id === 'wildlife' && <TreePine className="w-12 h-12 text-accent/30" />}
-                                                                                {journey.id === 'cultural' && <Compass className="w-12 h-12 text-gold/30" />}
-                                                                                {journey.id === 'wellness' && <Users className="w-12 h-12 text-primary/30" />}
-                                                                                {journey.id === 'photography' && <Camera className="w-12 h-12 text-accent/30" />}
-                                                                                {journey.id === 'luxury' && <Mountain className="w-12 h-12 text-gold/30" />}
-                                                                        </div>
+                                                                <div className="relative h-48 overflow-hidden">
+                                                                        {journey.image_url ? (
+                                                                                <img
+                                                                                        src={journey.image_url}
+                                                                                        alt={journey.title}
+                                                                                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                                                                                />
+                                                                        ) : (
+                                                                                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                                                                                        <Mountain className="w-12 h-12 text-primary/30" />
+                                                                                </div>
+                                                                        )}
                                                                         {journey.featured && (
                                                                                 <Badge className="absolute top-3 right-3 bg-gold text-white text-xs">
                                                                                         Popular
@@ -218,25 +229,36 @@ const Journeys = () => {
 
                                                                 <CardContent className="p-6">
                                                                         <h3 className="font-display font-semibold text-lg mb-2">{journey.title}</h3>
-                                                                        <p className="text-muted-foreground text-sm mb-4">{journey.description}</p>
+                                                                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{journey.description}</p>
 
                                                                         <div className="space-y-2 mb-4">
                                                                                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                                                                        <span>Duration: {journey.duration}</span>
-                                                                                        <span>Level: {journey.difficulty}</span>
+                                                                                        <span className="flex items-center">
+                                                                                                <Clock className="w-3 h-3 mr-1" />
+                                                                                                {journey.duration}
+                                                                                        </span>
+                                                                                        <span className="flex items-center">
+                                                                                                <Mountain className="w-3 h-3 mr-1" />
+                                                                                                {journey.difficulty}
+                                                                                        </span>
                                                                                 </div>
                                                                         </div>
 
                                                                         <div className="flex flex-wrap gap-1 mb-4">
-                                                                                {journey.activities.slice(0, 2).map((activity: any) => (
-                                                                                        <Badge key={activity} variant="outline" className="text-xs">
+                                                                                {journey.activities.slice(0, 2).map((activity: any, index: number) => (
+                                                                                        <Badge key={index} variant="outline" className="text-xs">
                                                                                                 {activity}
                                                                                         </Badge>
                                                                                 ))}
+                                                                                {journey.activities.length > 2 && (
+                                                                                        <Badge variant="outline" className="text-xs">
+                                                                                                +{journey.activities.length - 2}
+                                                                                        </Badge>
+                                                                                )}
                                                                         </div>
 
                                                                         <Link href={`/journeys/${journey.id}`}>
-                                                                                <Button variant="outline" className="w-full">
+                                                                                <Button variant="outline" className="w-full hover:bg-primary hover:text-white transition-colors">
                                                                                         View Details
                                                                                 </Button>
                                                                         </Link>

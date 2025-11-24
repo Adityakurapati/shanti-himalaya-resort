@@ -13,6 +13,7 @@ import { Menu, X, Phone, Mail, ChevronDown, Shield } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import logo from "@/assets/shanti-himalaya-logo.jpg";
+import type { Tables } from "@/integrations/supabase/types";
 
 const Header = () => {
         const [isMenuOpen, setIsMenuOpen] = useState(false);

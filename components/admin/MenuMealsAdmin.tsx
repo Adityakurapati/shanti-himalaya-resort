@@ -12,24 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, Edit, Trash2, Utensils, Clock } from "lucide-react"
+import type { Tables } from "@/integrations/supabase/types";
 
-interface MealPlan {
-        id: string
-        name: string
-        price: string
-        description: string
-        breakfast: string[]
-        lunch: string[]
-        dinner: string[]
-        badge: string
-}
+type MealPlan = Tables<"meal_plans">
 
-interface DiningSchedule {
-        id: string
-        meal_type: string
-        time: string
-        description: string
-}
+type DiningSchedule = Tables<"dining_schedule">
 
 export const MenuMealsAdmin = () => {
         const [mealPlans, setMealPlans] = useState<MealPlan[]>([])

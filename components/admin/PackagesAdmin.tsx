@@ -14,21 +14,9 @@ import { Plus, Edit, Trash2, Package } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
+import type { Tables } from "@/integrations/supabase/types";
 
-type Package = {
-        id: string
-        title: string
-        excerpt: string
-        content: string
-        category: string
-        author: string
-        author_bio?: string
-        author_avatar?: string
-        image_url?: string
-        tags: string[]
-        featured: boolean
-        read_time?: string
-}
+type Package = Tables<"packages">
 
 const PackagesAdmin = () => {
         const [packages, setPackages] = useState<Package[]>([])

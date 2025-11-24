@@ -13,19 +13,9 @@ import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, Edit, Trash2, Package } from "lucide-react"
 import ImageUploader from "./ImageUploader"
+import type { Tables } from "@/integrations/supabase/types";
 
-interface ResortPackage {
-        id: string
-        name: string
-        duration: string
-        price: string
-        original_price: string
-        description: string
-        includes: string[]
-        features: string[]
-        badge: string
-        image_url?: string
-}
+type ResortPackage = Tables<"resort_packages">
 
 export const ResortPackagesAdmin = () => {
         const [packages, setPackages] = useState<ResortPackage[]>([])

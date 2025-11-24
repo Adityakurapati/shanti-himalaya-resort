@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { Check, X, Users } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import type { Tables } from "@/integrations/supabase/types";
 
 interface PendingUser {
   id: string

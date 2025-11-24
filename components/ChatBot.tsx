@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MessageCircle, Send, Bot, User, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface Message {
   id: string;

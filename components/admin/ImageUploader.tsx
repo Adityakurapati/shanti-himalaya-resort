@@ -10,6 +10,7 @@ import { Label } from "../ui/label"
 import { Slider } from "../ui/slider"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { uploadService } from "@/lib/upload-service"
+import type { Tables } from "@/integrations/supabase/types";
 
 type Props = {
         label?: string

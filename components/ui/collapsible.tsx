@@ -1,4 +1,5 @@
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
+import type { Tables } from "@/integrations/supabase/types";
 
 const Collapsible = CollapsiblePrimitive.Root;
 

@@ -21,7 +21,69 @@ class Colors:
 def log(message: str, color: str = Colors.BLUE):
     print(f"{color}{message}{Colors.END}")
 
-def add_types_import(content: str) -> Tuple[str, bool]:
+def replace_custom_types_with_supabase(content: str, file_path: str) -> Tuple[str, bool]:
+    """Replace custom type definitions with Supabase Tables types"""
+    modified = False
+    
+    # Map of common type names to their Supabase table equivalents
+    type_mappings = {
+        r'type Destination = {[^}]+}': ('Destination', 'destinations'),
+        r'type Experience = {[^}]+}': ('Experience', 'experiences'),
+        r'type Journey = {[^}]+}': ('Journey', 'journeys'),
+        r'type Enquiry = {[^}]+}': ('Enquiry', 'enquiries'),
+        r'type Package = {[^}]+}': ('Package', 'packages'),
+        r'interface MealPlan {[^}]+}': ('MealPlan', 'meal_plans'),
+        r'interface DiningSchedule {[^}]+}': ('DiningSchedule', 'dining_schedule'),
+        r'interface Activity {[^}]+}': ('Activity', 'resort_activities'),
+        r'interface GalleryItem {[^}]+}': ('GalleryItem', 'resort_gallery'),
+        r'interface ResortPackage {[^}]+}': ('ResortPackage', 'resort_packages'),
+    }
+    
+    # Check if Tables import already exists
+    has_tables_import = 'from "@/integrations/supabase/types"' in content
+    
+    for pattern, (type_name, table_name) in type_mappings.items():
+        # Look for the custom type definition
+        match = re.search(pattern, content, re.DOTALL)
+        if match:
+            # Remove the custom type definition
+            content = re.sub(pattern, '', content)
+            modified = True
+            log(f"  ✓ Removed custom type: {type_name}", Colors.GREEN)
+            
+            # Add Tables import if not present
+            if not has_tables_import:
+                first_import = re.search(r'^(import\s+.*?;?\n)', content, re.MULTILINE)
+                if first_import:
+                    content = content.replace(
+                        first_import.group(0),
+                        'import type { Tables } from "@/integrations/supabase/types";\n' + first_import.group(0),
+                        1
+                    )
+                    has_tables_import = True
+                    log(f"  ✓ Added Tables import", Colors.GREEN)
+            
+            # Add type alias after imports
+            imports_end = list(re.finditer(r'^import\s+.*?;?\n', content, re.MULTILINE))
+            if imports_end:
+                last_import = imports_end[-1]
+                insert_pos = last_import.end()
+                type_alias = f'\ntype {type_name} = Tables<"{table_name}">;\n'
+                content = content[:insert_pos] + type_alias + content[insert_pos:]
+                log(f"  ✓ Added type alias: {type_name} = Tables<\"{table_name}\">", Colors.GREEN)
+    
+    # Handle AdminUser and PendingUser (they come from Functions, not Tables)
+    admin_patterns = [
+        (r'interface AdminUser {[^}]+}', 'AdminUser'),
+        (r'interface PendingUser {[^}]+}', 'PendingUser'),
+    ]
+    
+    for pattern, type_name in admin_patterns:
+        if re.search(pattern, content, re.DOTALL):
+            # These are return types from functions, leave them but note them
+            log(f"  ℹ️  Found {type_name} (function return type, keeping as-is)", Colors.YELLOW)
+    
+    return content, modified
     """Add Tables import from Supabase types if not present"""
     if 'from "@/integrations/supabase/types"' in content:
         return content, False

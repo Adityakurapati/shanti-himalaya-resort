@@ -14,19 +14,9 @@ import { Plus, Edit, Trash2, Compass } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
+import type { Tables } from "@/integrations/supabase/types";
 
-type Experience = {
-        id: string
-        title: string
-        description: string
-        category: string
-        duration: string
-        group_size: string
-        highlights: string[]
-        price: string
-        featured: boolean
-        image_url?: string
-}
+type Experience = Tables<"experiences">
 
 const ExperiencesAdmin = () => {
         const [experiences, setExperiences] = useState<Experience[]>([])

@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { Tables } from "@/integrations/supabase/types";
 
 const Footer = () => {
   return (

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { Trash2, Users, Crown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import type { Tables } from "@/integrations/supabase/types";
 
 interface AdminUser {
         id: string

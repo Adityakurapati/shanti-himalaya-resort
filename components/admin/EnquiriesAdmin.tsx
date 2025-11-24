@@ -7,18 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { Mail, Calendar, User, Eye, EyeOff, Trash2, Reply } from "lucide-react"
+import type { Tables } from "@/integrations/supabase/types";
 
-type Enquiry = {
-        id: string
-        journey_id: string
-        journey_title: string
-        name: string
-        email: string
-        message: string
-        status: string
-        is_read: boolean
-        created_at: string
-}
+type Enquiry = Tables<"enquiries">
 
 const EnquiriesAdmin = () => {
         const [enquiries, setEnquiries] = useState<Enquiry[]>([])

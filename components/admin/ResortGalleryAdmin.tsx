@@ -14,14 +14,9 @@ import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, Edit, Trash2, ImageIcon, ListOrdered } from "lucide-react"
 import ImageUploader from "./ImageUploader"
+import type { Tables } from "@/integrations/supabase/types";
 
-interface GalleryItem {
-        id: string
-        image_url: string
-        title: string | null
-        description: string | null
-        display_order: number | null
-}
+type GalleryItem = Tables<"resort_gallery">
 
 export const ResortGalleryAdmin = () => {
         const [items, setItems] = useState<GalleryItem[]>([])

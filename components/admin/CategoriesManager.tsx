@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Trash2, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import type { Tables } from "@/integrations/supabase/types";
 
 export default function CategoriesManager() {
         const [categories, setCategories] = useState<string[]>([])

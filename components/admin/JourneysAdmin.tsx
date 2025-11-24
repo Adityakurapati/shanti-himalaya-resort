@@ -15,18 +15,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
 import DayScheduleEditor from "./DayScheduleEditor"
+import type { Tables } from "@/integrations/supabase/types";
 
-type Journey = {
-        id: string
-        title: string
-        description: string
-        duration: string
-        difficulty: string
-        activities: string[]
-        featured: boolean
-        category: string
-        image_url?: string
-}
+type Journey = Tables<"journeys">
 
 const JourneysAdmin = () => {
         const [journeys, setJourneys] = useState<Journey[]>([])

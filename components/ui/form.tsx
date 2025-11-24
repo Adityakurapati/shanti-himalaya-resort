@@ -7,6 +7,7 @@ import { Controller, ControllerProps, FieldPath, FieldValues, FormProvider, useF
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import type { Tables } from "@/integrations/supabase/types";
 
 const Form = FormProvider;
 

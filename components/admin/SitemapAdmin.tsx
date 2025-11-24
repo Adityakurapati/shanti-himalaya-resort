@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import type { Tables } from "@/integrations/supabase/types";
 
 export default function SitemapAdmin() {
   const { toast } = useToast()

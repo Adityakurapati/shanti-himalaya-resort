@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import ImageUploader from "./ImageUploader"
 import {
+import type { Tables } from "@/integrations/supabase/types";
         Plus,
         Edit,
         Trash2,
@@ -32,14 +33,7 @@ import {
         Star,
 } from "lucide-react"
 
-interface Activity {
-        id: string
-        title: string
-        description: string
-        full_description: string
-        icon: string
-        image_url?: string
-}
+type Activity = Tables<"resort_activities">
 
 export const ResortActivitiesAdmin = () => {
         const [activities, setActivities] = useState<Activity[]>([])

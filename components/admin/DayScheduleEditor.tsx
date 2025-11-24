@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Edit, Trash2 } from "lucide-react"
 import ImageUploader from "./ImageUploader"
 import { useToast } from "@/hooks/use-toast"
+import type { Tables } from "@/integrations/supabase/types";
 
 type DayItem = {
   id: string

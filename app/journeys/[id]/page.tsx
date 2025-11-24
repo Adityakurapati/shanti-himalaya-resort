@@ -329,7 +329,7 @@ const JourneyDetail = () => {
 
         const handleEnquireNow = () => {
                 if (journey) {
-                        window.location.href = `mailto:info@example.com?subject=Enquiry about ${journey.title}&body=Hello, I would like to get more information about the ${journey.title} journey.`;
+                        window.location.href = `mailto:shantihimalaya@gmail.com?subject=Enquiry about ${encodeURIComponent(journey.title)}&body=Hi, I would like to know more about ${encodeURIComponent(journey.title)}.`;
                 }
         };
 

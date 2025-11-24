@@ -339,6 +339,9 @@ const DestinationDetail = () => {
                                                         <Button
                                                                 size="lg"
                                                                 className="hero-gradient text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300"
+                                                                onClick={() => {
+                                                                        window.location.href = `mailto:shantihimalaya@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
+                                                                }}
                                                         >
                                                                 Enquire Now
                                                         </Button>

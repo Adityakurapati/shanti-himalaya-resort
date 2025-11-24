@@ -21,7 +21,7 @@ type Props = {
 
 function getCroppedImg(imageSrc: string, pixelCrop: { x: number; y: number; width: number; height: number }) {
         return new Promise<string>((resolve, reject) => {
-                const image = new Image()
+                const image = new window.Image()
                 image.crossOrigin = "anonymous"
                 image.onload = () => {
                         const canvas = document.createElement("canvas")

@@ -219,7 +219,7 @@ const ExperienceDetail = () => {
 
                                                         {/* Quick Facts Sidebar */}
                                                         <div className="space-y-6">
-                                                                <Card className="shadow-card border-0">
+                                                                {/* <Card className="shadow-card border-0">
                                                                         <CardContent className="p-6">
                                                                                 <h3 className="text-2xl font-display font-bold mb-6 text-foreground">
                                                                                         Quick Facts
@@ -247,7 +247,7 @@ const ExperienceDetail = () => {
                                                                                 </div>
 
                                                                         </CardContent>
-                                                                </Card>
+                                                                </Card> */}
 
                                                                 {/* What to Expect Card */}
                                                                 <Card className="shadow-card border-0 bg-gradient-to-br from-primary/5 to-accent/5">

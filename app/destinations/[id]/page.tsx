@@ -110,9 +110,42 @@ const DestinationDetail = () => {
         };
 
         // Get things to do as array
+        // Get things to do as array and sort by numerical prefix in title
         const getThingsToDo = () => {
                 const thingsData = parseJSONData(destination?.things_to_do);
-                return Object.values(thingsData);
+                const thingsArray = Object.values(thingsData);
+
+                // Sort by extracting the number from the beginning of the title
+                let data = thingsArray.sort((a, b) => {
+                        // Helper function to extract number from title
+                        const extractNumber = (str) => {
+                                if (!str || typeof str !== 'string') return Infinity; // Put items without number at end
+
+                                // Try to match patterns like:
+                                // "1. Jungle Safari"
+                                // "1 Jungle Safari" 
+                                // "1) Jungle Safari"
+                                const match = str.match(/^(\d+)[\.\)\s]*/);
+                                return match ? parseInt(match[1], 10) : Infinity;
+                        };
+
+                        const numA = extractNumber(a.title);
+                        const numB = extractNumber(b.title);
+
+                        // If both have numbers, sort numerically
+                        if (numA !== Infinity && numB !== Infinity) {
+                                return numA - numB;
+                        }
+
+                        // If only one has number, put numbered items first
+                        if (numA !== Infinity && numB === Infinity) return -1;
+                        if (numA === Infinity && numB !== Infinity) return 1;
+
+                        // If neither has number, sort alphabetically
+                        return (a.title || '').localeCompare(b.title || '');
+                });
+                console.log("Sorted Things to Do:", data);
+                return data;
         };
 
         // Get itinerary as array
@@ -454,7 +487,7 @@ const DestinationDetail = () => {
 
                                                                                 {/* Quick Facts Sidebar */}
                                                                                 <div className="space-y-6">
-                                                                                        <Card className="bg-gradient-to-br from-white to-emerald-50/50 backdrop-blur-sm border-emerald-100 shadow-lg">
+                                                                                        {/* <Card className="bg-gradient-to-br from-white to-emerald-50/50 backdrop-blur-sm border-emerald-100 shadow-lg">
                                                                                                 <CardContent className="p-6">
                                                                                                         <h3 className="text-xl font-bold mb-4 text-foreground">Quick Facts</h3>
                                                                                                         <div className="space-y-4">
@@ -476,7 +509,7 @@ const DestinationDetail = () => {
                                                                                                                 </div>
                                                                                                         </div>
                                                                                                 </CardContent>
-                                                                                        </Card>
+                                                                                        </Card> */}
 
                                                                                         {destination.travel_tips && destination.travel_tips.length > 0 && (
                                                                                                 <Card className="bg-gradient-to-br from-white to-teal-50/50 backdrop-blur-sm border-teal-100 shadow-lg">
@@ -586,31 +619,40 @@ const DestinationDetail = () => {
                                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                                                 {getThingsToDo().map((activity: any, index: number) => (
                                                                                         <SlideInSection key={activity.id || index} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
-                                                                                                <motion.div
-                                                                                                        whileHover={{ scale: 1.02 }}
-                                                                                                        transition={{ type: "spring", stiffness: 300 }}
-                                                                                                >
-                                                                                                        <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                                                                                                <CardContent className="p-6">
-                                                                                                                        <div className="flex items-center space-x-3 mb-3">
-                                                                                                                                <div className="p-2 hero-gradient rounded-lg">
-                                                                                                                                        <Activity className="w-5 h-5 text-white" />
+                                                                                                <div className="h-full">
+                                                                                                        <motion.div
+                                                                                                                whileHover={{ scale: 1.02 }}
+                                                                                                                transition={{ type: "spring", stiffness: 300 }}
+                                                                                                                className="h-full"
+                                                                                                        >
+                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                                                                                        <CardContent className="p-6 h-full flex flex-col">
+                                                                                                                                <div className="flex items-center space-x-3 mb-3">
+                                                                                                                                        <div className="p-2 hero-gradient rounded-lg">
+                                                                                                                                                <Activity className="w-5 h-5 text-white" />
+                                                                                                                                        </div>
+                                                                                                                                        <h3 className="text-lg font-bold text-foreground">{activity.title}</h3>
                                                                                                                                 </div>
-                                                                                                                                <h3 className="text-lg font-bold text-foreground">{activity.title}</h3>
-                                                                                                                        </div>
-                                                                                                                        {activity.image_url && (
-                                                                                                                                <div className="mb-4 rounded-lg overflow-hidden">
-                                                                                                                                        <img
-                                                                                                                                                src={activity.image_url}
-                                                                                                                                                alt={activity.title}
-                                                                                                                                                className="w-full h-40 object-cover"
-                                                                                                                                        />
+                                                                                                                                {activity.image_url && (
+                                                                                                                                        <div className="mb-4 rounded-lg overflow-hidden flex-shrink-0">
+                                                                                                                                                <img
+                                                                                                                                                        src={activity.image_url}
+                                                                                                                                                        alt={activity.title}
+                                                                                                                                                        className="w-full h-40 object-cover"
+                                                                                                                                                />
+                                                                                                                                        </div>
+                                                                                                                                )}
+                                                                                                                                <div className="flex-grow overflow-hidden">
+                                                                                                                                        <div className="h-full overflow-y-auto pr-2">
+                                                                                                                                                <p className="text-muted-foreground leading-relaxed">
+                                                                                                                                                        {activity.description}
+                                                                                                                                                </p>
+                                                                                                                                        </div>
                                                                                                                                 </div>
-                                                                                                                        )}
-                                                                                                                        <p className="text-muted-foreground leading-relaxed">{activity.description}</p>
-                                                                                                                </CardContent>
-                                                                                                        </Card>
-                                                                                                </motion.div>
+                                                                                                                        </CardContent>
+                                                                                                                </Card>
+                                                                                                        </motion.div>
+                                                                                                </div>
                                                                                         </SlideInSection>
                                                                                 ))}
                                                                         </div>

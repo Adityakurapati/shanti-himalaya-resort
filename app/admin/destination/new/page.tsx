@@ -671,6 +671,7 @@ const AdminDestinationNew = () => {
                                 )}
 
                                 {/* Things to Do Tab */}
+                                {/* Things to Do Tab */}
                                 {activeTab === "activities" && (
                                         <div className="space-y-4">
                                                 <div className="flex justify-between items-center">
@@ -703,52 +704,89 @@ const AdminDestinationNew = () => {
                                                 </div>
 
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        {Object.entries(formData.things_to_do).map(([key, activity]) => (
-                                                                <Card key={key}>
-                                                                        <CardContent className="p-4">
-                                                                                <div className="flex justify-between items-start mb-2">
-                                                                                        <h4 className="font-semibold text-sm flex-1">{activity.title}</h4>
-                                                                                        <div className="flex gap-1 ml-2">
-                                                                                                <Dialog>
-                                                                                                        <DialogTrigger asChild>
-                                                                                                                <Button variant="outline" size="sm">
-                                                                                                                        <Edit className="w-3 h-3" />
-                                                                                                                </Button>
-                                                                                                        </DialogTrigger>
-                                                                                                        <DialogContent className="max-w-2xl">
-                                                                                                                <DialogHeader>
-                                                                                                                        <DialogTitle>Edit Activity: {activity.title}</DialogTitle>
-                                                                                                                </DialogHeader>
-                                                                                                                <ActivityForm
-                                                                                                                        initialData={activity}
-                                                                                                                        onSubmit={(updatedActivity) => handleUpdateActivity(key, updatedActivity)}
-                                                                                                                        isEdit={true}
-                                                                                                                />
-                                                                                                        </DialogContent>
-                                                                                                </Dialog>
-                                                                                                <Button variant="destructive" size="sm" onClick={() => handleDeleteActivity(key)}>
-                                                                                                        <Trash2 className="w-3 h-3" />
-                                                                                                </Button>
-                                                                                        </div>
-                                                                                </div>
+                                                        {/* Convert object entries to array, sort by numerical prefix, then map */}
+                                                        {Object.entries(formData.things_to_do)
+                                                                .sort(([keyA, activityA], [keyB, activityB]) => {
+                                                                        // Helper function to extract number from title
+                                                                        const extractNumber = (title) => {
+                                                                                if (!title || typeof title !== 'string') return Infinity;
+                                                                                const match = title.match(/^(\d+)[\.\)\s]*/);
+                                                                                return match ? parseInt(match[1], 10) : Infinity;
+                                                                        };
 
-                                                                                <div className="grid grid-cols-1 gap-2">
-                                                                                        <div className="text-xs text-muted-foreground">{activity.description}</div>
-                                                                                        {activity.image_url && (
-                                                                                                <div className="h-24 rounded-lg overflow-hidden">
-                                                                                                        <img
-                                                                                                                src={activity.image_url}
-                                                                                                                alt={activity.title}
-                                                                                                                className="w-full h-full object-cover"
-                                                                                                        />
+                                                                        const numA = extractNumber(activityA.title);
+                                                                        const numB = extractNumber(activityB.title);
+
+                                                                        // If both have numbers, sort numerically
+                                                                        if (numA !== Infinity && numB !== Infinity) {
+                                                                                return numA - numB;
+                                                                        }
+
+                                                                        // If only one has number, put numbered items first
+                                                                        if (numA !== Infinity && numB === Infinity) return -1;
+                                                                        if (numA === Infinity && numB !== Infinity) return 1;
+
+                                                                        // If neither has number, sort by key
+                                                                        return keyA.localeCompare(keyB);
+                                                                })
+                                                                .map(([key, activity]) => (
+                                                                        <Card key={key} className="flex flex-col min-h-[200px]">
+                                                                                <CardContent className="p-4 flex flex-col flex-grow">
+                                                                                        {/* Fixed Header Section */}
+                                                                                        <div className="flex justify-between items-start mb-2 flex-shrink-0">
+                                                                                                <h4 className="font-semibold text-sm flex-1">{activity.title}</h4>
+                                                                                                <div className="flex gap-1 ml-2 flex-shrink-0">
+                                                                                                        <Dialog>
+                                                                                                                <DialogTrigger asChild>
+                                                                                                                        <Button variant="outline" size="sm">
+                                                                                                                                <Edit className="w-3 h-3" />
+                                                                                                                        </Button>
+                                                                                                                </DialogTrigger>
+                                                                                                                <DialogContent className="max-w-2xl">
+                                                                                                                        <DialogHeader>
+                                                                                                                                <DialogTitle>Edit Activity: {activity.title}</DialogTitle>
+                                                                                                                        </DialogHeader>
+                                                                                                                        <ActivityForm
+                                                                                                                                initialData={activity}
+                                                                                                                                onSubmit={(updatedActivity) => handleUpdateActivity(key, updatedActivity)}
+                                                                                                                                isEdit={true}
+                                                                                                                        />
+                                                                                                                </DialogContent>
+                                                                                                        </Dialog>
+                                                                                                        <Button variant="destructive" size="sm" onClick={() => handleDeleteActivity(key)}>
+                                                                                                                <Trash2 className="w-3 h-3" />
+                                                                                                        </Button>
                                                                                                 </div>
-                                                                                        )}
-                                                                                </div>
-                                                                        </CardContent>
-                                                                </Card>
-                                                        ))}
+                                                                                        </div>
+
+                                                                                        {/* Scrollable Content Area */}
+                                                                                        <div className="flex-grow overflow-hidden">
+                                                                                                <div className="h-full overflow-y-auto pr-1">
+                                                                                                        <div className="space-y-2">
+                                                                                                                <div className="text-xs text-muted-foreground leading-relaxed">
+                                                                                                                        {activity.description}
+                                                                                                                </div>
+
+                                                                                                                {activity.image_url && (
+                                                                                                                        <div className="h-24 rounded-lg overflow-hidden flex-shrink-0 mt-2">
+                                                                                                                                <img
+                                                                                                                                        src={activity.image_url}
+                                                                                                                                        alt={activity.title}
+                                                                                                                                        className="w-full h-full object-cover"
+                                                                                                                                />
+                                                                                                                        </div>
+                                                                                                                )}
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </CardContent>
+                                                                        </Card>
+                                                                ))}
+
                                                         {Object.keys(formData.things_to_do).length === 0 && (
-                                                                <p className="text-sm text-muted-foreground text-center py-4">No activities added yet.</p>
+                                                                <p className="text-sm text-muted-foreground text-center py-4 col-span-2">
+                                                                        No activities added yet.
+                                                                </p>
                                                         )}
                                                 </div>
                                         </div>

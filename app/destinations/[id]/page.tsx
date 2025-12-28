@@ -109,22 +109,16 @@ const DestinationDetail = () => {
                 return Object.values(placesData);
         };
 
-        // Get things to do as array
         // Get things to do as array and sort by numerical prefix in title
         const getThingsToDo = () => {
                 const thingsData = parseJSONData(destination?.things_to_do);
                 const thingsArray = Object.values(thingsData);
 
                 // Sort by extracting the number from the beginning of the title
-                let data = thingsArray.sort((a, b) => {
+                return thingsArray.sort((a: any, b: any) => {
                         // Helper function to extract number from title
-                        const extractNumber = (str) => {
-                                if (!str || typeof str !== 'string') return Infinity; // Put items without number at end
-
-                                // Try to match patterns like:
-                                // "1. Jungle Safari"
-                                // "1 Jungle Safari" 
-                                // "1) Jungle Safari"
+                        const extractNumber = (str: string | undefined): number => {
+                                if (!str || typeof str !== 'string') return Infinity;
                                 const match = str.match(/^(\d+)[\.\)\s]*/);
                                 return match ? parseInt(match[1], 10) : Infinity;
                         };
@@ -144,8 +138,6 @@ const DestinationDetail = () => {
                         // If neither has number, sort alphabetically
                         return (a.title || '').localeCompare(b.title || '');
                 });
-                console.log("Sorted Things to Do:", data);
-                return data;
         };
 
         // Get itinerary as array

@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import CategoriesManager from "@/components/admin/CategoriesManager";
@@ -63,6 +64,14 @@ const AdminDestinationEdit = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
   const [categories, setCategories] = useState<string[]>([]);
+
+  // Modal state management
+  const [placesModalOpen, setPlacesModalOpen] = useState(false);
+  const [activitiesModalOpen, setActivitiesModalOpen] = useState(false);
+  const [itineraryModalOpen, setItineraryModalOpen] = useState(false);
+  const [faqModalOpen, setFaqModalOpen] = useState(false);
+  const [editingItemKey, setEditingItemKey] = useState<string | null>(null);
+  const [editingItemType, setEditingItemType] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -517,7 +526,7 @@ const AdminDestinationEdit = () => {
     });
   };
 
-  // Enhanced handlers with image upload support
+  // Enhanced handlers with modal management
   const handleAddPlace = (place: any) => {
     const id = generateId();
     const updated = {
@@ -528,6 +537,11 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, places_to_visit: updated });
+    setPlacesModalOpen(false);
+    toast({
+      title: "Place added",
+      description: "New place has been added successfully.",
+    });
   };
 
   const handleUpdatePlace = (key: string, updatedPlace: any) => {
@@ -539,12 +553,22 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, places_to_visit: updated });
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "Place updated",
+      description: "Place has been updated successfully.",
+    });
   };
 
   const handleDeletePlace = (key: string) => {
     const updated = { ...formData.places_to_visit };
     delete updated[key];
     setFormData({ ...formData, places_to_visit: updated });
+    toast({
+      title: "Place deleted",
+      description: "Place has been removed.",
+    });
   };
 
   const handleAddActivity = (activity: any) => {
@@ -557,6 +581,11 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, things_to_do: updated });
+    setActivitiesModalOpen(false);
+    toast({
+      title: "Activity added",
+      description: "New activity has been added successfully.",
+    });
   };
 
   const handleUpdateActivity = (key: string, updatedActivity: any) => {
@@ -568,12 +597,22 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, things_to_do: updated });
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "Activity updated",
+      description: "Activity has been updated successfully.",
+    });
   };
 
   const handleDeleteActivity = (key: string) => {
     const updated = { ...formData.things_to_do };
     delete updated[key];
     setFormData({ ...formData, things_to_do: updated });
+    toast({
+      title: "Activity deleted",
+      description: "Activity has been removed.",
+    });
   };
 
   const handleAddDay = (day: any) => {
@@ -586,6 +625,11 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, itinerary: updated });
+    setItineraryModalOpen(false);
+    toast({
+      title: "Itinerary day added",
+      description: "New itinerary day has been added successfully.",
+    });
   };
 
   const handleUpdateDay = (key: string, updatedDay: any) => {
@@ -597,12 +641,22 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, itinerary: updated });
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "Itinerary day updated",
+      description: "Itinerary day has been updated successfully.",
+    });
   };
 
   const handleDeleteDay = (key: string) => {
     const updated = { ...formData.itinerary };
     delete updated[key];
     setFormData({ ...formData, itinerary: updated });
+    toast({
+      title: "Itinerary day deleted",
+      description: "Itinerary day has been removed.",
+    });
   };
 
   const handleAddFAQ = (faq: any) => {
@@ -615,6 +669,11 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, faqs: updated });
+    setFaqModalOpen(false);
+    toast({
+      title: "FAQ added",
+      description: "New FAQ has been added successfully.",
+    });
   };
 
   const handleUpdateFAQ = (key: string, updatedFAQ: any) => {
@@ -626,12 +685,28 @@ const AdminDestinationEdit = () => {
       },
     };
     setFormData({ ...formData, faqs: updated });
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "FAQ updated",
+      description: "FAQ has been updated successfully.",
+    });
   };
 
   const handleDeleteFAQ = (key: string) => {
     const updated = { ...formData.faqs };
     delete updated[key];
     setFormData({ ...formData, faqs: updated });
+    toast({
+      title: "FAQ deleted",
+      description: "FAQ has been removed.",
+    });
+  };
+
+  // Handler to open edit modal
+  const handleEditItem = (key: string, type: string) => {
+    setEditingItemKey(key);
+    setEditingItemType(type);
   };
 
   const tabs = [
@@ -914,7 +989,7 @@ const AdminDestinationEdit = () => {
               <h3 className="font-semibold">
                 Places to Visit ({Object.keys(formData.places_to_visit).length})
               </h3>
-              <Dialog>
+              <Dialog open={placesModalOpen} onOpenChange={setPlacesModalOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm">
                     <Plus className="w-4 h-4 mr-2" />
@@ -929,7 +1004,10 @@ const AdminDestinationEdit = () => {
                       destination.
                     </DialogDescription>
                   </DialogHeader>
-                  <PlaceForm onSubmit={handleAddPlace} />
+                  <PlaceForm
+                    onSubmit={handleAddPlace}
+                    onClose={() => setPlacesModalOpen(false)}
+                  />
                 </DialogContent>
               </Dialog>
             </div>
@@ -954,28 +1032,14 @@ const AdminDestinationEdit = () => {
                           <h4 className="font-semibold text-lg">
                             {place.name}
                           </h4>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-4 h-4 mr-1" />
-                                Edit
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Edit Place: {place.name}
-                                </DialogTitle>
-                              </DialogHeader>
-                              <PlaceForm
-                                initialData={place}
-                                onSubmit={(updatedPlace) =>
-                                  handleUpdatePlace(key, updatedPlace)
-                                }
-                                isEdit={true}
-                              />
-                            </DialogContent>
-                          </Dialog>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditItem(key, "place")}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1037,6 +1101,40 @@ const AdminDestinationEdit = () => {
                 </p>
               )}
             </div>
+
+            {/* Edit Place Dialog */}
+            <Dialog
+              open={editingItemType === "place" && editingItemKey !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    Edit Place:{" "}
+                    {editingItemKey &&
+                      formData.places_to_visit[editingItemKey]?.name}
+                  </DialogTitle>
+                </DialogHeader>
+                {editingItemKey && (
+                  <PlaceForm
+                    initialData={formData.places_to_visit[editingItemKey]}
+                    onSubmit={(updatedPlace) =>
+                      handleUpdatePlace(editingItemKey!, updatedPlace)
+                    }
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
@@ -1047,7 +1145,10 @@ const AdminDestinationEdit = () => {
               <h3 className="font-semibold">
                 Things to Do ({Object.keys(formData.things_to_do).length})
               </h3>
-              <Dialog>
+              <Dialog
+                open={activitiesModalOpen}
+                onOpenChange={setActivitiesModalOpen}
+              >
                 <DialogTrigger asChild>
                   <Button size="sm">
                     <Plus className="w-4 h-4 mr-2" />
@@ -1062,7 +1163,10 @@ const AdminDestinationEdit = () => {
                       destination.
                     </DialogDescription>
                   </DialogHeader>
-                  <ActivityForm onSubmit={handleAddActivity} />
+                  <ActivityForm
+                    onSubmit={handleAddActivity}
+                    onClose={() => setActivitiesModalOpen(false)}
+                  />
                 </DialogContent>
               </Dialog>
             </div>
@@ -1080,10 +1184,8 @@ const AdminDestinationEdit = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {/* Convert object entries to array, sort by numerical prefix, then map */}
               {Object.entries(formData.things_to_do)
                 .sort(([keyA, activityA], [keyB, activityB]) => {
-                  // Helper function to extract number from title
                   const extractNumber = (title: string | undefined): number => {
                     if (!title || typeof title !== "string") return Infinity;
                     const match = title.match(/^(\d+)[\.\)\s]*/);
@@ -1093,48 +1195,30 @@ const AdminDestinationEdit = () => {
                   const numA = extractNumber(activityA.title);
                   const numB = extractNumber(activityB.title);
 
-                  // If both have numbers, sort numerically
                   if (numA !== Infinity && numB !== Infinity) {
                     return numA - numB;
                   }
 
-                  // If only one has number, put numbered items first
                   if (numA !== Infinity && numB === Infinity) return -1;
                   if (numA === Infinity && numB !== Infinity) return 1;
 
-                  // If neither has number, sort by key
                   return keyA.localeCompare(keyB);
                 })
                 .map(([key, activity]) => (
                   <Card key={key} className="flex flex-col">
                     <CardContent className="p-4 flex flex-col flex-grow">
-                      {/* Fixed Header - Top Section */}
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-semibold text-sm flex-1">
                           {activity.title}
                         </h4>
                         <div className="flex gap-1 ml-2 flex-shrink-0">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Edit Activity: {activity.title}
-                                </DialogTitle>
-                              </DialogHeader>
-                              <ActivityForm
-                                initialData={activity}
-                                onSubmit={(updatedActivity) =>
-                                  handleUpdateActivity(key, updatedActivity)
-                                }
-                                isEdit={true}
-                              />
-                            </DialogContent>
-                          </Dialog>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditItem(key, "activity")}
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
                           <Button
                             variant="destructive"
                             size="sm"
@@ -1145,7 +1229,6 @@ const AdminDestinationEdit = () => {
                         </div>
                       </div>
 
-                      {/* Scrollable Content Area */}
                       <div className="flex-grow overflow-hidden">
                         <div className="h-full overflow-y-auto pr-1">
                           <div className="space-y-2">
@@ -1175,6 +1258,40 @@ const AdminDestinationEdit = () => {
                 </p>
               )}
             </div>
+
+            {/* Edit Activity Dialog */}
+            <Dialog
+              open={editingItemType === "activity" && editingItemKey !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    Edit Activity:{" "}
+                    {editingItemKey &&
+                      formData.things_to_do[editingItemKey]?.title}
+                  </DialogTitle>
+                </DialogHeader>
+                {editingItemKey && (
+                  <ActivityForm
+                    initialData={formData.things_to_do[editingItemKey]}
+                    onSubmit={(updatedActivity) =>
+                      handleUpdateActivity(editingItemKey!, updatedActivity)
+                    }
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
@@ -1185,7 +1302,10 @@ const AdminDestinationEdit = () => {
               <h3 className="font-semibold">
                 Itinerary ({Object.keys(formData.itinerary).length} days)
               </h3>
-              <Dialog>
+              <Dialog
+                open={itineraryModalOpen}
+                onOpenChange={setItineraryModalOpen}
+              >
                 <DialogTrigger asChild>
                   <Button size="sm">
                     <Plus className="w-4 h-4 mr-2" />
@@ -1200,7 +1320,10 @@ const AdminDestinationEdit = () => {
                       destination.
                     </DialogDescription>
                   </DialogHeader>
-                  <ItineraryForm onSubmit={handleAddDay} />
+                  <ItineraryForm
+                    onSubmit={handleAddDay}
+                    onClose={() => setItineraryModalOpen(false)}
+                  />
                 </DialogContent>
               </Dialog>
             </div>
@@ -1228,28 +1351,14 @@ const AdminDestinationEdit = () => {
                         </h4>
                       </div>
                       <div className="flex gap-1 ml-2">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
-                            <DialogHeader>
-                              <DialogTitle>
-                                Edit Day {day.day}: {day.title}
-                              </DialogTitle>
-                            </DialogHeader>
-                            <ItineraryForm
-                              initialData={day}
-                              onSubmit={(updatedDay) =>
-                                handleUpdateDay(key, updatedDay)
-                              }
-                              isEdit={true}
-                            />
-                          </DialogContent>
-                        </Dialog>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditItem(key, "itinerary")}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
@@ -1296,6 +1405,43 @@ const AdminDestinationEdit = () => {
                 </p>
               )}
             </div>
+
+            {/* Edit Itinerary Dialog */}
+            <Dialog
+              open={editingItemType === "itinerary" && editingItemKey !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    Edit Day{" "}
+                    {editingItemKey &&
+                      formData.itinerary[editingItemKey]?.day}
+                    :{" "}
+                    {editingItemKey &&
+                      formData.itinerary[editingItemKey]?.title}
+                  </DialogTitle>
+                </DialogHeader>
+                {editingItemKey && (
+                  <ItineraryForm
+                    initialData={formData.itinerary[editingItemKey]}
+                    onSubmit={(updatedDay) =>
+                      handleUpdateDay(editingItemKey!, updatedDay)
+                    }
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
@@ -1565,7 +1711,7 @@ const AdminDestinationEdit = () => {
               <h3 className="font-semibold">
                 Frequently Asked Questions ({Object.keys(formData.faqs).length})
               </h3>
-              <Dialog>
+              <Dialog open={faqModalOpen} onOpenChange={setFaqModalOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm">
                     <Plus className="w-4 h-4 mr-2" />
@@ -1579,7 +1725,10 @@ const AdminDestinationEdit = () => {
                       Add a new frequently asked question and its answer.
                     </DialogDescription>
                   </DialogHeader>
-                  <FAQForm onSubmit={handleAddFAQ} />
+                  <FAQForm
+                    onSubmit={handleAddFAQ}
+                    onClose={() => setFaqModalOpen(false)}
+                  />
                 </DialogContent>
               </Dialog>
             </div>
@@ -1597,13 +1746,22 @@ const AdminDestinationEdit = () => {
                           {faq.answer}
                         </p>
                       </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeleteFAQ(key)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditItem(key, "faq")}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteFAQ(key)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -1614,6 +1772,40 @@ const AdminDestinationEdit = () => {
                 </p>
               )}
             </div>
+
+            {/* Edit FAQ Dialog */}
+            <Dialog
+              open={editingItemType === "faq" && editingItemKey !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
+              }}
+            >
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Edit FAQ:{" "}
+                    {editingItemKey &&
+                      formData.faqs[editingItemKey]?.question}
+                  </DialogTitle>
+                </DialogHeader>
+                {editingItemKey && (
+                  <FAQForm
+                    initialData={formData.faqs[editingItemKey]}
+                    onSubmit={(updatedFAQ) =>
+                      handleUpdateFAQ(editingItemKey!, updatedFAQ)
+                    }
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>
@@ -1621,13 +1813,15 @@ const AdminDestinationEdit = () => {
   );
 };
 
-// Enhanced sub-components with image uploader and edit functionality
+// Enhanced sub-components with onClose prop
 function PlaceForm({
   onSubmit,
+  onClose,
   initialData,
   isEdit = false,
 }: {
   onSubmit: (place: any) => void;
+  onClose?: () => void;
   initialData?: any;
   isEdit?: boolean;
 }) {
@@ -1653,6 +1847,7 @@ function PlaceForm({
     if (!isEdit) {
       setFormData({ name: "", description: "", highlights: "", image_url: "" });
     }
+    onClose?.();
   };
 
   return (
@@ -1697,19 +1892,28 @@ function PlaceForm({
           rows={3}
         />
       </div>
-      <Button type="submit" className="w-full">
-        {isEdit ? "Update Place" : "Add Place"}
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" className="flex-1">
+          {isEdit ? "Update Place" : "Add Place"}
+        </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
 
 function ActivityForm({
   onSubmit,
+  onClose,
   initialData,
   isEdit = false,
 }: {
   onSubmit: (activity: any) => void;
+  onClose?: () => void;
   initialData?: any;
   isEdit?: boolean;
 }) {
@@ -1731,6 +1935,7 @@ function ActivityForm({
     if (!isEdit) {
       setFormData({ title: "", description: "", image_url: "" });
     }
+    onClose?.();
   };
 
   return (
@@ -1763,19 +1968,28 @@ function ActivityForm({
           onChange={(url) => setFormData({ ...formData, image_url: url })}
         />
       </div>
-      <Button type="submit" className="w-full">
-        {isEdit ? "Update Activity" : "Add Activity"}
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" className="flex-1">
+          {isEdit ? "Update Activity" : "Add Activity"}
+        </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
 
 function ItineraryForm({
   onSubmit,
+  onClose,
   initialData,
   isEdit = false,
 }: {
   onSubmit: (day: any) => void;
+  onClose?: () => void;
   initialData?: any;
   isEdit?: boolean;
 }) {
@@ -1806,6 +2020,7 @@ function ItineraryForm({
         image_url: "",
       });
     }
+    onClose?.();
   };
 
   return (
@@ -1851,18 +2066,34 @@ function ItineraryForm({
           onChange={(url) => setFormData({ ...formData, image_url: url })}
         />
       </div>
-      <Button type="submit" className="w-full">
-        {isEdit ? "Update Day" : "Add Day"}
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" className="flex-1">
+          {isEdit ? "Update Day" : "Add Day"}
+        </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
 
-// FAQForm remains the same as before
-function FAQForm({ onSubmit }: { onSubmit: (faq: any) => void }) {
+function FAQForm({
+  onSubmit,
+  onClose,
+  initialData,
+  isEdit = false,
+}: {
+  onSubmit: (faq: any) => void;
+  onClose?: () => void;
+  initialData?: any;
+  isEdit?: boolean;
+}) {
   const [formData, setFormData] = useState({
-    question: "",
-    answer: "",
+    question: initialData?.question || "",
+    answer: initialData?.answer || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -1873,7 +2104,10 @@ function FAQForm({ onSubmit }: { onSubmit: (faq: any) => void }) {
     };
     console.log("🎯 Submitting FAQ:", faqData);
     onSubmit(faqData);
-    setFormData({ question: "", answer: "" });
+    if (!isEdit) {
+      setFormData({ question: "", answer: "" });
+    }
+    onClose?.();
   };
 
   return (
@@ -1898,9 +2132,16 @@ function FAQForm({ onSubmit }: { onSubmit: (faq: any) => void }) {
           required
         />
       </div>
-      <Button type="submit" className="w-full">
-        Add FAQ
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" className="flex-1">
+          {isEdit ? "Update FAQ" : "Add FAQ"}
+        </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }

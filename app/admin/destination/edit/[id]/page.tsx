@@ -1084,8 +1084,7 @@ const AdminDestinationEdit = () => {
               {Object.entries(formData.things_to_do)
                 .sort(([keyA, activityA], [keyB, activityB]) => {
                   // Helper function to extract number from title
-                  const extractNumber = (title) => {
-                    // <-- ERROR HERE
+                  const extractNumber = (title: string | undefined): number => {
                     if (!title || typeof title !== "string") return Infinity;
                     const match = title.match(/^(\d+)[\.\)\s]*/);
                     return match ? parseInt(match[1], 10) : Infinity;

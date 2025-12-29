@@ -368,10 +368,10 @@ const HowToReach = () => {
                                                                 </CardContent>
                                                         </Card>
                                                 </div>
-
+{/* 
                                                 <Button size="lg" className="hero-gradient hover-glow">
                                                         Request Pickup Service
-                                                </Button>
+                                                </Button> */}
                                         </div>
                                 </div>
                         </section>

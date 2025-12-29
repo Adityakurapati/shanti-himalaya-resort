@@ -174,14 +174,14 @@ const OurResort = () => {
                                                 <Link href="/gallery" className="hover:text-luxury transition-colors">
                                                         Gallery
                                                 </Link>
-                                                <Button
+                                                {/* <Button
                                                         size="sm"
                                                         variant="outline"
                                                         className="border-white text-white hover:bg-white hover:text-primary ml-4 bg-transparent"
                                                 >
                                                         <MessageCircle className="w-4 h-4 mr-2" />
                                                         Enquire Now
-                                                </Button>
+                                                </Button> */}
                                                 <a href="tel:9910775073" className="hover:text-luxury transition-colors ml-4 flex items-center">
                                                         <Phone className="w-4 h-4 mr-1" />
                                                         9910775073
@@ -207,7 +207,7 @@ const OurResort = () => {
                                                         "Shanti Himalaya" Beyond Corbett - Where peace, spirituality, serenity and bounty of nature still exists.
                                                         Experience wilderness glamping in the lap of Mother Nature.
                                                 </p>
-                                                <div className="flex justify-center">
+                                                {/* <div className="flex justify-center">
                                                         <Button
                                                                 size="lg"
                                                                 variant="outline"
@@ -216,7 +216,7 @@ const OurResort = () => {
                                                                 <MessageCircle className="w-5 h-5 mr-2" />
                                                                 Enquire Now
                                                         </Button>
-                                                </div>
+                                                </div> */}
                                         </div>
                                 </div>
                         </section>
@@ -225,10 +225,10 @@ const OurResort = () => {
                         <section id="accommodation" className="py-20 bg-background">
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
-                                                <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
-                                                        <Bed className="w-12 h-12 text-primary mx-auto mb-4" />
-                                                        Accommodation
-                                                </h2>
+                                              <h2 className="text-4xl font-display font-bold mb-6 text-foreground flex items-center justify-center gap-3">
+  <Bed className="w-10 h-10 text-primary" />
+  Accommodation
+</h2>
                                                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                                                         The exclusive four Glamps carry intriguing charm and comfort coupled with views of the pristine valley.
                                                         Spacious, comfortable, and cosy rooms with scenic valley views.
@@ -350,64 +350,93 @@ const OurResort = () => {
                         </section>
 
                         {/* Packages Section */}
-                        <section id="packages" className="py-20 bg-background">
-                                <div className="container mx-auto px-4">
-                                        <div className="text-center mb-16">
-                                                <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
-                                                        <Calendar className="w-12 h-12 text-primary mx-auto mb-4" />
-                                                        Curated Packages
-                                                </h2>
-                                                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                                        Choose from our carefully curated packages designed to provide the perfect getaway experience.
+                        <section id="packages" className="py-24 bg-background">
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                        <div className="text-center mb-12">
+                                                <div className="flex items-center justify-center space-x-4 mb-4">
+                                                        <Calendar className="w-10 h-10 text-primary" />
+                                                        <h2 className="text-3xl font-display font-bold text-foreground">
+                                                                Curated Packages
+                                                        </h2>
+                                                </div>
+                                                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                                                        Choose from our specially designed packages for an unforgettable stay
                                                 </p>
                                         </div>
 
-                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                                 {packagesDb.map((pkg: any) => (
-                                                        <Card key={pkg.id} className="shadow-card hover-lift overflow-hidden relative">
-                                                                <div className="absolute top-4 right-4">
+                                                        <Card key={pkg.id} className="shadow-card hover:shadow-xl transition-shadow duration-300 overflow-hidden relative flex flex-col h-full">
+                                                                <div className="absolute top-3 right-3 z-10">
                                                                         <Badge
-                                                                                className={`${pkg.badge === "Festival Special" ? "bg-red-500" : pkg.badge === "Popular" ? "bg-green-500" : "bg-gold"} text-white`}
+                                                                                className={`${pkg.badge === "Festival Special" ? "bg-red-500" : pkg.badge === "Popular" ? "bg-green-500" : "bg-gold"} text-white text-xs px-2 py-1`}
                                                                         >
                                                                                 {pkg.badge}
                                                                         </Badge>
                                                                 </div>
-                                                                <div className="h-48 bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                                                                        <Camera className="w-16 h-16 text-white/30" />
+                                                                <div className="h-40 relative">
+                                                                        {/* Show package image if available */}
+                                                                        {pkg.image_url ? (
+                                                                                <img
+                                                                                        src={pkg.image_url}
+                                                                                        alt={pkg.name}
+                                                                                        className="w-full h-full object-cover"
+                                                                                />
+                                                                        ) : (
+                                                                                <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                                                                                        <Camera className="w-12 h-12 text-white/30" />
+                                                                                </div>
+                                                                        )}
                                                                 </div>
-                                                                <CardHeader>
-                                                                        <CardTitle className="text-xl font-display">{pkg.name}</CardTitle>
-                                                                        <div className="flex items-center space-x-2">
-                                                                                <Calendar className="w-4 h-4 text-muted-foreground" />
-                                                                                <span className="text-sm text-muted-foreground">{pkg.duration}</span>
+                                                                <div className="p-5 flex-grow flex flex-col">
+                                                                       <div className="mb-3 flex items-start justify-between">
+  <div>
+    <h3 className="text-lg font-semibold text-foreground mb-1">{pkg.name}</h3>
+    <div className="flex items-center text-sm text-muted-foreground">
+      <Calendar className="w-3 h-3 mr-1" />
+      <span>{pkg.duration}</span>
+    </div>
+  </div>
+  <div className="text-right">
+    <div className="text-2xl font-bold text-primary">{pkg.price}</div>
+    {pkg.original_price && pkg.original_price !== pkg.price && (
+      <div className="text-sm text-muted-foreground line-through">{pkg.original_price}</div>
+    )}
+  </div>
+</div>
+
+                                                                        <p className="text-sm text-muted-foreground mb-4 flex-grow line-clamp-1">
+                                                                                {pkg.description}
+                                                                        </p>
+
+                                                                        <div className="mb-4">
+                                                                               
+
+                                                                                <div className="mb-3">
+                                                                                        <h4 className="font-semibold text-sm mb-2">Highlights:</h4>
+                                                                                        <div className="flex flex-wrap gap-1">
+                                                                                                {pkg.features.slice(0, 2).map((feature: any, index: number) => (
+                                                                                                        <Badge key={index} variant="outline" className="text-xs">
+                                                                                                                {feature}
+                                                                                                        </Badge>
+                                                                                                ))}
+                                                                                                {pkg.features.length > 2 && (
+                                                                                                        <Badge variant="outline" className="text-xs">
+                                                                                                                +{pkg.features.length - 2} more
+                                                                                                        </Badge>
+                                                                                                )}
+                                                                                        </div>
+                                                                                </div>
                                                                         </div>
-                                                                </CardHeader>
-                                                                <CardContent className="space-y-4">
-                                                                        <p className="text-sm text-muted-foreground leading-relaxed">{pkg.description}</p>
-                                                                        <div className="flex items-center space-x-3">
-                                                                                <span className="text-3xl font-bold text-primary">{pkg.price}</span>
-                                                                                <span className="text-lg text-muted-foreground line-through">{pkg.original_price}</span>
+
+                                                                        <div className="mt-auto space-y-3">
+                                                                                <Link href={`/our-resort/packages/${pkg.id}`} className="block">
+                                                                                        <Button variant="outline" size="sm" className="w-full">
+                                                                                                View Details
+                                                                                        </Button>
+                                                                                </Link>
                                                                         </div>
-                                                                        <div className="space-y-2">
-                                                                                <h4 className="font-semibold text-sm">Package Includes:</h4>
-                                                                                <ul className="text-sm text-muted-foreground space-y-1">
-                                                                                        {pkg.includes.map((item: any, index: number) => (
-                                                                                                <li key={index} className="flex items-center space-x-2">
-                                                                                                        <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                                                                                                        <span>{item}</span>
-                                                                                                </li>
-                                                                                        ))}
-                                                                                </ul>
-                                                                        </div>
-                                                                        <div className="flex flex-wrap gap-1">
-                                                                                {pkg.features.map((feature: any, index: number) => (
-                                                                                        <Badge key={index} variant="secondary" className="text-xs">
-                                                                                                {feature}
-                                                                                        </Badge>
-                                                                                ))}
-                                                                        </div>
-                                                                        <Button className="w-full mt-4 hero-gradient hover-glow">Book This Package</Button>
-                                                                </CardContent>
+                                                                </div>
                                                         </Card>
                                                 ))}
                                         </div>
@@ -415,13 +444,13 @@ const OurResort = () => {
                         </section>
 
                         {/* Gallery Section */}
-                        <section id="gallery" className="py-20 mountain-gradient">
+                        <section id="gallery" className="py-24 mountain-gradient">
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
-                                                <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
-                                                        <Camera className="w-12 h-12 text-primary mx-auto mb-4" />
-                                                        Gallery
-                                                </h2>
+                                               <h2 className="text-4xl font-display font-bold mb-6 text-foreground flex items-center justify-center gap-3">
+  <Camera className="w-10 h-10 text-primary" />
+  Gallery
+</h2>
                                                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                                                         Experience the beauty of Shanti Himalaya through our curated collection of images.
                                                 </p>
@@ -510,13 +539,13 @@ const OurResort = () => {
                         </section>
 
                         {/* Activities & Experiences Section */}
-                        <section id="activities" className="py-20 bg-background">
+                        <section id="activities" className="py-24 bg-background">
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
-                                                <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
-                                                        <TreePine className="w-12 h-12 text-primary mx-auto mb-4" />
-                                                        Activities & Experiences
-                                                </h2>
+                                               <h2 className="text-4xl font-display font-bold mb-6 text-foreground flex items-center justify-center gap-4">
+  <TreePine className="w-10 h-10 text-primary" />
+  Activities & Experiences
+</h2>
                                                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                                                         From guided treks to cultural experiences, discover the many ways to connect with nature and local
                                                         culture.
@@ -528,8 +557,19 @@ const OurResort = () => {
                                                         const Icon = iconMap[activity.icon] || Mountain
                                                         return (
                                                                 <Card key={activity.id} className="shadow-card hover-lift bg-white overflow-hidden">
-                                                                        <div className="h-48 bg-gradient-to-br from-primary to-accent flex items-center justify-center relative">
-                                                                                <Icon className="w-16 h-16 text-white/30" />
+                                                                        <div className="h-48 relative">
+                                                                                {/* Show activity image if available */}
+                                                                                {activity.image_url ? (
+                                                                                        <img
+                                                                                                src={activity.image_url}
+                                                                                                alt={activity.title}
+                                                                                                className="w-full h-full object-cover"
+                                                                                        />
+                                                                                ) : (
+                                                                                        <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                                                                                                <Icon className="w-16 h-16 text-white/30" />
+                                                                                        </div>
+                                                                                )}
                                                                         </div>
                                                                         <CardContent className="p-6">
                                                                                 <div className="text-center mb-4">
@@ -568,20 +608,31 @@ const OurResort = () => {
                                                         <h3 className="text-2xl font-display font-bold mb-6 text-foreground text-center">Featured Experiences</h3>
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                                 {featuredExperiences.map((exp: any) => (
-                                                                        <Card key={exp.id} className="shadow-card hover-lift bg-white">
-                                                                                <div className="relative h-32 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                                                                                        <Badge className="absolute top-2 left-2 bg-white/20 text-foreground border-white/30">
+                                                                        <Card key={exp.id} className="shadow-card hover-lift bg-white overflow-hidden">
+                                                                                <div className="relative h-32 bg-gradient-to-br from-primary/10 to-accent/10">
+                                                                                        {/* Show experience image if available */}
+                                                                                        {exp.image_url ? (
+                                                                                                <img
+                                                                                                        src={exp.image_url}
+                                                                                                        alt={exp.title}
+                                                                                                        className="w-full h-full object-cover"
+                                                                                                />
+                                                                                        ) : (
+                                                                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
+                                                                                                        <Camera className="w-8 h-8 text-primary/30" />
+                                                                                                </div>
+                                                                                        )}
+                                                                                        <Badge className="absolute top-2 left-2 bg-white/90 text-foreground backdrop-blur-sm border-white/30">
                                                                                                 {exp.category}
                                                                                         </Badge>
-                                                                                        <span className="absolute bottom-2 right-2 text-primary font-semibold text-sm">
+                                                                                        <span className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-primary font-semibold text-xs">
                                                                                                 {exp.price || "Contact"}
                                                                                         </span>
-                                                                                        <Camera className="w-8 h-8 text-primary/30" />
                                                                                 </div>
                                                                                 <CardContent className="p-4">
                                                                                         <h4 className="font-display font-semibold text-sm mb-2">{exp.title}</h4>
                                                                                         <p className="text-muted-foreground text-xs mb-3 line-clamp-2">{exp.description}</p>
-                                                                                        <Link href={`/experience/${exp.id}`}>
+                                                                                        <Link href={`/experiences/${exp.id}`}>
                                                                                                 <Button variant="outline" size="sm" className="w-full text-xs bg-transparent">
                                                                                                         View Details
                                                                                                 </Button>
@@ -680,10 +731,10 @@ const OurResort = () => {
                                                                         Call Now: +91 99107 75073
                                                                 </a>
                                                         </Button>
-                                                        <Button size="lg" variant="outline">
+                                                        {/* <Button size="lg" variant="outline">
                                                                 <Mail className="w-5 h-5 mr-2" />
                                                                 Email Enquiry
-                                                        </Button>
+                                                        </Button> */}
                                                 </div>
                                         </div>
                                 </div>

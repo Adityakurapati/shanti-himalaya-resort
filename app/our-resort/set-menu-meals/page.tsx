@@ -331,11 +331,11 @@ const SetMenuMeals = () => {
                 </div>
               </div>
 
-              <div className="pt-6">
+              {/* <div className="pt-6">
                 <Button size="lg" className="hero-gradient hover-glow">
                   Book Your Culinary Experience
                 </Button>
-              </div>
+              </div> */}
             </div>
 
             <div className="relative">
@@ -380,7 +380,7 @@ const SetMenuMeals = () => {
                 <CardContent className="p-6">
                   <Utensils className="w-12 h-12 text-primary mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">Lunch</h3>
-                  <div className="text-lg font-bold text-accent mb-3">12:00 PM - 2:00 PM</div>
+                  <div className="text-lg font-bold text-accent mb-3">01:00 PM - 03:00 PM</div>
                   <p className="text-muted-foreground text-sm">
                     Traditional midday meal with fresh, locally sourced ingredients
                   </p>
@@ -392,7 +392,7 @@ const SetMenuMeals = () => {
                 <CardContent className="p-6">
                   <ChefHat className="w-12 h-12 text-primary mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">Dinner</h3>
-                  <div className="text-lg font-bold text-accent mb-3">7:00 PM - 9:00 PM</div>
+                  <div className="text-lg font-bold text-accent mb-3">08:00 PM - 10:30 PM</div>
                   <p className="text-muted-foreground text-sm">
                     End your day with a warm, comforting dinner by the fireplace
                   </p>

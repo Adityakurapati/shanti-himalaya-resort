@@ -350,27 +350,6 @@ const Blog = () => {
                                                                         </div>
                                                                 </CardContent>
                                                         </Card>
-
-                                                        {/* Newsletter */}
-                                                        <Card className="shadow-card bg-primary text-white">
-                                                                <CardContent className="p-6 text-center">
-                                                                        <h3 className="font-display font-semibold text-lg mb-3">
-                                                                                Subscribe to Our Newsletter
-                                                                        </h3>
-                                                                        <p className="text-sm text-primary-foreground/80 mb-4">
-                                                                                Get the latest travel tips and cultural insights delivered to your inbox.
-                                                                        </p>
-                                                                        <div className="space-y-3">
-                                                                                <Input
-                                                                                        placeholder="Your email address"
-                                                                                        className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
-                                                                                />
-                                                                                <Button className="w-full bg-white text-primary hover:bg-white/90">
-                                                                                        Subscribe
-                                                                                </Button>
-                                                                        </div>
-                                                                </CardContent>
-                                                        </Card>
                                                 </div>
                                         </div>
                                 </div>

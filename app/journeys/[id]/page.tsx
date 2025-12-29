@@ -24,7 +24,9 @@ import {
         TrendingUp,
         ChevronDown,
         ChevronUp,
-        Play
+        Play,
+        ChevronLeft,
+        ChevronRight
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -40,6 +42,8 @@ type DaySchedule = {
         image_url: string | null;
 };
 
+
+
 const DayCard = ({ day, isExpanded, onToggle, index }: {
         day: DaySchedule;
         isExpanded: boolean;
@@ -51,6 +55,7 @@ const DayCard = ({ day, isExpanded, onToggle, index }: {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
+                        className="px-4 sm:px-0"
                 >
                         <Card className={`overflow-hidden border-2 transition-all duration-300 ${isExpanded ? 'border-primary shadow-xl scale-[1.02]' : 'border-border hover:border-primary/50'
                                 }`}>
@@ -158,7 +163,6 @@ const DayCard = ({ day, isExpanded, onToggle, index }: {
         );
 };
 
-
 const EnquiryModal = ({ journey, isOpen, onClose }: { journey: any, isOpen: boolean, onClose: () => void }) => {
         const [formData, setFormData] = React.useState({
                 name: '',
@@ -255,27 +259,7 @@ const EnquiryModal = ({ journey, isOpen, onClose }: { journey: any, isOpen: bool
         );
 };
 
-const JourneyTimeline = ({ days }: { days: DaySchedule[] }) => {
-        const [expandedDay, setExpandedDay] = React.useState<number | null>(null);
-
-        const toggleDay = (dayNumber: number) => {
-                setExpandedDay(expandedDay === dayNumber ? null : dayNumber);
-        };
-
-        return (
-                <div className="space-y-4">
-                        {days.map((day: any, index: number) => (
-                                <DayCard
-                                        key={day.id}
-                                        day={day}
-                                        isExpanded={expandedDay === day.day_number}
-                                        onToggle={() => toggleDay(day.day_number)}
-                                        index={index}
-                                />
-                        ))}
-                </div>
-        );
-};
+// REMOVED JourneyTimeline component since we're handling it directly in the main component
 
 const JourneyDetail = () => {
         const params = useParams();
@@ -285,6 +269,7 @@ const JourneyDetail = () => {
         const [loading, setLoading] = React.useState(true);
         const [daysLoading, setDaysLoading] = React.useState(true);
         const [isEnquiryModalOpen, setIsEnquiryModalOpen] = React.useState(false);
+        const [expandedDay, setExpandedDay] = React.useState<number | null>(null); // MOVED HERE
 
         React.useEffect(() => {
                 if (id) {
@@ -292,6 +277,16 @@ const JourneyDetail = () => {
                         fetchDays();
                 }
         }, [id]);
+
+        // Add this state near your other states
+        const [highlightIndex, setHighlightIndex] = React.useState(0);
+        const HIGHLIGHTS_PER_PAGE = 4;
+
+        // Calculate current highlights
+        const currentHighlights = days.slice(
+                highlightIndex * HIGHLIGHTS_PER_PAGE,
+                highlightIndex * HIGHLIGHTS_PER_PAGE + HIGHLIGHTS_PER_PAGE
+        );
 
         const fetchJourney = async () => {
                 try {
@@ -325,6 +320,10 @@ const JourneyDetail = () => {
                 } finally {
                         setDaysLoading(false);
                 }
+        };
+
+        const toggleDay = (dayNumber: number) => {
+                setExpandedDay(expandedDay === dayNumber ? null : dayNumber);
         };
 
         const handleEnquireNow = () => {
@@ -432,127 +431,152 @@ const JourneyDetail = () => {
                         <section className="py-20 bg-background">
                                 <div className="container mx-auto px-4">
                                         <div className="max-w-6xl mx-auto">
-                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                                                        <div className="lg:col-span-2 space-y-8">
-                                                                <div>
-                                                                        <h2 className="text-3xl font-display font-bold mb-6 text-foreground">About This Journey</h2>
+                                                <div className="lg:col-span-2 space-y-8">
+                                                        <div>
+                                                                <h2 className="text-3xl font-display font-bold mb-6 text-foreground">About This Journey</h2>
 
-                                                                        {/* Journey Banner Image */}
-                                                                        {journey.image_url && (
-                                                                                <div className="mb-8 rounded-2xl overflow-hidden shadow-xl">
-                                                                                        <img
-                                                                                                src={journey.image_url}
-                                                                                                alt={journey.title}
-                                                                                                className="w-full h-64 md:h-80 lg:h-96 object-cover"
-                                                                                        />
-                                                                                </div>
-                                                                        )}
-                                                                        <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                                                                                {journey.description}
-                                                                        </p>
-
-                                                                        <h3 className="text-2xl font-display font-bold mb-4 text-foreground">Activities</h3>
-                                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                                {journey.activities && journey.activities.map((activity: any, index: number) => (
-                                                                                        <div key={index} className="flex items-start space-x-3">
-                                                                                                <CheckCircle className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-                                                                                                <span className="text-muted-foreground">{activity}</span>
+                                                                {/* Journey Banner Image with Description side-by-side */}
+                                                                {journey.image_url && (
+                                                                        <div className="mb-8">
+                                                                                <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                                                                                        {/* Image on left */}
+                                                                                        <div className="lg:w-1/2">
+                                                                                                <div className="rounded-2xl overflow-hidden shadow-xl">
+                                                                                                        <img
+                                                                                                                src={journey.image_url}
+                                                                                                                alt={journey.title}
+                                                                                                                className="w-full h-64 md:h-80 lg:h-96 object-cover"
+                                                                                                        />
+                                                                                                </div>
                                                                                         </div>
+
+                                                                                        {/* Description and Activities on right */}
+                                                                                        <div className="lg:w-1/2 space-y-6">
+                                                                                                <div>
+                                                                                                        <h3 className="text-xl font-bold mb-4 text-foreground">Overview</h3>
+                                                                                                        <p className="text-muted-foreground leading-relaxed">
+                                                                                                                {journey.description}
+                                                                                                        </p>
+                                                                                                </div>
+
+                                                                                                <div>
+                                                                                                        <h3 className="text-xl font-bold mb-4 text-foreground">Activities</h3>
+                                                                                                        <div className="space-y-3">
+                                                                                                                {journey.activities && journey.activities.map((activity: any, index: number) => (
+                                                                                                                        <div key={index} className="flex items-start space-x-3">
+                                                                                                                                <CheckCircle className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
+                                                                                                                                <span className="text-muted-foreground">{activity}</span>
+                                                                                                                        </div>
+                                                                                                                ))}
+                                                                                                        </div>
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                )}
+
+                                                                {/* Highlights as Tags Section */}
+                                                                <div className="mt-8">
+                                                                        <div className="flex items-center justify-between mb-4">
+                                                                                <h3 className="text-2xl font-display font-bold text-foreground flex items-center">
+                                                                                        <Star className="w-6 h-6 text-yellow-500 mr-2" />
+                                                                                        Journey Highlights
+                                                                                </h3>
+                                                                                {days.length > HIGHLIGHTS_PER_PAGE && (
+                                                                                        <div className="flex items-center space-x-2">
+                                                                                                <Button
+                                                                                                        size="icon"
+                                                                                                        variant="outline"
+                                                                                                        className="h-8 w-8"
+                                                                                                        onClick={() => {
+                                                                                                                const prevIndex = highlightIndex - 1;
+                                                                                                                setHighlightIndex(prevIndex < 0 ? Math.ceil(days.length / HIGHLIGHTS_PER_PAGE) - 1 : prevIndex);
+                                                                                                        }}
+                                                                                                >
+                                                                                                        <ChevronLeft className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                                <Button
+                                                                                                        size="icon"
+                                                                                                        variant="outline"
+                                                                                                        className="h-8 w-8"
+                                                                                                        onClick={() => {
+                                                                                                                const nextIndex = highlightIndex + 1;
+                                                                                                                const totalPages = Math.ceil(days.length / HIGHLIGHTS_PER_PAGE);
+                                                                                                                setHighlightIndex(nextIndex >= totalPages ? 0 : nextIndex);
+                                                                                                        }}
+                                                                                                >
+                                                                                                        <ChevronRight className="h-4 w-4" />
+                                                                                                </Button>
+                                                                                        </div>
+                                                                                )}
+                                                                        </div>
+
+                                                                        {/* Highlights as Tags */}
+                                                                        <div className="flex flex-wrap gap-3">
+                                                                                {currentHighlights.map((day) => (
+                                                                                        <Badge
+                                                                                                key={day.id}
+                                                                                                variant="outline"
+                                                                                                className="px-4 py-2 border-primary/30 text-foreground hover:bg-primary/10 transition-colors"
+                                                                                        >
+                                                                                                <div className="flex items-center space-x-2">
+                                                                                                        <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold">
+                                                                                                                {day.day_number}
+                                                                                                        </div>
+                                                                                                        <span>{day.title || `Day ${day.day_number}`}</span>
+                                                                                                </div>
+                                                                                        </Badge>
                                                                                 ))}
                                                                         </div>
                                                                 </div>
-
-                                                                {/* Day-wise Schedule Section */}
-                                                                <div className="pt-8">
-                                                                        <div className="flex items-center space-x-3 mb-8">
-                                                                                <Calendar className="w-8 h-8 text-primary" />
-                                                                                <h2 className="text-3xl font-display font-bold text-foreground">
-                                                                                        Daily Itinerary
-                                                                                </h2>
-                                                                        </div>
-
-                                                                        {daysLoading ? (
-                                                                                <div className="text-center py-12">
-                                                                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                                                                                        <p className="text-muted-foreground">Loading itinerary...</p>
-                                                                                </div>
-                                                                        ) : days.length > 0 ? (
-                                                                                <JourneyTimeline days={days} />
-                                                                        ) : (
-                                                                                <Card className="text-center py-12 border-dashed">
-                                                                                        <CardContent>
-                                                                                                <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-                                                                                                <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-                                                                                                        Itinerary Coming Soon
-                                                                                                </h3>
-                                                                                                <p className="text-muted-foreground">
-                                                                                                        Detailed day-by-day schedule will be available soon.
-                                                                                                </p>
-                                                                                        </CardContent>
-                                                                                </Card>
-                                                                        )}
-                                                                </div>
-                                                        </div>
-
-                                                        <div className="space-y-6">
-                                                                <Card className="shadow-card">
-                                                                        <CardContent className="p-6 space-y-4">
-                                                                                <div>
-                                                                                        <h3 className="text-2xl font-bold text-foreground mb-2">Quick Info</h3>
-                                                                                        <p className="text-sm text-muted-foreground">Essential details</p>
-                                                                                </div>
-
-                                                                                <div className="space-y-3 border-t pt-4">
-                                                                                        <div className="flex justify-between py-2">
-                                                                                                <span className="text-sm text-muted-foreground">Duration</span>
-                                                                                                <span className="font-semibold">{journey.duration}</span>
-                                                                                        </div>
-                                                                                        <div className="flex justify-between py-2">
-                                                                                                <span className="text-sm text-muted-foreground">Difficulty</span>
-                                                                                                <span className="font-semibold">{journey.difficulty}</span>
-                                                                                        </div>
-                                                                                        <div className="flex justify-between py-2">
-                                                                                                <span className="text-sm text-muted-foreground">Category</span>
-                                                                                                <span className="font-semibold">{journey.category}</span>
-                                                                                        </div>
-                                                                                </div>
-
-                                                                                <Button
-                                                                                        className="w-full hero-gradient hover-glow mt-4"
-                                                                                        onClick={() => setIsEnquiryModalOpen(true)}
-                                                                                >
-                                                                                        Enquire Now
-                                                                                </Button>
-                                                                        </CardContent>
-                                                                </Card>
-
-                                                                {/* Journey Highlights Card */}
-                                                                <Card className="shadow-card border-primary/20">
-                                                                        <CardContent className="p-6">
-                                                                                <h3 className="text-xl font-bold text-foreground mb-4 flex items-center">
-                                                                                        <Star className="w-5 h-5 text-yellow-500 mr-2" />
-                                                                                        Journey Highlights
-                                                                                </h3>
-                                                                                <div className="space-y-3">
-                                                                                        {days.map((day: any) => (
-                                                                                                <div key={day.id} className="flex items-start space-x-3">
-                                                                                                        <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold mt-0.5 flex-shrink-0">
-                                                                                                                {day.day_number}
-                                                                                                        </div>
-                                                                                                        <span className="text-sm text-muted-foreground">
-                                                                                                                {day.title || `Day ${day.day_number}`}
-                                                                                                        </span>
-                                                                                                </div>
-                                                                                        ))}
-                                                                                </div>
-                                                                        </CardContent>
-                                                                </Card>
                                                         </div>
                                                 </div>
+
                                         </div>
                                 </div>
                         </section>
 
+
+                        {/* Day-wise Schedule Section */}
+                        <div className="pt-8 mx-auto max-w-6xl px-4 mb-20">
+                                <div className="flex items-center space-x-3 mb-8">
+                                        <Calendar className="w-8 h-8 text-primary" />
+                                        <h2 className="text-3xl font-display font-bold text-foreground">
+                                                Daily Itinerary
+                                        </h2>
+                                </div>
+
+                                {daysLoading ? (
+                                        <div className="text-center py-12">
+                                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                                                <p className="text-muted-foreground">Loading itinerary...</p>
+                                        </div>
+                                ) : days.length > 0 ? (
+                                        <div className="space-y-4 -mx-4 sm:mx-0">
+                                                {days.map((day: any, index: number) => (
+                                                        <DayCard
+                                                                key={day.id}
+                                                                day={day}
+                                                                isExpanded={expandedDay === day.day_number}
+                                                                onToggle={() => toggleDay(day.day_number)}
+                                                                index={index}
+                                                        />
+                                                ))}
+                                        </div>
+                                ) : (
+                                        <Card className="text-center py-12 border-dashed">
+                                                <CardContent>
+                                                        <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+                                                        <h3 className="text-xl font-semibold text-muted-foreground mb-2">
+                                                                Itinerary Coming Soon
+                                                        </h3>
+                                                        <p className="text-muted-foreground">
+                                                                Detailed day-by-day schedule will be available soon.
+                                                        </p>
+                                                </CardContent>
+                                        </Card>
+                                )}
+                        </div>
                         <EnquiryModal
                                 journey={journey}
                                 isOpen={isEnquiryModalOpen}

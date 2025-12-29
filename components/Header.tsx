@@ -32,10 +32,10 @@ const Header = () => {
 
         const mainNavLinks = [
                 { href: "/our-resort", label: "Our Resort", featured: true },
-                { href: "/blog", label: secondNavLabel },
         ];
 
         const resortNavLinks = isResortPage ? [
+                { href: "#packages", label: "Packages" },
                 { href: "#accommodation", label: "Accommodation" },
                 { href: "#activities", label: "Activities" },
                 { href: "#gallery", label: "Gallery" },

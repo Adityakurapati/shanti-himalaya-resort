@@ -17,6 +17,7 @@ import ImageUploader from "./ImageUploader"
 import DayScheduleEditor from "./DayScheduleEditor"
 import type { Tables } from "@/integrations/supabase/types";
 import CategoriesManager from "@/components/admin/CategoriesManager"
+import { AIButton } from "@/components/admin/AIButton";
 
 type Journey = Tables<"journeys">
 
@@ -220,7 +221,24 @@ const JourneysAdmin = () => {
                                                 </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
-                                                                <Label htmlFor="title">Title</Label>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                        <Label htmlFor="title">Title</Label>
+                                                                        <AIButton
+                                                                                title={formData.title}
+                                                                                contentType="journey"
+                                                                                onContentGenerated={(aiContent) => {
+                                                                                        setFormData(prev => ({
+                                                                                                ...prev,
+                                                                                                description: aiContent.description || prev.description,
+                                                                                                duration: aiContent.duration || prev.duration,
+                                                                                                difficulty: aiContent.difficulty || prev.difficulty,
+                                                                                                activities: aiContent.activities || prev.activities,
+                                                                                                category: aiContent.category || prev.category,
+                                                                                                // Optionally use image_prompt to generate image
+                                                                                        }));
+                                                                                }}
+                                                                        />
+                                                                </div>
                                                                 <Input
                                                                         id="title"
                                                                         value={formData.title}

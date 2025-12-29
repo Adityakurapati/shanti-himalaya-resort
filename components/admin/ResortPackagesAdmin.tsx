@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Plus, Edit, Trash2, Package } from "lucide-react"
 import ImageUploader from "./ImageUploader"
 import type { Tables } from "@/integrations/supabase/types";
+import { AIButton } from "./AIButton";
 
 type ResortPackage = Tables<"resort_packages">
 
@@ -222,14 +223,38 @@ export const ResortPackagesAdmin = () => {
                                                 </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
-                                                                <Label htmlFor="name">Package Name</Label>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                        <Label htmlFor="name">Name</Label>
+
+                                                                        <AIButton
+                                                                                title={formData.name}
+                                                                                contentType="resortPackage"
+                                                                                onContentGenerated={(aiContent) => {
+                                                                                        setFormData((prev) => ({
+                                                                                                ...prev,
+                                                                                                description: aiContent.description || prev.description,
+                                                                                                duration: aiContent.duration || prev.duration,
+                                                                                                price: aiContent.price || prev.price,
+                                                                                                original_price: aiContent.original_price || prev.original_price,
+                                                                                                includes: aiContent.includes || prev.includes,
+                                                                                                features: aiContent.features || prev.features,
+                                                                                                badge: aiContent.badge || prev.badge,
+                                                                                                image_url: aiContent.image_url || prev.image_url,
+                                                                                        }));
+                                                                                }}
+                                                                        />
+                                                                </div>
+
                                                                 <Input
                                                                         id="name"
                                                                         value={formData.name}
-                                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                                        onChange={(e) =>
+                                                                                setFormData({ ...formData, name: e.target.value })
+                                                                        }
                                                                         required
                                                                 />
                                                         </div>
+
                                                         <div>
                                                                 <Label htmlFor="duration">Duration</Label>
                                                                 <Input

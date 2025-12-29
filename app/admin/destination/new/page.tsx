@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type React from "react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Plus, Trash2, RefreshCw, Edit } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash2, Edit, Sparkles, Loader2, MapPin, Mountain, Clock, Calendar, Users, Home, Route, HelpCircle, Sun, Moon, Cloud } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { useRouter } from "next/navigation";
@@ -24,6 +23,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import CategoriesManager from "@/components/admin/CategoriesManager";
+import { useDestinationAI } from "@/hooks/useDestinationAI"; // Add this import
 
 const AdminDestinationNew = () => {
   const router = useRouter();
@@ -31,6 +31,21 @@ const AdminDestinationNew = () => {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
   const [categories, setCategories] = useState<string[]>([]);
+  
+  // Use the hook instead of manual state
+  const {
+    loading: aiLoading,
+    generateBasicInfo,
+    generateOverview,
+    generatePlaces,
+    generateActivities,
+    generateItinerary,
+    generateFAQs,
+    generateTravelInfo,
+    generateSeasonInfo,
+    generateAccommodation,
+    generateTravelTips,
+  } = useDestinationAI();
 
   // State to track which modals are open
   const [openDialogs, setOpenDialogs] = useState({
@@ -426,18 +441,232 @@ const AdminDestinationNew = () => {
     setFormData({ ...formData, faqs: updated });
   };
 
+  // AI Content Generation Functions
+  const handleGenerateBasicInfo = async () => {
+    const aiContent = await generateBasicInfo(formData.name);
+    if (aiContent) {
+      setFormData(prev => ({
+        ...prev,
+        description: aiContent.description || prev.description,
+        duration: aiContent.duration || prev.duration,
+        difficulty: aiContent.difficulty || prev.difficulty,
+        best_time: aiContent.best_time || prev.best_time,
+        altitude: aiContent.altitude || prev.altitude,
+        category: aiContent.category || prev.category,
+        highlights: aiContent.highlights || prev.highlights,
+      }));
+    }
+  };
+
+  const handleGenerateOverview = async () => {
+    const overview = await generateOverview(formData.name);
+    if (overview) {
+      setFormData(prev => ({
+        ...prev,
+        overview: overview,
+      }));
+    }
+  };
+
+  const handleGeneratePlaces = async () => {
+    const places = await generatePlaces(formData.name, 5);
+    if (places) {
+      places.forEach((place: any) => {
+        const id = generateId();
+        setFormData(prev => ({
+          ...prev,
+          places_to_visit: {
+            ...prev.places_to_visit,
+            [id]: {
+              id,
+              name: place.name,
+              description: place.description,
+              highlights: place.highlights || [],
+              image_url: "",
+            }
+          }
+        }));
+      });
+    }
+  };
+
+  const handleGenerateActivities = async () => {
+    const activities = await generateActivities(formData.name, 5);
+    if (activities) {
+      activities.forEach((activity: any) => {
+        const id = generateId();
+        setFormData(prev => ({
+          ...prev,
+          things_to_do: {
+            ...prev.things_to_do,
+            [id]: {
+              id,
+              title: activity.title,
+              description: activity.description,
+              image_url: "",
+            }
+          }
+        }));
+      });
+    }
+  };
+
+  const handleGenerateItinerary = async () => {
+    const days = await generateItinerary(formData.name, formData.duration);
+    if (days) {
+      days.forEach((day: any) => {
+        const id = generateId();
+        setFormData(prev => ({
+          ...prev,
+          itinerary: {
+            ...prev.itinerary,
+            [id]: {
+              id,
+              day: day.day,
+              title: day.title,
+              activities: day.activities || [],
+              image_url: "",
+            }
+          }
+        }));
+      });
+    }
+  };
+
+  const handleGenerateFAQs = async () => {
+    const faqs = await generateFAQs(formData.name, 5);
+    if (faqs) {
+      faqs.forEach((faq: any) => {
+        const id = generateId();
+        setFormData(prev => ({
+          ...prev,
+          faqs: {
+            ...prev.faqs,
+            [id]: {
+              id,
+              question: faq.question,
+              answer: faq.answer,
+            }
+          }
+        }));
+      });
+    }
+  };
+
+  const handleGenerateHowToReach = async () => {
+    const types = ['air', 'train', 'road'] as const;
+    
+    for (const type of types) {
+      const details = await generateTravelInfo(formData.name, type);
+      if (details) {
+        setFormData(prev => ({
+          ...prev,
+          how_to_reach: {
+            ...prev.how_to_reach,
+            [type]: {
+              ...prev.how_to_reach[type],
+              details,
+            }
+          }
+        }));
+      }
+    }
+  };
+
+  const handleGenerateBestTimeDetails = async () => {
+    const seasons = ['winter', 'summer', 'monsoon'] as const;
+    
+    for (const season of seasons) {
+      const info = await generateSeasonInfo(formData.name, season);
+      if (info) {
+        setFormData(prev => ({
+          ...prev,
+          best_time_details: {
+            ...prev.best_time_details,
+            [season]: info
+          }
+        }));
+      }
+    }
+  };
+
+  const handleGenerateWhereToStay = async () => {
+    const types = ['budget', 'midrange', 'luxury'] as const;
+    
+    for (const type of types) {
+      const info = await generateAccommodation(formData.name, type);
+      if (info) {
+        setFormData(prev => ({
+          ...prev,
+          where_to_stay: {
+            ...prev.where_to_stay,
+            [type]: {
+              ...prev.where_to_stay[type],
+              description: info.description || "",
+              options: info.options || []
+            }
+          }
+        }));
+      }
+    }
+  };
+
+  const handleGenerateTravelTips = async () => {
+    const tips = await generateTravelTips(formData.name);
+    if (tips) {
+      setFormData(prev => ({
+        ...prev,
+        travel_tips: tips,
+      }));
+    }
+  };
+
   const tabs = [
-    { id: "basic", label: "Basic Info" },
-    { id: "overview", label: "Overview" },
-    { id: "places", label: "Places to Visit" },
-    { id: "activities", label: "Things to Do" },
-    { id: "reach", label: "How to Reach" },
-    { id: "besttime", label: "Best Time" },
-    { id: "stay", label: "Where to Stay" },
-    { id: "itinerary", label: "Itinerary" },
-    { id: "tips", label: "Travel Tips" },
-    { id: "faqs", label: "FAQs" },
+    { id: "basic", label: "Basic Info", icon: Mountain },
+    { id: "overview", label: "Overview", icon: MapPin },
+    { id: "places", label: "Places to Visit", icon: MapPin },
+    { id: "activities", label: "Things to Do", icon: Route },
+    { id: "reach", label: "How to Reach", icon: Route },
+    { id: "besttime", label: "Best Time", icon: Calendar },
+    { id: "stay", label: "Where to Stay", icon: Home },
+    { id: "itinerary", label: "Itinerary", icon: Clock },
+    { id: "tips", label: "Travel Tips", icon: Users },
+    { id: "faqs", label: "FAQs", icon: HelpCircle },
   ];
+
+  const AIGenerateButton = ({ 
+    onClick, 
+    loading, 
+    icon = Sparkles,
+    label = "Generate with AI",
+    size = "sm" 
+  }: { 
+    onClick: () => void;
+    loading: boolean;
+    icon?: any;
+    label?: string;
+    size?: "sm" | "default";
+  }) => {
+    const Icon = icon;
+    
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size={size}
+        onClick={onClick}
+        disabled={loading || !formData.name.trim()}
+        className="gap-2"
+      >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Icon className="h-4 w-4" />
+        )}
+        {label}
+      </Button>
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -485,171 +714,206 @@ const AdminDestinationNew = () => {
 
       <div>
         <div className="flex flex-wrap gap-1 border-b mb-6">
-          {tabs.map((tab: any) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-2 font-medium text-sm transition-colors ${
-                activeTab === tab.id
-                  ? "border-b-2 border-primary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${
+                  activeTab === tab.id
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Basic Info Tab */}
         {activeTab === "basic" && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold">Basic Information</h3>
+              <AIGenerateButton
+                onClick={handleGenerateBasicInfo}
+                loading={aiLoading.basic}
+                label="Generate All Basic Info"
+                size="default"
+              />
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <Label htmlFor="name">Name *</Label>
+                    <span className="text-xs text-muted-foreground">AI will use this</span>
+                  </div>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="slug">Slug (URL-friendly name)</Label>
+                  <Input
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) =>
+                      setFormData({ ...formData, slug: e.target.value })
+                    }
+                    placeholder="Auto-generated from name"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This will be used in the URL. Leave empty to auto-generate.
+                  </p>
+                </div>
+              </div>
+
               <div>
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
+                <div className="flex items-center justify-between mb-1">
+                  <Label htmlFor="description">Description *</Label>
+                  <AIGenerateButton
+                  onClick={handleGenerateBasicInfo}
+                  loading={aiLoading.basic}
+                  label="Generate Description"
+                  size="sm"
+                />
+                </div>
+                <Textarea
+                  id="description"
+                  value={formData.description}
                   onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
+                    setFormData({ ...formData, description: e.target.value })
                   }
                   required
                 />
               </div>
+
               <div>
-                <Label htmlFor="slug">Slug (URL-friendly name)</Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
+                <Label htmlFor="highlights">Highlights (comma-separated)</Label>
+                <Textarea
+                  id="highlights"
+                  value={formData.highlights}
                   onChange={(e) =>
-                    setFormData({ ...formData, slug: e.target.value })
+                    setFormData({ ...formData, highlights: e.target.value })
                   }
-                  placeholder="Auto-generated from name"
+                  placeholder="Sunrise views, Ancient temples, Local culture"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  This will be used in the URL. Leave empty to auto-generate.
-                </p>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="description">Description *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                required
-              />
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="duration">Duration *</Label>
+                  <Input
+                    id="duration"
+                    value={formData.duration}
+                    onChange={(e) =>
+                      setFormData({ ...formData, duration: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="difficulty">Difficulty *</Label>
+                  <Input
+                    id="difficulty"
+                    value={formData.difficulty}
+                    onChange={(e) =>
+                      setFormData({ ...formData, difficulty: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+              </div>
 
-            <div>
-              <Label htmlFor="highlights">Highlights (comma-separated)</Label>
-              <Textarea
-                id="highlights"
-                value={formData.highlights}
-                onChange={(e) =>
-                  setFormData({ ...formData, highlights: e.target.value })
-                }
-                placeholder="Sunrise views, Ancient temples, Local culture"
-              />
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="best_time">Best Time *</Label>
+                  <Input
+                    id="best_time"
+                    value={formData.best_time}
+                    onChange={(e) =>
+                      setFormData({ ...formData, best_time: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="altitude">Altitude</Label>
+                  <Input
+                    id="altitude"
+                    value={formData.altitude}
+                    onChange={(e) =>
+                      setFormData({ ...formData, altitude: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="duration">Duration *</Label>
-                <Input
-                  id="duration"
-                  value={formData.duration}
+                <Label htmlFor="category">Category *</Label>
+                <select
+                  id="category"
+                  value={formData.category}
                   onChange={(e) =>
-                    setFormData({ ...formData, duration: e.target.value })
+                    setFormData({ ...formData, category: e.target.value })
                   }
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
-                />
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div>
-                <Label htmlFor="difficulty">Difficulty *</Label>
-                <Input
-                  id="difficulty"
-                  value={formData.difficulty}
-                  onChange={(e) =>
-                    setFormData({ ...formData, difficulty: e.target.value })
-                  }
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
+              <CategoriesManager />
               <div>
-                <Label htmlFor="best_time">Best Time *</Label>
-                <Input
-                  id="best_time"
-                  value={formData.best_time}
-                  onChange={(e) =>
-                    setFormData({ ...formData, best_time: e.target.value })
-                  }
-                  required
+                <Label htmlFor="image_url">Main Image</Label>
+                <ImageUploader
+                  value={formData.image_url}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
                 />
               </div>
-              <div>
-                <Label htmlFor="altitude">Altitude</Label>
-                <Input
-                  id="altitude"
-                  value={formData.altitude}
-                  onChange={(e) =>
-                    setFormData({ ...formData, altitude: e.target.value })
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="featured"
+                  checked={formData.featured}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, featured: checked as boolean })
                   }
                 />
+                <Label htmlFor="featured">Featured Destination</Label>
               </div>
-            </div>
-
-            <div>
-              <Label htmlFor="category">Category *</Label>
-              <select
-                id="category"
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                required
-              >
-                <option value="">Select a category</option>
-                {categories.map((category: any) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <CategoriesManager />
-            <div>
-              <Label htmlFor="image_url">Main Image</Label>
-              <ImageUploader
-                value={formData.image_url}
-                onChange={(url) => setFormData({ ...formData, image_url: url })}
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="featured"
-                checked={formData.featured}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, featured: checked as boolean })
-                }
-              />
-              <Label htmlFor="featured">Featured Destination</Label>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
 
         {/* Overview Tab */}
         {activeTab === "overview" && (
           <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Detailed Overview</h3>
+              <AIGenerateButton
+              onClick={handleGenerateOverview}
+              loading={aiLoading.overview}
+            />
+            </div>
+            
             <form onSubmit={handleSubmit}>
               <Label htmlFor="overview">Detailed Overview</Label>
               <Textarea
@@ -678,30 +942,41 @@ const AdminDestinationNew = () => {
         {activeTab === "places" && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold">
-                Places to Visit ({Object.keys(formData.places_to_visit).length})
-              </h3>
-              <Dialog 
-                open={openDialogs.place} 
-                onOpenChange={(open) => setOpenDialogs({...openDialogs, place: open})}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Place
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Add Place to Visit</DialogTitle>
-                    <DialogDescription>
-                      Add a new place that visitors should see at this
-                      destination.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <PlaceForm onSubmit={handleAddPlace} />
-                </DialogContent>
-              </Dialog>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Places to Visit ({Object.keys(formData.places_to_visit).length})
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Add famous attractions and landmarks
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <AIGenerateButton
+                onClick={handleGeneratePlaces}
+                loading={aiLoading.places}
+              />
+                <Dialog 
+                  open={openDialogs.place} 
+                  onOpenChange={(open) => setOpenDialogs({...openDialogs, place: open})}
+                >
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Manually
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Add Place to Visit</DialogTitle>
+                      <DialogDescription>
+                        Add a new place that visitors should see at this
+                        destination.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <PlaceForm onSubmit={handleAddPlace} />
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <div>
@@ -764,7 +1039,7 @@ const AdminDestinationNew = () => {
                                   </p>
                                   <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                                     {place.highlights.map(
-                                      (h: any, i: number) => (
+                                      (h, i) => (
                                         <li key={i}>{h}</li>
                                       )
                                     )}
@@ -805,9 +1080,12 @@ const AdminDestinationNew = () => {
                 </Card>
               ))}
               {Object.keys(formData.places_to_visit).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  No places added yet.
-                </p>
+                <div className="text-center py-8 border-2 border-dashed rounded-lg">
+                  <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    No places added yet. Generate with AI or add manually.
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -817,30 +1095,41 @@ const AdminDestinationNew = () => {
         {activeTab === "activities" && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold">
-                Things to Do ({Object.keys(formData.things_to_do).length})
-              </h3>
-              <Dialog 
-                open={openDialogs.activity} 
-                onOpenChange={(open) => setOpenDialogs({...openDialogs, activity: open})}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Activity
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Add Activity</DialogTitle>
-                    <DialogDescription>
-                      Add a new activity that visitors can enjoy at this
-                      destination.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <ActivityForm onSubmit={handleAddActivity} />
-                </DialogContent>
-              </Dialog>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Things to Do ({Object.keys(formData.things_to_do).length})
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Add activities and experiences
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <AIGenerateButton
+                  onClick={handleGenerateActivities}
+                  loading={aiLoading.activities}
+                />
+                <Dialog 
+                  open={openDialogs.activity} 
+                  onOpenChange={(open) => setOpenDialogs({...openDialogs, activity: open})}
+                >
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Manually
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Add Activity</DialogTitle>
+                      <DialogDescription>
+                        Add a new activity that visitors can enjoy at this
+                        destination.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <ActivityForm onSubmit={handleAddActivity} />
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <div>
@@ -942,11 +1231,295 @@ const AdminDestinationNew = () => {
                 ))}
 
               {Object.keys(formData.things_to_do).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4 col-span-2">
-                  No activities added yet.
-                </p>
+                <div className="col-span-2 text-center py-8 border-2 border-dashed rounded-lg">
+                  <Route className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    No activities added yet. Generate with AI or add manually.
+                  </p>
+                </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* How to Reach Tab */}
+        {activeTab === "reach" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">How to Reach</h3>
+             <AIGenerateButton
+              onClick={handleGenerateHowToReach}
+              loading={aiLoading.reach}
+            />
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {["air", "train", "road"].map((method) => (
+                  <div key={method}>
+                    <Label htmlFor={`reach-${method}`} className="capitalize">
+                      <div className="flex items-center gap-2">
+                        {method === "air" && "✈️"}
+                        {method === "train" && "🚂"}
+                        {method === "road" && "🚗"}
+                        By {method}
+                      </div>
+                    </Label>
+                    <Textarea
+                      id={`reach-${method}`}
+                      value={
+                        formData.how_to_reach[
+                          method as keyof typeof formData.how_to_reach
+                        ]?.details?.join("\n") || ""
+                      }
+                      onChange={(e) => {
+                        const details = e.target.value
+                          .split("\n")
+                          .filter((d) => d.trim());
+                        setFormData({
+                          ...formData,
+                          how_to_reach: {
+                            ...formData.how_to_reach,
+                            [method]: {
+                              ...formData.how_to_reach[
+                                method as keyof typeof formData.how_to_reach
+                              ],
+                              details,
+                            },
+                          },
+                        });
+                      }}
+                      placeholder={`Enter ${method} details (one per line)`}
+                      rows={4}
+                    />
+                  </div>
+                ))}
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Best Time Tab */}
+        {activeTab === "besttime" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Best Time to Visit</h3>
+              <AIGenerateButton
+                onClick={handleGenerateBestTimeDetails}
+                loading={aiLoading.besttime}
+              />
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { key: "winter", label: "Winter", icon: "❄️" },
+                  { key: "summer", label: "Summer", icon: "☀️" },
+                  { key: "monsoon", label: "Monsoon", icon: "🌧️" }
+                ].map(({ key, label, icon }) => (
+                  <div key={key}>
+                    <Label className="capitalize font-semibold mb-2 block flex items-center gap-2">
+                      <span>{icon}</span> {label}
+                    </Label>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Season dates"
+                        value={
+                          formData.best_time_details[
+                            key as keyof typeof formData.best_time_details
+                          ]?.season || ""
+                        }
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            best_time_details: {
+                              ...formData.best_time_details,
+                              [key]: {
+                                ...formData.best_time_details[
+                                  key as keyof typeof formData.best_time_details
+                                ],
+                                season: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                      />
+                      <Textarea
+                        placeholder="Weather"
+                        value={
+                          formData.best_time_details[
+                            key as keyof typeof formData.best_time_details
+                          ]?.weather || ""
+                        }
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            best_time_details: {
+                              ...formData.best_time_details,
+                              [key]: {
+                                ...formData.best_time_details[
+                                  key as keyof typeof formData.best_time_details
+                                ],
+                                weather: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        rows={2}
+                      />
+                      <Textarea
+                        placeholder="Why visit"
+                        value={
+                          formData.best_time_details[
+                            key as keyof typeof formData.best_time_details
+                          ]?.why_visit || ""
+                        }
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            best_time_details: {
+                              ...formData.best_time_details,
+                              [key]: {
+                                ...formData.best_time_details[
+                                  key as keyof typeof formData.best_time_details
+                                ],
+                                why_visit: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        rows={2}
+                      />
+                      <Textarea
+                        placeholder="Events"
+                        value={
+                          formData.best_time_details[
+                            key as keyof typeof formData.best_time_details
+                          ]?.events || ""
+                        }
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            best_time_details: {
+                              ...formData.best_time_details,
+                              [key]: {
+                                ...formData.best_time_details[
+                                  key as keyof typeof formData.best_time_details
+                                ],
+                                events: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        rows={2}
+                      />
+                      <Textarea
+                        placeholder="Challenges"
+                        value={
+                          formData.best_time_details[
+                            key as keyof typeof formData.best_time_details
+                          ]?.challenges || ""
+                        }
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            best_time_details: {
+                              ...formData.best_time_details,
+                              [key]: {
+                                ...formData.best_time_details[
+                                  key as keyof typeof formData.best_time_details
+                                ],
+                                challenges: e.target.value,
+                              },
+                            },
+                          });
+                        }}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Where to Stay Tab */}
+        {activeTab === "stay" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Where to Stay</h3>
+              <AIGenerateButton
+                onClick={handleGenerateWhereToStay}
+                loading={aiLoading.stay}
+              />
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { key: "budget", label: "Budget", emoji: "💰" },
+                  { key: "midrange", label: "Mid-range", emoji: "🏨" },
+                  { key: "luxury", label: "Luxury", emoji: "✨" }
+                ].map(({ key, label, emoji }) => (
+                  <div key={key}>
+                    <Label className="capitalize font-semibold mb-2 block flex items-center gap-2">
+                      <span>{emoji}</span> {label}
+                    </Label>
+                    <Textarea
+                      placeholder={`${label} description`}
+                      value={
+                        formData.where_to_stay[
+                          key as keyof typeof formData.where_to_stay
+                        ]?.description || ""
+                      }
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          where_to_stay: {
+                            ...formData.where_to_stay,
+                            [key]: {
+                              ...formData.where_to_stay[
+                                key as keyof typeof formData.where_to_stay
+                              ],
+                              description: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                      rows={3}
+                    />
+                    <Textarea
+                      placeholder="Options (one per line)"
+                      value={
+                        formData.where_to_stay[
+                          key as keyof typeof formData.where_to_stay
+                        ]?.options?.join("\n") || ""
+                      }
+                      onChange={(e) => {
+                        const options = e.target.value
+                          .split("\n")
+                          .filter((o) => o.trim());
+                        setFormData({
+                          ...formData,
+                          where_to_stay: {
+                            ...formData.where_to_stay,
+                            [key]: {
+                              ...formData.where_to_stay[
+                                key as keyof typeof formData.where_to_stay
+                              ],
+                              options,
+                            },
+                          },
+                        });
+                      }}
+                      rows={3}
+                      className="mt-2"
+                    />
+                  </div>
+                ))}
+              </div>
+            </form>
           </div>
         )}
 
@@ -954,30 +1527,41 @@ const AdminDestinationNew = () => {
         {activeTab === "itinerary" && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold">
-                Itinerary ({Object.keys(formData.itinerary).length} days)
-              </h3>
-              <Dialog 
-                open={openDialogs.itinerary} 
-                onOpenChange={(open) => setOpenDialogs({...openDialogs, itinerary: open})}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Day
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Add Itinerary Day</DialogTitle>
-                    <DialogDescription>
-                      Add a new day to the travel itinerary for this
-                      destination.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <ItineraryForm onSubmit={handleAddDay} />
-                </DialogContent>
-              </Dialog>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Itinerary ({Object.keys(formData.itinerary).length} days)
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Plan daily activities and schedule
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <AIGenerateButton
+                  onClick={handleGenerateItinerary}
+                  loading={aiLoading.itinerary}
+                />
+                <Dialog 
+                  open={openDialogs.itinerary} 
+                  onOpenChange={(open) => setOpenDialogs({...openDialogs, itinerary: open})}
+                >
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Day
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Add Itinerary Day</DialogTitle>
+                      <DialogDescription>
+                        Add a new day to the travel itinerary for this
+                        destination.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <ItineraryForm onSubmit={handleAddDay} />
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <div>
@@ -1041,7 +1625,7 @@ const AdminDestinationNew = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2">
                         <ul className="text-sm text-muted-foreground space-y-1">
-                          {day.activities?.map((activity: any, i: number) => (
+                          {day.activities?.map((activity, i) => (
                             <li key={i}>• {activity}</li>
                           ))}
                         </ul>
@@ -1069,300 +1653,86 @@ const AdminDestinationNew = () => {
                 </Card>
               ))}
               {Object.keys(formData.itinerary).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  No itinerary days added yet.
-                </p>
+                <div className="text-center py-8 border-2 border-dashed rounded-lg">
+                  <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    No itinerary days added yet. Generate with AI or add manually.
+                  </p>
+                </div>
               )}
             </div>
           </div>
         )}
 
-        {/* How to Reach Tab */}
-        {activeTab === "reach" && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {["air", "train", "road"].map((method: any) => (
-                <div key={method}>
-                  <Label htmlFor={`reach-${method}`} className="capitalize">
-                    By {method}
-                  </Label>
-                  <Textarea
-                    id={`reach-${method}`}
-                    value={
-                      formData.how_to_reach[
-                        method as keyof typeof formData.how_to_reach
-                      ]?.details?.join("\n") || ""
-                    }
-                    onChange={(e) => {
-                      const details = e.target.value
-                        .split("\n")
-                        .filter((d: string) => d.trim());
-                      setFormData({
-                        ...formData,
-                        how_to_reach: {
-                          ...formData.how_to_reach,
-                          [method]: {
-                            ...formData.how_to_reach[
-                              method as keyof typeof formData.how_to_reach
-                            ],
-                            details,
-                          },
-                        },
-                      });
-                    }}
-                    placeholder={`Enter ${method} details (one per line)`}
-                    rows={4}
-                  />
-                </div>
-              ))}
-            </div>
-          </form>
-        )}
-
-        {/* Best Time Tab */}
-        {activeTab === "besttime" && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {["winter", "summer", "monsoon"].map((season: any) => (
-                <div key={season}>
-                  <Label className="capitalize font-semibold mb-2 block">
-                    {season}
-                  </Label>
-                  <div className="space-y-2">
-                    <Input
-                      placeholder="Season dates"
-                      value={
-                        formData.best_time_details[
-                          season as keyof typeof formData.best_time_details
-                        ]?.season || ""
-                      }
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          best_time_details: {
-                            ...formData.best_time_details,
-                            [season]: {
-                              ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
-                              ],
-                              season: e.target.value,
-                            },
-                          },
-                        });
-                      }}
-                    />
-                    <Textarea
-                      placeholder="Weather"
-                      value={
-                        formData.best_time_details[
-                          season as keyof typeof formData.best_time_details
-                        ]?.weather || ""
-                      }
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          best_time_details: {
-                            ...formData.best_time_details,
-                            [season]: {
-                              ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
-                              ],
-                              weather: e.target.value,
-                            },
-                          },
-                        });
-                      }}
-                      rows={2}
-                    />
-                    <Textarea
-                      placeholder="Why visit"
-                      value={
-                        formData.best_time_details[
-                          season as keyof typeof formData.best_time_details
-                        ]?.why_visit || ""
-                      }
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          best_time_details: {
-                            ...formData.best_time_details,
-                            [season]: {
-                              ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
-                              ],
-                              why_visit: e.target.value,
-                            },
-                          },
-                        });
-                      }}
-                      rows={2}
-                    />
-                    <Textarea
-                      placeholder="Events"
-                      value={
-                        formData.best_time_details[
-                          season as keyof typeof formData.best_time_details
-                        ]?.events || ""
-                      }
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          best_time_details: {
-                            ...formData.best_time_details,
-                            [season]: {
-                              ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
-                              ],
-                              events: e.target.value,
-                            },
-                          },
-                        });
-                      }}
-                      rows={2}
-                    />
-                    <Textarea
-                      placeholder="Challenges"
-                      value={
-                        formData.best_time_details[
-                          season as keyof typeof formData.best_time_details
-                        ]?.challenges || ""
-                      }
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          best_time_details: {
-                            ...formData.best_time_details,
-                            [season]: {
-                              ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
-                              ],
-                              challenges: e.target.value,
-                            },
-                          },
-                        });
-                      }}
-                      rows={2}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </form>
-        )}
-
-        {/* Where to Stay Tab */}
-        {activeTab === "stay" && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {["budget", "midrange", "luxury"].map((category: any) => (
-                <div key={category}>
-                  <Label className="capitalize font-semibold mb-2 block">
-                    {category}
-                  </Label>
-                  <Textarea
-                    placeholder={`${category} description`}
-                    value={
-                      formData.where_to_stay[
-                        category as keyof typeof formData.where_to_stay
-                      ]?.description || ""
-                    }
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        where_to_stay: {
-                          ...formData.where_to_stay,
-                          [category]: {
-                            ...formData.where_to_stay[
-                              category as keyof typeof formData.where_to_stay
-                            ],
-                            description: e.target.value,
-                          },
-                        },
-                      });
-                    }}
-                    rows={3}
-                  />
-                  <Textarea
-                    placeholder="Options (one per line)"
-                    value={
-                      formData.where_to_stay[
-                        category as keyof typeof formData.where_to_stay
-                      ]?.options?.join("\n") || ""
-                    }
-                    onChange={(e) => {
-                      const options = e.target.value
-                        .split("\n")
-                        .filter((o: string) => o.trim());
-                      setFormData({
-                        ...formData,
-                        where_to_stay: {
-                          ...formData.where_to_stay,
-                          [category]: {
-                            ...formData.where_to_stay[
-                              category as keyof typeof formData.where_to_stay
-                            ],
-                            options,
-                          },
-                        },
-                      });
-                    }}
-                    rows={3}
-                    className="mt-2"
-                  />
-                </div>
-              ))}
-            </div>
-          </form>
-        )}
-
         {/* Travel Tips Tab */}
         {activeTab === "tips" && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="tips">Travel Tips (one per line)</Label>
-              <Textarea
-                id="tips"
-                value={formData.travel_tips.join("\n")}
-                onChange={(e) => {
-                  const tips = e.target.value
-                    .split("\n")
-                    .filter((t: string) => t.trim());
-                  setFormData({ ...formData, travel_tips: tips });
-                }}
-                placeholder="Enter travel tips, one per line"
-                rows={8}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Travel Tips</h3>
+              <AIGenerateButton
+                onClick={handleGenerateTravelTips}
+                loading={aiLoading.tips}
               />
             </div>
-          </form>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="tips">Travel Tips (one per line)</Label>
+                <Textarea
+                  id="tips"
+                  value={formData.travel_tips.join("\n")}
+                  onChange={(e) => {
+                    const tips = e.target.value
+                      .split("\n")
+                      .filter((t) => t.trim());
+                    setFormData({ ...formData, travel_tips: tips });
+                  }}
+                  placeholder="Enter travel tips, one per line"
+                  rows={8}
+                />
+              </div>
+            </form>
+          </div>
         )}
 
         {/* FAQs Tab */}
         {activeTab === "faqs" && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold">
-                Frequently Asked Questions ({Object.keys(formData.faqs).length})
-              </h3>
-              <Dialog 
-                open={openDialogs.faq} 
-                onOpenChange={(open) => setOpenDialogs({...openDialogs, faq: open})}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add FAQ
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add FAQ</DialogTitle>
-                    <DialogDescription>
-                      Add a new frequently asked question and its answer.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <FAQForm onSubmit={handleAddFAQ} />
-                </DialogContent>
-              </Dialog>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Frequently Asked Questions ({Object.keys(formData.faqs).length})
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Common questions visitors ask
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <AIGenerateButton
+                  onClick={handleGenerateFAQs}
+                  loading={aiLoading.faqs}
+                />
+                <Dialog 
+                  open={openDialogs.faq} 
+                  onOpenChange={(open) => setOpenDialogs({...openDialogs, faq: open})}
+                >
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Manually
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add FAQ</DialogTitle>
+                      <DialogDescription>
+                        Add a new frequently asked question and its answer.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <FAQForm onSubmit={handleAddFAQ} />
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -1415,9 +1785,12 @@ const AdminDestinationNew = () => {
                 </Card>
               ))}
               {Object.keys(formData.faqs).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  No FAQs added yet.
-                </p>
+                <div className="text-center py-8 border-2 border-dashed rounded-lg">
+                  <HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    No FAQs added yet. Generate with AI or add manually.
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -1427,16 +1800,8 @@ const AdminDestinationNew = () => {
   );
 };
 
-// Sub-components with DialogClose integration
-function PlaceForm({
-  onSubmit,
-  initialData,
-  isEdit = false,
-}: {
-  onSubmit: (place: any) => void;
-  initialData?: any;
-  isEdit?: boolean;
-}) {
+// Sub-components with DialogClose integration (keep these as they were)
+function PlaceForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (place: any) => void; initialData?: any; isEdit?: boolean }) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
@@ -1517,15 +1882,7 @@ function PlaceForm({
   );
 }
 
-function ActivityForm({
-  onSubmit,
-  initialData,
-  isEdit = false,
-}: {
-  onSubmit: (activity: any) => void;
-  initialData?: any;
-  isEdit?: boolean;
-}) {
+function ActivityForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (activity: any) => void; initialData?: any; isEdit?: boolean }) {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
@@ -1590,15 +1947,7 @@ function ActivityForm({
   );
 }
 
-function ItineraryForm({
-  onSubmit,
-  initialData,
-  isEdit = false,
-}: {
-  onSubmit: (day: any) => void;
-  initialData?: any;
-  isEdit?: boolean;
-}) {
+function ItineraryForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (day: any) => void; initialData?: any; isEdit?: boolean }) {
   const [formData, setFormData] = useState({
     day: initialData?.day || 1,
     title: initialData?.title || "",
@@ -1685,15 +2034,7 @@ function ItineraryForm({
   );
 }
 
-function FAQForm({ 
-  onSubmit, 
-  initialData, 
-  isEdit = false 
-}: { 
-  onSubmit: (faq: any) => void;
-  initialData?: any;
-  isEdit?: boolean;
-}) {
+function FAQForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (faq: any) => void; initialData?: any; isEdit?: boolean }) {
   const [formData, setFormData] = useState({
     question: initialData?.question || "",
     answer: initialData?.answer || "",

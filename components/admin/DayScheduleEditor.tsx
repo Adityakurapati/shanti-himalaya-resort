@@ -130,7 +130,7 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
               id="title"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Day 1: Arrive Kathmandu"
+              placeholder="Example : Kathmandu"
             />
           </div>
         </div>

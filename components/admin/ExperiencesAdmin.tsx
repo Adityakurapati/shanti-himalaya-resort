@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
 import type { Tables } from "@/integrations/supabase/types";
 import CategoriesManager from "@/components/admin/CategoriesManager"
+import { AIButton } from "./AIButton";
 
 type Experience = Tables<"experiences">
 
@@ -39,6 +40,10 @@ const ExperiencesAdmin = () => {
                 featured: false,
                 image_url: "",
         })
+
+        const getUnsplashImageUrl = (title: string, width = 800, height = 600) =>
+                `https://source.unsplash.com/${width}x${height}/?${encodeURIComponent(title)}`
+
 
         useEffect(() => {
                 fetchExperiences()
@@ -224,7 +229,24 @@ const ExperiencesAdmin = () => {
                                                 </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
-                                                                <Label htmlFor="title">Title</Label>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                        <Label htmlFor="title">Title</Label>
+                                                                        <AIButton
+                                                                                title={formData.title}
+                                                                                contentType="experience"
+                                                                                onContentGenerated={(aiContent) => {
+                                                                                        setFormData(prev => ({
+                                                                                                ...prev,
+                                                                                                description: aiContent.description || prev.description,
+                                                                                                duration: aiContent.duration || prev.duration,
+                                                                                                group_size: aiContent.group_size || prev.group_size,
+                                                                                                price: aiContent.price || prev.price,
+                                                                                                highlights: aiContent.highlights || prev.highlights,
+                                                                                                category: aiContent.category || prev.category,
+                                                                                        }));
+                                                                                }}
+                                                                        />
+                                                                </div>
                                                                 <Input
                                                                         id="title"
                                                                         value={formData.title}

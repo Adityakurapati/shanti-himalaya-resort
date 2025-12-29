@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from "@/components/ui/checkbox"
 import ImageUploader from "./ImageUploader"
 import type { Tables } from "@/integrations/supabase/types";
+import { AIButton } from "./AIButton";
 
 type Package = Tables<"packages">
 
@@ -205,14 +206,39 @@ const PackagesAdmin = () => {
                                                 </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
-                                                                <Label htmlFor="title">Title</Label>
-                                                                <Input
-                                                                        id="title"
-                                                                        value={formData.title}
-                                                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                                                        required
-                                                                />
-                                                        </div>
+  <div className="flex items-center gap-2 mb-2">
+    <Label htmlFor="title">Title</Label>
+
+    <AIButton
+      title={formData.title}
+      contentType="blog"
+      onContentGenerated={(aiContent) => {
+        setFormData((prev) => ({
+          ...prev,
+          excerpt: aiContent.excerpt || prev.excerpt,
+          content: aiContent.content || prev.content,
+          category: aiContent.category || prev.category,
+          tags: aiContent.tags || prev.tags,
+          read_time: aiContent.read_time || prev.read_time,
+          image_url: aiContent.image_url || prev.image_url,
+          author: aiContent.author || prev.author,
+          author_bio: aiContent.author_bio || prev.author_bio,
+          author_avatar: aiContent.author_avatar || prev.author_avatar,
+        }));
+      }}
+    />
+  </div>
+
+  <Input
+    id="title"
+    value={formData.title}
+    onChange={(e) =>
+      setFormData({ ...formData, title: e.target.value })
+    }
+    required
+  />
+</div>
+
                                                         <div>
                                                                 <Label htmlFor="excerpt">Excerpt</Label>
                                                                 <Textarea

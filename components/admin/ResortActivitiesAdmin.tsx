@@ -32,6 +32,7 @@ import {
         Sun,
         Star,
 } from "lucide-react"
+import { AIButton } from "./AIButton";
 
 type Activity = Tables<"resort_activities">
 
@@ -242,14 +243,43 @@ export const ResortActivitiesAdmin = () => {
                                                 </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
-                                                                <Label htmlFor="title">Activity Title</Label>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                        <Label htmlFor="title">Activity Title</Label>
+
+                                                                        <AIButton
+                                                                                title={formData.title}
+                                                                                contentType="resortActivity"
+                                                                                onContentGenerated={(aiContent) => {
+                                                                                        // allowed icons
+                                                                                        const allowedIcons = travelIconOptions.map(i => i.name)
+
+                                                                                        setFormData(prev => ({
+                                                                                                ...prev,
+                                                                                                title: aiContent.title || prev.title,
+                                                                                                description: aiContent.description || prev.description,
+                                                                                                full_description: aiContent.full_description || prev.full_description,
+
+                                                                                                // 🔒 icon safety: only allow predefined icons
+                                                                                                icon: allowedIcons.includes(aiContent.icon)
+                                                                                                        ? aiContent.icon
+                                                                                                        : prev.icon,
+
+                                                                                                image_url: aiContent.image_url || prev.image_url,
+                                                                                        }))
+                                                                                }}
+                                                                        />
+                                                                </div>
+
                                                                 <Input
                                                                         id="title"
                                                                         value={formData.title}
-                                                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                                                        onChange={(e) =>
+                                                                                setFormData({ ...formData, title: e.target.value })
+                                                                        }
                                                                         required
                                                                 />
                                                         </div>
+
                                                         <div>
                                                                 <Label htmlFor="description">Short Description</Label>
                                                                 <Textarea

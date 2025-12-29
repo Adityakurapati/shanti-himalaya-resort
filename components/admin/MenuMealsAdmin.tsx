@@ -190,14 +190,14 @@ export const MenuMealsAdmin = () => {
     return items
   }
 
-  const getCategoryName = (category: string) => {
+  const getCategoryName = (category: string | null) => {
     switch(category) {
       case 'main': return 'Main Course'
       case 'starter': return 'Starter'
       case 'dessert': return 'Dessert'
       case 'beverage': return 'Beverage'
       case 'snack': return 'Snack'
-      default: return category
+      default: return category || 'Uncategorized'
     }
   }
 

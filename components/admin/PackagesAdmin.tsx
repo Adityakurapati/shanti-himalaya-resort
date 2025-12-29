@@ -211,7 +211,7 @@ const PackagesAdmin = () => {
 
     <AIButton
       title={formData.title}
-      contentType="blog"
+      contentType="package"
       onContentGenerated={(aiContent) => {
         setFormData((prev) => ({
           ...prev,

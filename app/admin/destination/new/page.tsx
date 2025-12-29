@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Plus, Trash2, Edit, Sparkles, Loader2, MapPin, Mountain, Clock, Calendar, Users, Home, Route, HelpCircle, Sun, Moon, Cloud } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash2, Edit, Sparkles, Loader2, MapPin, Mountain, Clock, Calendar, Users, Home, Route, HelpCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import CategoriesManager from "@/components/admin/CategoriesManager";
-import { useDestinationAI } from "@/hooks/useDestinationAI"; // Add this import
+import { useDestinationAI } from "@/hooks/useDestinationAI";
 
 const AdminDestinationNew = () => {
   const router = useRouter();
@@ -31,23 +31,9 @@ const AdminDestinationNew = () => {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
   const [categories, setCategories] = useState<string[]>([]);
-  
-  // Use the hook instead of manual state
-  const {
-    loading: aiLoading,
-    generateBasicInfo,
-    generateOverview,
-    generatePlaces,
-    generateActivities,
-    generateItinerary,
-    generateFAQs,
-    generateTravelInfo,
-    generateSeasonInfo,
-    generateAccommodation,
-    generateTravelTips,
-  } = useDestinationAI();
 
-  // State to track which modals are open
+  const { loading: aiLoading, generateAllDestinationContent } = useDestinationAI();
+
   const [openDialogs, setOpenDialogs] = useState({
     place: false,
     activity: false,
@@ -297,7 +283,6 @@ const AdminDestinationNew = () => {
           description: "New destination has been added to the database.",
         });
 
-        // Redirect to edit page for the new destination
         if (data && data[0]) {
           setTimeout(() => {
             router.push("/admin/destination/edit/" + data[0].id);
@@ -316,7 +301,160 @@ const AdminDestinationNew = () => {
     }
   };
 
-  // Enhanced handlers with image upload support
+  const handleGenerateAllContent = async () => {
+    if (!formData.name.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please enter a destination name first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const allContent = await generateAllDestinationContent(formData.name);
+
+    if (!allContent) {
+      return;
+    }
+
+    // Update all form fields at once
+    setFormData(prev => {
+      const newFormData = { ...prev };
+
+      // Basic Info
+      if (allContent.basic) {
+        newFormData.description = allContent.basic.description || prev.description;
+        newFormData.duration = allContent.basic.duration || prev.duration;
+        newFormData.difficulty = allContent.basic.difficulty || prev.difficulty;
+        newFormData.best_time = allContent.basic.best_time || prev.best_time;
+        newFormData.altitude = allContent.basic.altitude || prev.altitude;
+        newFormData.category = allContent.basic.category || prev.category;
+        newFormData.highlights = allContent.basic.highlights || prev.highlights;
+      }
+
+      // Overview
+      if (allContent.overview) {
+        newFormData.overview = allContent.overview;
+      }
+
+      // Places to Visit
+      if (allContent.places && Array.isArray(allContent.places)) {
+        const placesObj: { [key: string]: any } = {};
+        allContent.places.forEach((place: any) => {
+          const id = generateId();
+          placesObj[id] = {
+            id,
+            name: place.name,
+            description: place.description,
+            highlights: place.highlights || [],
+            image_url: "",
+          };
+        });
+        newFormData.places_to_visit = placesObj;
+      }
+
+      // Activities
+      if (allContent.activities && Array.isArray(allContent.activities)) {
+        const activitiesObj: { [key: string]: any } = {};
+        allContent.activities.forEach((activity: any) => {
+          const id = generateId();
+          activitiesObj[id] = {
+            id,
+            title: activity.title,
+            description: activity.description,
+            image_url: "",
+          };
+        });
+        newFormData.things_to_do = activitiesObj;
+      }
+
+      // How to Reach
+      if (allContent.howToReach) {
+        newFormData.how_to_reach = {
+          air: {
+            title: "By Air",
+            details: allContent.howToReach.air || []
+          },
+          train: {
+            title: "By Train",
+            details: allContent.howToReach.train || []
+          },
+          road: {
+            title: "By Road",
+            details: allContent.howToReach.road || []
+          },
+        };
+      }
+
+      // Best Time Details
+      if (allContent.bestTime) {
+        newFormData.best_time_details = {
+          winter: allContent.bestTime.winter || prev.best_time_details.winter,
+          summer: allContent.bestTime.summer || prev.best_time_details.summer,
+          monsoon: allContent.bestTime.monsoon || prev.best_time_details.monsoon,
+        };
+      }
+
+      // Where to Stay
+      if (allContent.accommodation) {
+        newFormData.where_to_stay = {
+          budget: {
+            category: "budget",
+            description: allContent.accommodation.budget?.description || "",
+            options: allContent.accommodation.budget?.options || [],
+          },
+          midrange: {
+            category: "midrange",
+            description: allContent.accommodation.midrange?.description || "",
+            options: allContent.accommodation.midrange?.options || [],
+          },
+          luxury: {
+            category: "luxury",
+            description: allContent.accommodation.luxury?.description || "",
+            options: allContent.accommodation.luxury?.options || [],
+          },
+        };
+      }
+
+      // Itinerary
+      if (allContent.itinerary && Array.isArray(allContent.itinerary)) {
+        const itineraryObj: { [key: string]: any } = {};
+        allContent.itinerary.forEach((day: any) => {
+          const id = generateId();
+          itineraryObj[id] = {
+            id,
+            day: day.day,
+            title: day.title,
+            activities: day.activities || [],
+            image_url: "",
+          };
+        });
+        newFormData.itinerary = itineraryObj;
+      }
+
+      // Travel Tips
+      if (allContent.travelTips && Array.isArray(allContent.travelTips)) {
+        newFormData.travel_tips = allContent.travelTips;
+      }
+
+      // FAQs
+      if (allContent.faqs && Array.isArray(allContent.faqs)) {
+        const faqsObj: { [key: string]: any } = {};
+        allContent.faqs.forEach((faq: any) => {
+          const id = generateId();
+          faqsObj[id] = {
+            id,
+            question: faq.question,
+            answer: faq.answer,
+          };
+        });
+        newFormData.faqs = faqsObj;
+      }
+
+      return newFormData;
+    });
+  };
+
   const handleAddPlace = (place: any) => {
     const id = generateId();
     const updated = {
@@ -441,186 +579,6 @@ const AdminDestinationNew = () => {
     setFormData({ ...formData, faqs: updated });
   };
 
-  // AI Content Generation Functions
-  const handleGenerateBasicInfo = async () => {
-    const aiContent = await generateBasicInfo(formData.name);
-    if (aiContent) {
-      setFormData(prev => ({
-        ...prev,
-        description: aiContent.description || prev.description,
-        duration: aiContent.duration || prev.duration,
-        difficulty: aiContent.difficulty || prev.difficulty,
-        best_time: aiContent.best_time || prev.best_time,
-        altitude: aiContent.altitude || prev.altitude,
-        category: aiContent.category || prev.category,
-        highlights: aiContent.highlights || prev.highlights,
-      }));
-    }
-  };
-
-  const handleGenerateOverview = async () => {
-    const overview = await generateOverview(formData.name);
-    if (overview) {
-      setFormData(prev => ({
-        ...prev,
-        overview: overview,
-      }));
-    }
-  };
-
-  const handleGeneratePlaces = async () => {
-    const places = await generatePlaces(formData.name, 5);
-    if (places) {
-      places.forEach((place: any) => {
-        const id = generateId();
-        setFormData(prev => ({
-          ...prev,
-          places_to_visit: {
-            ...prev.places_to_visit,
-            [id]: {
-              id,
-              name: place.name,
-              description: place.description,
-              highlights: place.highlights || [],
-              image_url: "",
-            }
-          }
-        }));
-      });
-    }
-  };
-
-  const handleGenerateActivities = async () => {
-    const activities = await generateActivities(formData.name, 5);
-    if (activities) {
-      activities.forEach((activity: any) => {
-        const id = generateId();
-        setFormData(prev => ({
-          ...prev,
-          things_to_do: {
-            ...prev.things_to_do,
-            [id]: {
-              id,
-              title: activity.title,
-              description: activity.description,
-              image_url: "",
-            }
-          }
-        }));
-      });
-    }
-  };
-
-  const handleGenerateItinerary = async () => {
-    const days = await generateItinerary(formData.name, formData.duration);
-    if (days) {
-      days.forEach((day: any) => {
-        const id = generateId();
-        setFormData(prev => ({
-          ...prev,
-          itinerary: {
-            ...prev.itinerary,
-            [id]: {
-              id,
-              day: day.day,
-              title: day.title,
-              activities: day.activities || [],
-              image_url: "",
-            }
-          }
-        }));
-      });
-    }
-  };
-
-  const handleGenerateFAQs = async () => {
-    const faqs = await generateFAQs(formData.name, 5);
-    if (faqs) {
-      faqs.forEach((faq: any) => {
-        const id = generateId();
-        setFormData(prev => ({
-          ...prev,
-          faqs: {
-            ...prev.faqs,
-            [id]: {
-              id,
-              question: faq.question,
-              answer: faq.answer,
-            }
-          }
-        }));
-      });
-    }
-  };
-
-  const handleGenerateHowToReach = async () => {
-    const types = ['air', 'train', 'road'] as const;
-    
-    for (const type of types) {
-      const details = await generateTravelInfo(formData.name, type);
-      if (details) {
-        setFormData(prev => ({
-          ...prev,
-          how_to_reach: {
-            ...prev.how_to_reach,
-            [type]: {
-              ...prev.how_to_reach[type],
-              details,
-            }
-          }
-        }));
-      }
-    }
-  };
-
-  const handleGenerateBestTimeDetails = async () => {
-    const seasons = ['winter', 'summer', 'monsoon'] as const;
-    
-    for (const season of seasons) {
-      const info = await generateSeasonInfo(formData.name, season);
-      if (info) {
-        setFormData(prev => ({
-          ...prev,
-          best_time_details: {
-            ...prev.best_time_details,
-            [season]: info
-          }
-        }));
-      }
-    }
-  };
-
-  const handleGenerateWhereToStay = async () => {
-    const types = ['budget', 'midrange', 'luxury'] as const;
-    
-    for (const type of types) {
-      const info = await generateAccommodation(formData.name, type);
-      if (info) {
-        setFormData(prev => ({
-          ...prev,
-          where_to_stay: {
-            ...prev.where_to_stay,
-            [type]: {
-              ...prev.where_to_stay[type],
-              description: info.description || "",
-              options: info.options || []
-            }
-          }
-        }));
-      }
-    }
-  };
-
-  const handleGenerateTravelTips = async () => {
-    const tips = await generateTravelTips(formData.name);
-    if (tips) {
-      setFormData(prev => ({
-        ...prev,
-        travel_tips: tips,
-      }));
-    }
-  };
-
   const tabs = [
     { id: "basic", label: "Basic Info", icon: Mountain },
     { id: "overview", label: "Overview", icon: MapPin },
@@ -634,25 +592,27 @@ const AdminDestinationNew = () => {
     { id: "faqs", label: "FAQs", icon: HelpCircle },
   ];
 
-  const AIGenerateButton = ({ 
-    onClick, 
-    loading, 
+  const AIGenerateButton = ({
+    onClick,
+    loading,
     icon = Sparkles,
     label = "Generate with AI",
-    size = "sm" 
-  }: { 
+    size = "sm",
+    variant = "outline"
+  }: {
     onClick: () => void;
     loading: boolean;
     icon?: any;
     label?: string;
     size?: "sm" | "default";
+    variant?: "default" | "outline";
   }) => {
     const Icon = icon;
-    
+
     return (
       <Button
         type="button"
-        variant="outline"
+        variant={variant}
         size={size}
         onClick={onClick}
         disabled={loading || !formData.name.trim()}
@@ -678,13 +638,40 @@ const AdminDestinationNew = () => {
           </Button>
           <h1 className="text-3xl font-bold">Create New Destination</h1>
         </div>
-        <Button onClick={handleSubmit} disabled={saving}>
-          <Save className="mr-2 h-4 w-4" />
-          {saving ? "Creating..." : "Create Destination"}
-        </Button>
+        <div className="flex gap-2">
+          <AIGenerateButton
+            onClick={handleGenerateAllContent}
+            loading={aiLoading}
+            label="✨ Generate All Content"
+            size="default"
+            variant="default"
+          />
+          <Button onClick={handleSubmit} disabled={saving || aiLoading}>
+            <Save className="mr-2 h-4 w-4" />
+            {saving ? "Creating..." : "Create Destination"}
+          </Button>
+        </div>
       </div>
 
-      {/* Debug Info */}
+      <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-purple-900">
+              ✨ AI Content Generator
+            </h3>
+            <p className="text-sm text-purple-700">
+              Generate all destination content at once with AI. Enter a destination name above first.
+            </p>
+          </div>
+          <AIGenerateButton
+            onClick={handleGenerateAllContent}
+            loading={aiLoading}
+            label="Generate Everything"
+            size="default"
+          />
+        </div>
+      </div>
+
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <h3 className="font-semibold mb-2 text-blue-900">
           Data Status (Object Format - Manual Save):
@@ -707,8 +694,7 @@ const AdminDestinationNew = () => {
           </div>
         </div>
         <p className="text-xs text-blue-600 mt-2">
-          Data stored as objects. Use Create Destination to save your new
-          destination.
+          Data stored as objects. Use Create Destination to save your new destination.
         </p>
       </div>
 
@@ -721,11 +707,10 @@ const AdminDestinationNew = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-3 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${
-                  activeTab === tab.id
+                className={`px-3 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${activeTab === tab.id
                     ? "border-b-2 border-primary text-primary"
                     : "text-muted-foreground hover:text-foreground"
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {tab.label}
@@ -737,16 +722,8 @@ const AdminDestinationNew = () => {
         {/* Basic Info Tab */}
         {activeTab === "basic" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold">Basic Information</h3>
-              <AIGenerateButton
-                onClick={handleGenerateBasicInfo}
-                loading={aiLoading.basic}
-                label="Generate All Basic Info"
-                size="default"
-              />
-            </div>
-            
+            <h3 className="text-lg font-semibold">Basic Information</h3>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -780,15 +757,7 @@ const AdminDestinationNew = () => {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <Label htmlFor="description">Description *</Label>
-                  <AIGenerateButton
-                  onClick={handleGenerateBasicInfo}
-                  loading={aiLoading.basic}
-                  label="Generate Description"
-                  size="sm"
-                />
-                </div>
+                <Label htmlFor="description">Description *</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
@@ -872,11 +841,11 @@ const AdminDestinationNew = () => {
                   required
                 >
                   <option value="">Select a category</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
+                  {categories.map((category: string) => (
+  <option key={category} value={category}>
+    {category}
+  </option>
+))}
                 </select>
               </div>
 
@@ -906,14 +875,8 @@ const AdminDestinationNew = () => {
         {/* Overview Tab */}
         {activeTab === "overview" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Detailed Overview</h3>
-              <AIGenerateButton
-              onClick={handleGenerateOverview}
-              loading={aiLoading.overview}
-            />
-            </div>
-            
+            <h3 className="text-lg font-semibold">Detailed Overview</h3>
+
             <form onSubmit={handleSubmit}>
               <Label htmlFor="overview">Detailed Overview</Label>
               <Textarea
@@ -951,13 +914,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <AIGenerateButton
-                onClick={handleGeneratePlaces}
-                loading={aiLoading.places}
-              />
-                <Dialog 
-                  open={openDialogs.place} 
-                  onOpenChange={(open) => setOpenDialogs({...openDialogs, place: open})}
+                <Dialog
+                  open={openDialogs.place}
+                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, place: open })}
                 >
                   <DialogTrigger asChild>
                     <Button size="sm">
@@ -969,8 +928,7 @@ const AdminDestinationNew = () => {
                     <DialogHeader>
                       <DialogTitle>Add Place to Visit</DialogTitle>
                       <DialogDescription>
-                        Add a new place that visitors should see at this
-                        destination.
+                        Add a new place that visitors should see at this destination.
                       </DialogDescription>
                     </DialogHeader>
                     <PlaceForm onSubmit={handleAddPlace} />
@@ -999,9 +957,9 @@ const AdminDestinationNew = () => {
                           <h4 className="font-semibold text-lg">
                             {place.name}
                           </h4>
-                          <Dialog 
-                            open={openDialogs.place && key === place.id} 
-                            onOpenChange={(open) => setOpenDialogs({...openDialogs, place: open})}
+                          <Dialog
+                            open={openDialogs.place && key === place.id}
+                            onOpenChange={(open) => setOpenDialogs({ ...openDialogs, place: open })}
                           >
                             <DialogTrigger asChild>
                               <Button variant="outline" size="sm">
@@ -1039,7 +997,7 @@ const AdminDestinationNew = () => {
                                   </p>
                                   <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                                     {place.highlights.map(
-                                      (h, i) => (
+                                      (h: string, i: number) => (
                                         <li key={i}>{h}</li>
                                       )
                                     )}
@@ -1083,7 +1041,7 @@ const AdminDestinationNew = () => {
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
                   <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No places added yet. Generate with AI or add manually.
+                    No places added yet. Use "Generate All Content" or add manually.
                   </p>
                 </div>
               )}
@@ -1104,13 +1062,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <AIGenerateButton
-                  onClick={handleGenerateActivities}
-                  loading={aiLoading.activities}
-                />
-                <Dialog 
-                  open={openDialogs.activity} 
-                  onOpenChange={(open) => setOpenDialogs({...openDialogs, activity: open})}
+                <Dialog
+                  open={openDialogs.activity}
+                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, activity: open })}
                 >
                   <DialogTrigger asChild>
                     <Button size="sm">
@@ -1122,8 +1076,7 @@ const AdminDestinationNew = () => {
                     <DialogHeader>
                       <DialogTitle>Add Activity</DialogTitle>
                       <DialogDescription>
-                        Add a new activity that visitors can enjoy at this
-                        destination.
+                        Add a new activity that visitors can enjoy at this destination.
                       </DialogDescription>
                     </DialogHeader>
                     <ActivityForm onSubmit={handleAddActivity} />
@@ -1173,9 +1126,9 @@ const AdminDestinationNew = () => {
                           {activity.title}
                         </h4>
                         <div className="flex gap-1 ml-2 flex-shrink-0">
-                          <Dialog 
-                            open={openDialogs.activity && key === activity.id} 
-                            onOpenChange={(open) => setOpenDialogs({...openDialogs, activity: open})}
+                          <Dialog
+                            open={openDialogs.activity && key === activity.id}
+                            onOpenChange={(open) => setOpenDialogs({ ...openDialogs, activity: open })}
                           >
                             <DialogTrigger asChild>
                               <Button variant="outline" size="sm">
@@ -1234,7 +1187,7 @@ const AdminDestinationNew = () => {
                 <div className="col-span-2 text-center py-8 border-2 border-dashed rounded-lg">
                   <Route className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No activities added yet. Generate with AI or add manually.
+                    No activities added yet. Use "Generate All Content" or add manually.
                   </p>
                 </div>
               )}
@@ -1245,14 +1198,8 @@ const AdminDestinationNew = () => {
         {/* How to Reach Tab */}
         {activeTab === "reach" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">How to Reach</h3>
-             <AIGenerateButton
-              onClick={handleGenerateHowToReach}
-              loading={aiLoading.reach}
-            />
-            </div>
-            
+            <h3 className="text-lg font-semibold">How to Reach</h3>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {["air", "train", "road"].map((method) => (
@@ -1282,7 +1229,7 @@ const AdminDestinationNew = () => {
                             ...formData.how_to_reach,
                             [method]: {
                               ...formData.how_to_reach[
-                                method as keyof typeof formData.how_to_reach
+                              method as keyof typeof formData.how_to_reach
                               ],
                               details,
                             },
@@ -1302,14 +1249,8 @@ const AdminDestinationNew = () => {
         {/* Best Time Tab */}
         {activeTab === "besttime" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Best Time to Visit</h3>
-              <AIGenerateButton
-                onClick={handleGenerateBestTimeDetails}
-                loading={aiLoading.besttime}
-              />
-            </div>
-            
+            <h3 className="text-lg font-semibold">Best Time to Visit</h3>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
@@ -1336,7 +1277,7 @@ const AdminDestinationNew = () => {
                               ...formData.best_time_details,
                               [key]: {
                                 ...formData.best_time_details[
-                                  key as keyof typeof formData.best_time_details
+                                key as keyof typeof formData.best_time_details
                                 ],
                                 season: e.target.value,
                               },
@@ -1358,7 +1299,7 @@ const AdminDestinationNew = () => {
                               ...formData.best_time_details,
                               [key]: {
                                 ...formData.best_time_details[
-                                  key as keyof typeof formData.best_time_details
+                                key as keyof typeof formData.best_time_details
                                 ],
                                 weather: e.target.value,
                               },
@@ -1381,7 +1322,7 @@ const AdminDestinationNew = () => {
                               ...formData.best_time_details,
                               [key]: {
                                 ...formData.best_time_details[
-                                  key as keyof typeof formData.best_time_details
+                                key as keyof typeof formData.best_time_details
                                 ],
                                 why_visit: e.target.value,
                               },
@@ -1404,7 +1345,7 @@ const AdminDestinationNew = () => {
                               ...formData.best_time_details,
                               [key]: {
                                 ...formData.best_time_details[
-                                  key as keyof typeof formData.best_time_details
+                                key as keyof typeof formData.best_time_details
                                 ],
                                 events: e.target.value,
                               },
@@ -1427,7 +1368,7 @@ const AdminDestinationNew = () => {
                               ...formData.best_time_details,
                               [key]: {
                                 ...formData.best_time_details[
-                                  key as keyof typeof formData.best_time_details
+                                key as keyof typeof formData.best_time_details
                                 ],
                                 challenges: e.target.value,
                               },
@@ -1447,14 +1388,8 @@ const AdminDestinationNew = () => {
         {/* Where to Stay Tab */}
         {activeTab === "stay" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Where to Stay</h3>
-              <AIGenerateButton
-                onClick={handleGenerateWhereToStay}
-                loading={aiLoading.stay}
-              />
-            </div>
-            
+            <h3 className="text-lg font-semibold">Where to Stay</h3>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
@@ -1480,7 +1415,7 @@ const AdminDestinationNew = () => {
                             ...formData.where_to_stay,
                             [key]: {
                               ...formData.where_to_stay[
-                                key as keyof typeof formData.where_to_stay
+                              key as keyof typeof formData.where_to_stay
                               ],
                               description: e.target.value,
                             },
@@ -1506,7 +1441,7 @@ const AdminDestinationNew = () => {
                             ...formData.where_to_stay,
                             [key]: {
                               ...formData.where_to_stay[
-                                key as keyof typeof formData.where_to_stay
+                              key as keyof typeof formData.where_to_stay
                               ],
                               options,
                             },
@@ -1536,13 +1471,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <AIGenerateButton
-                  onClick={handleGenerateItinerary}
-                  loading={aiLoading.itinerary}
-                />
-                <Dialog 
-                  open={openDialogs.itinerary} 
-                  onOpenChange={(open) => setOpenDialogs({...openDialogs, itinerary: open})}
+                <Dialog
+                  open={openDialogs.itinerary}
+                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, itinerary: open })}
                 >
                   <DialogTrigger asChild>
                     <Button size="sm">
@@ -1554,8 +1485,7 @@ const AdminDestinationNew = () => {
                     <DialogHeader>
                       <DialogTitle>Add Itinerary Day</DialogTitle>
                       <DialogDescription>
-                        Add a new day to the travel itinerary for this
-                        destination.
+                        Add a new day to the travel itinerary for this destination.
                       </DialogDescription>
                     </DialogHeader>
                     <ItineraryForm onSubmit={handleAddDay} />
@@ -1587,9 +1517,9 @@ const AdminDestinationNew = () => {
                         </h4>
                       </div>
                       <div className="flex gap-1 ml-2">
-                        <Dialog 
-                          open={openDialogs.itinerary && key === day.id} 
-                          onOpenChange={(open) => setOpenDialogs({...openDialogs, itinerary: open})}
+                        <Dialog
+                          open={openDialogs.itinerary && key === day.id}
+                          onOpenChange={(open) => setOpenDialogs({ ...openDialogs, itinerary: open })}
                         >
                           <DialogTrigger asChild>
                             <Button variant="outline" size="sm">
@@ -1625,9 +1555,9 @@ const AdminDestinationNew = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2">
                         <ul className="text-sm text-muted-foreground space-y-1">
-                          {day.activities?.map((activity, i) => (
-                            <li key={i}>• {activity}</li>
-                          ))}
+                          {day.activities?.map((activity: string, i: number) => (
+  <li key={i}>• {activity}</li>
+))}
                         </ul>
                       </div>
 
@@ -1656,7 +1586,7 @@ const AdminDestinationNew = () => {
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
                   <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No itinerary days added yet. Generate with AI or add manually.
+                    No itinerary days added yet. Use "Generate All Content" or add manually.
                   </p>
                 </div>
               )}
@@ -1667,14 +1597,8 @@ const AdminDestinationNew = () => {
         {/* Travel Tips Tab */}
         {activeTab === "tips" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Travel Tips</h3>
-              <AIGenerateButton
-                onClick={handleGenerateTravelTips}
-                loading={aiLoading.tips}
-              />
-            </div>
-            
+            <h3 className="text-lg font-semibold">Travel Tips</h3>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="tips">Travel Tips (one per line)</Label>
@@ -1708,13 +1632,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <AIGenerateButton
-                  onClick={handleGenerateFAQs}
-                  loading={aiLoading.faqs}
-                />
-                <Dialog 
-                  open={openDialogs.faq} 
-                  onOpenChange={(open) => setOpenDialogs({...openDialogs, faq: open})}
+                <Dialog
+                  open={openDialogs.faq}
+                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, faq: open })}
                 >
                   <DialogTrigger asChild>
                     <Button size="sm">
@@ -1749,9 +1669,9 @@ const AdminDestinationNew = () => {
                         </p>
                       </div>
                       <div className="flex gap-1">
-                        <Dialog 
-                          open={openDialogs.faq && key === faq.id} 
-                          onOpenChange={(open) => setOpenDialogs({...openDialogs, faq: open})}
+                        <Dialog
+                          open={openDialogs.faq && key === faq.id}
+                          onOpenChange={(open) => setOpenDialogs({ ...openDialogs, faq: open })}
                         >
                           <DialogTrigger asChild>
                             <Button variant="outline" size="sm">
@@ -1788,7 +1708,7 @@ const AdminDestinationNew = () => {
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
                   <HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No FAQs added yet. Generate with AI or add manually.
+                    No FAQs added yet. Use "Generate All Content" or add manually.
                   </p>
                 </div>
               )}
@@ -1800,7 +1720,9 @@ const AdminDestinationNew = () => {
   );
 };
 
-// Sub-components with DialogClose integration (keep these as they were)
+// Sub-components (PlaceForm, ActivityForm, ItineraryForm, FAQForm) remain exactly the same
+// [Keep all the sub-component functions as they were in your original code]
+
 function PlaceForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (place: any) => void; initialData?: any; isEdit?: boolean }) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",

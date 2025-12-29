@@ -10,55 +10,15 @@ import Footer from "@/components/Footer"
 import { Utensils, Coffee, Leaf, Clock, ChefHat, ArrowLeft, Star, Users, Sun, Moon, Check, Filter } from "lucide-react"
 import Link from "next/link"
 import { supabase } from "@/integrations/supabase/client"
-
-type MealItem = {
-  id: string
-  name: string
-  price: string
-  description: string
-  category: string
-  is_breakfast: boolean
-  is_lunch: boolean
-  is_dinner: boolean
-  is_vegetarian: boolean
-  spice_level: string
-}
+import { Tables } from "@/integrations/supabase/types"
 
 type MealTimeFilter = 'all' | 'breakfast' | 'lunch' | 'dinner'
 
 const SetMenuMeals = () => {
-  const [mealItems, setMealItems] = React.useState<MealItem[]>([])
+  // Use the exact type from your Supabase types
+  const [mealItems, setMealItems] = React.useState<Tables<'meal_items'>[]>([])
   const [loading, setLoading] = React.useState(true)
   const [activeFilter, setActiveFilter] = useState<MealTimeFilter>('all')
-
-  React.useEffect(() => {
-    const loadMealItems = async () => {
-      const { data, error } = await supabase
-        .from("meal_items")
-        .select("*")
-        .order("created_at", { ascending: false })
-      
-      if (!error) {
-        setMealItems(data || [])
-      }
-      setLoading(false)
-    }
-
-    loadMealItems()
-
-    const channel = supabase
-      .channel("meal_items_changes")
-      .on("postgres_changes", { 
-        event: "*", 
-        schema: "public", 
-        table: "meal_items" 
-      }, loadMealItems)
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [])
 
   const specialFeatures = [
     {
@@ -83,6 +43,55 @@ const SetMenuMeals = () => {
     },
   ]
 
+  React.useEffect(() => {
+    const loadMealItems = async () => {
+      const { data, error } = await supabase
+        .from("meal_items")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (!error) {
+        setMealItems(data || [])
+      }
+      setLoading(false)
+    }
+
+    loadMealItems()
+
+    const channel = supabase
+      .channel("meal_items_changes")
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "meal_items"
+      }, loadMealItems)
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
+  // Helper function to safely check boolean values
+  const isTrue = (value: boolean | null) => value === true
+
+  // Update your helper functions to handle null values
+  const getMealTimeBadges = (item: Tables<'meal_items'>) => {
+    const badges = []
+    if (item.is_breakfast) badges.push("Breakfast")
+    if (item.is_lunch) badges.push("Lunch")
+    if (item.is_dinner) badges.push("Dinner")
+    return badges
+  }
+
+  const filterMealItems = (items: Tables<'meal_items'>[], filter: MealTimeFilter) => {
+    if (filter === 'all') return items
+    if (filter === 'breakfast') return items.filter(item => item.is_breakfast)
+    if (filter === 'lunch') return items.filter(item => item.is_lunch)
+    if (filter === 'dinner') return items.filter(item => item.is_dinner)
+    return items
+  }
+
   const getCategoryColor = (category: string) => {
     switch(category) {
       case 'main': return 'bg-blue-100 text-blue-800'
@@ -103,22 +112,6 @@ const SetMenuMeals = () => {
       case 'snack': return 'Snack'
       default: return category
     }
-  }
-
-  const getMealTimeBadges = (item: MealItem) => {
-    const badges = []
-    if (item.is_breakfast) badges.push("Breakfast")
-    if (item.is_lunch) badges.push("Lunch")
-    if (item.is_dinner) badges.push("Dinner")
-    return badges
-  }
-
-  const filterMealItems = (items: MealItem[], filter: MealTimeFilter) => {
-    if (filter === 'all') return items
-    if (filter === 'breakfast') return items.filter(item => item.is_breakfast)
-    if (filter === 'lunch') return items.filter(item => item.is_lunch)
-    if (filter === 'dinner') return items.filter(item => item.is_dinner)
-    return items
   }
 
   const filteredItems = filterMealItems(mealItems, activeFilter)
@@ -200,7 +193,7 @@ const SetMenuMeals = () => {
                   className="gap-2"
                 >
                   <Coffee className="w-4 h-4" />
-                  Breakfast ({mealItems.filter(item => item.is_breakfast).length})
+                  Breakfast ({mealItems.filter(item => isTrue(item.is_breakfast)).length})
                 </Button>
                 <Button
                   variant={activeFilter === 'lunch' ? "default" : "outline"}
@@ -209,7 +202,7 @@ const SetMenuMeals = () => {
                   className="gap-2"
                 >
                   <Sun className="w-4 h-4" />
-                  Lunch ({mealItems.filter(item => item.is_lunch).length})
+                  Lunch ({mealItems.filter(item => isTrue(item.is_lunch)).length})
                 </Button>
                 <Button
                   variant={activeFilter === 'dinner' ? "default" : "outline"}
@@ -218,7 +211,7 @@ const SetMenuMeals = () => {
                   className="gap-2"
                 >
                   <Moon className="w-4 h-4" />
-                  Dinner ({mealItems.filter(item => item.is_dinner).length})
+                  Dinner ({mealItems.filter(item => isTrue(item.is_dinner)).length})
                 </Button>
               </div>
             </div>
@@ -241,9 +234,11 @@ const SetMenuMeals = () => {
                       <div>
                         <h3 className="text-lg font-semibold">{item.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="secondary" className={getCategoryColor(item.category)}>
-                            {getCategoryName(item.category)}
-                          </Badge>
+                          {item.category && (
+                            <Badge variant="secondary" className={getCategoryColor(item.category)}>
+                              {getCategoryName(item.category)}
+                            </Badge>
+                          )}
                           {item.is_vegetarian && (
                             <Badge variant="outline" className="text-green-700 border-green-300">
                               <Check className="w-3 h-3 mr-1" /> Veg
@@ -260,7 +255,7 @@ const SetMenuMeals = () => {
                     
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="capitalize">
-                        {item.spice_level} spice
+                        {item.spice_level || 'medium'} spice
                       </Badge>
                       <div className="flex gap-1">
                         {getMealTimeBadges(item).map((badge) => (
@@ -275,8 +270,6 @@ const SetMenuMeals = () => {
               ))}
             </div>
           )}
-
-         
         </div>
       </section>
 

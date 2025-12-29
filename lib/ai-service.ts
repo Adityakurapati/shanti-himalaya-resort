@@ -18,7 +18,9 @@ export interface AIRequestPayload {
     | "travelInfo"
     | "season"
     | "accommodation"
-    | "travelTips";
+    | "travelTips"
+    | "destinationAll";
+
   existingData?: Record<string, any>;
   context?: Record<string, any>; // Add context property
 }
@@ -188,122 +190,128 @@ Format as JSON: {
   "is_vegetarian": boolean,
   "meal_times": ["breakfast", "lunch", "dinner"]
 }`,
+      destinationAll: `Generate COMPREHENSIVE travel destination information for "${title}" in Nepal/Himalayan region in ONE SINGLE RESPONSE.
+      
+Provide ALL the following sections in structured JSON format:
 
-      destination: `Generate comprehensive travel destination information for "${title}" in Nepal/Himalayan region. 
-      
-      Provide:
-      1. Short description (2-3 sentences)
-      2. Suggested duration (e.g., "5-7 days")
-      3. Difficulty level (Easy/Moderate/Challenging)
-      4. Best time to visit (seasons/months)
-      5. Approximate altitude (if applicable)
-      6. Category (Trekking/Wildlife/Culture/Adventure/Pilgrimage/Nature)
-      7. Key highlights (3-5 comma-separated attractions)
-      8. Overview (3-4 paragraph detailed description)
-      
-      Format as JSON: {
-        "description": "string",
-        "duration": "string",
-        "difficulty": "string",
-        "best_time": "string",
-        "altitude": "string",
-        "category": "string",
-        "highlights": "string",
-        "overview": "string"
-      }`,
+BASIC INFORMATION:
+1. description (2-3 sentences)
+2. duration (e.g., "5-7 days")
+3. difficulty (Easy/Moderate/Challenging)
+4. best_time (seasons/months)
+5. altitude (if applicable)
+6. category (Trekking/Wildlife/Culture/Adventure/Pilgrimage/Nature)
+7. highlights (comma-separated string of 3-5 attractions)
 
-      place: `Generate information for a place to visit at "${title}" destination in Nepal/Himalayan region.
-      
-      Provide:
-      1. Place name
-      2. Description (2-3 sentences)
-      3. 2-3 key highlights
-      
-      Format as JSON: {
-        "name": "string",
-        "description": "string",
-        "highlights": ["highlight1", "highlight2", "highlight3"]
-      }`,
+OVERVIEW:
+8. overview (3-4 paragraph detailed description)
 
-      activity: `Generate activity information for "${title}" destination in Nepal/Himalayan region.
-      
-      Provide:
-      1. Activity title (start with number like "1. Activity Name")
-      2. Description (2-3 sentences)
-      
-      Format as JSON: {
-        "title": "string",
-        "description": "string"
-      }`,
+PLACES TO VISIT:
+9. places (array of 5 places, each with name, description, and 2-3 highlights)
 
-      itinerary: `Generate itinerary for ${context?.duration || "5-7 day"} trip to "${title}" in Nepal/Himalayan region.
-      
-      For each day provide:
-      1. Day number
-      2. Day title/theme
-      3. 4-5 activities for the day
-      
-      Format as JSON array: [
-        {
-          "day": 1,
-          "title": "Day 1 title",
-          "activities": ["Activity 1", "Activity 2", "Activity 3"]
-        }
-      ]`,
+ACTIVITIES:
+10. activities (array of 5 activities, each with title starting with number and description)
 
-      faq: `Generate frequently asked questions (FAQs) about visiting "${title}" in Nepal/Himalayan region.
-      
-      Provide both question and detailed answer for 5-8 common questions.
-      
-      Format as JSON array: [
-        {
-          "question": "What is the best time to visit?",
-          "answer": "The best time is from March to May..."
-        }
-      ]`,
+HOW TO REACH:
+11. howToReach with air, train, road (each as array of 3-4 details)
 
-      travelInfo: `Generate ${context?.type || "air"} travel information for reaching "${title}" in Nepal/Himalayan region.
-      
-      Provide 3-4 practical details about ${context?.type || "air"} travel.
-      
-      Format as JSON: {
-        "details": ["detail1", "detail2", "detail3"]
-      }`,
+BEST TIME DETAILS:
+12. bestTime with winter, summer, monsoon (each with season, weather, why_visit, events, challenges)
 
-      season: `Generate information about visiting "${title}" in Nepal/Himalayan region during ${context?.season || "winter"} season.
-      
-      Provide:
-      1. Season dates
-      2. Weather conditions
-      3. Why visit during this season
-      4. Special events/festivals
-      5. Challenges/considerations
-      
-      Format as JSON: {
-        "season": "string",
-        "weather": "string",
-        "why_visit": "string",
-        "events": "string",
-        "challenges": "string"
-      }`,
+ACCOMMODATION:
+13. accommodation with budget, midrange, luxury (each with description and 3-5 options)
 
-      accommodation: `Generate ${context?.type || "budget"} accommodation information for "${title}" in Nepal/Himalayan region.
-      
-      Provide:
-      1. Description of what to expect
-      2. 3-5 accommodation options/suggestions
-      
-      Format as JSON: {
-        "description": "string",
-        "options": ["option1", "option2", "option3"]
-      }`,
+ITINERARY:
+14. itinerary (array of days based on duration, each with day number, title, and 4-5 activities)
 
-      travelTips: `Generate 8-10 useful travel tips for visiting "${title}" in Nepal/Himalayan region.
-      Tips should cover packing, health, safety, cultural etiquette, and practical advice.
-      
-      Format as JSON: {
-        "tips": ["tip1", "tip2", "tip3"]
-      }`,
+TRAVEL TIPS:
+15. travelTips (array of 8-10 tips)
+
+FAQS:
+16. faqs (array of 5-8 FAQs with question and answer)
+
+Format as SINGLE JSON object:
+{
+  "basic": {
+    "description": "string",
+    "duration": "string",
+    "difficulty": "string",
+    "best_time": "string",
+    "altitude": "string",
+    "category": "string",
+    "highlights": "string"
+  },
+  "overview": "string",
+  "places": [
+    {
+      "name": "string",
+      "description": "string",
+      "highlights": ["string1", "string2"]
+    }
+  ],
+  "activities": [
+    {
+      "title": "string (start with number like '1. Activity Name')",
+      "description": "string"
+    }
+  ],
+  "howToReach": {
+    "air": ["detail1", "detail2", "detail3"],
+    "train": ["detail1", "detail2", "detail3"],
+    "road": ["detail1", "detail2", "detail3"]
+  },
+  "bestTime": {
+    "winter": {
+      "season": "string",
+      "weather": "string",
+      "why_visit": "string",
+      "events": "string",
+      "challenges": "string"
+    },
+    "summer": {
+      "season": "string",
+      "weather": "string",
+      "why_visit": "string",
+      "events": "string",
+      "challenges": "string"
+    },
+    "monsoon": {
+      "season": "string",
+      "weather": "string",
+      "why_visit": "string",
+      "events": "string",
+      "challenges": "string"
+    }
+  },
+  "accommodation": {
+    "budget": {
+      "description": "string",
+      "options": ["option1", "option2"]
+    },
+    "midrange": {
+      "description": "string",
+      "options": ["option1", "option2"]
+    },
+    "luxury": {
+      "description": "string",
+      "options": ["option1", "option2"]
+    }
+  },
+  "itinerary": [
+    {
+      "day": 1,
+      "title": "string",
+      "activities": ["activity1", "activity2", "activity3"]
+    }
+  ],
+  "travelTips": ["tip1", "tip2", "tip3"],
+  "faqs": [
+    {
+      "question": "string",
+      "answer": "string"
+    }
+  ]
+}`,
     };
 
     return contentTypePrompts[contentType] || contentTypePrompts.journey;
@@ -313,14 +321,15 @@ Format as JSON: {
     try {
       // Clean the text - remove markdown code blocks if present
       let cleanedText = text.trim();
-      if (cleanedText.startsWith('```json')) {
+      if (cleanedText.startsWith("```json")) {
         cleanedText = cleanedText.slice(7, -3).trim();
-      } else if (cleanedText.startsWith('```')) {
+      } else if (cleanedText.startsWith("```")) {
         cleanedText = cleanedText.slice(3, -3).trim();
       }
 
       // Extract JSON from the response
-      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/) || cleanedText.match(/\[[\s\S]*\]/);
+      const jsonMatch =
+        cleanedText.match(/\{[\s\S]*\}/) || cleanedText.match(/\[[\s\S]*\]/);
       if (!jsonMatch) {
         throw new Error("No JSON found in AI response");
       }
@@ -409,54 +418,78 @@ Format as JSON: {
         image_prompt: "Blog post header with travel-themed imagery",
       },
       destination: {
-        description: "A beautiful destination in the Himalayan region offering breathtaking views and cultural experiences.",
+        description:
+          "A beautiful destination in the Himalayan region offering breathtaking views and cultural experiences.",
         duration: "5-7 days",
         difficulty: "Moderate",
         best_time: "March to May, September to November",
         altitude: "2,000-4,000 meters",
         category: "Adventure",
         highlights: "Mountain views, Local culture, Trekking routes",
-        overview: "This destination offers a perfect blend of natural beauty and cultural richness. Nestled in the majestic Himalayas, it provides visitors with unforgettable experiences ranging from challenging treks to serene cultural explorations. The region is known for its warm hospitality and diverse landscapes that cater to all types of travelers."
+        overview:
+          "This destination offers a perfect blend of natural beauty and cultural richness. Nestled in the majestic Himalayas, it provides visitors with unforgettable experiences ranging from challenging treks to serene cultural explorations. The region is known for its warm hospitality and diverse landscapes that cater to all types of travelers.",
       },
       place: {
         name: "Scenic Viewpoint",
-        description: "A beautiful viewpoint offering panoramic views of the surrounding mountains.",
-        highlights: ["Panoramic views", "Great for photography", "Accessible location"]
+        description:
+          "A beautiful viewpoint offering panoramic views of the surrounding mountains.",
+        highlights: [
+          "Panoramic views",
+          "Great for photography",
+          "Accessible location",
+        ],
       },
       activity: {
         title: "1. Mountain Trekking",
-        description: "Experience the thrill of trekking through beautiful mountain trails with expert guides."
+        description:
+          "Experience the thrill of trekking through beautiful mountain trails with expert guides.",
       },
       itinerary: [
         {
           day: 1,
           title: "Arrival and Acclimatization",
-          activities: ["Arrive at destination", "Check into accommodation", "Light walk around town", "Evening cultural show"]
-        }
+          activities: [
+            "Arrive at destination",
+            "Check into accommodation",
+            "Light walk around town",
+            "Evening cultural show",
+          ],
+        },
       ],
       faq: [
         {
           question: "What is the best time to visit?",
-          answer: "The best time to visit is during the spring (March to May) and autumn (September to November) seasons when the weather is pleasant and skies are clear."
-        }
+          answer:
+            "The best time to visit is during the spring (March to May) and autumn (September to November) seasons when the weather is pleasant and skies are clear.",
+        },
       ],
       travelInfo: {
-        details: ["Nearest airport: Tribhuvan International Airport", "Flight duration: 30-45 minutes from Kathmandu", "Best to book tickets in advance"]
+        details: [
+          "Nearest airport: Tribhuvan International Airport",
+          "Flight duration: 30-45 minutes from Kathmandu",
+          "Best to book tickets in advance",
+        ],
       },
       season: {
         season: "Winter (December-February)",
         weather: "Cold with occasional snowfall",
         why_visit: "Fewer crowds, beautiful snow-capped mountains",
         events: "Christmas, New Year celebrations",
-        challenges: "Cold temperatures, possible road closures"
+        challenges: "Cold temperatures, possible road closures",
       },
       accommodation: {
-        description: "Comfortable lodging options suitable for budget travelers",
-        options: ["Local guesthouses", "Budget hotels", "Homestays"]
+        description:
+          "Comfortable lodging options suitable for budget travelers",
+        options: ["Local guesthouses", "Budget hotels", "Homestays"],
       },
       travelTips: {
-        tips: ["Pack warm clothing", "Stay hydrated", "Respect local customs", "Carry necessary permits"]
-      }
+        tips: [
+          "Pack warm clothing",
+          "Stay hydrated",
+          "Respect local customs",
+          "Carry necessary permits",
+        ],
+      },
     };
 
     const fallback = fallbacks[contentType as keyof typeof fallbacks] || {};

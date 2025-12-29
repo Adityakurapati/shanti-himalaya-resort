@@ -76,10 +76,10 @@ export class AIContentService {
   }
 
   private buildPrompt(payload: AIRequestPayload): string {
-  const { title, contentType, existingData, context } = payload;
+    const { title, contentType, existingData, context } = payload;
 
-  const contentTypePrompts: Record<string, string> = {
-    journey: `Generate content for a travel journey titled "${title}". Provide:
+    const contentTypePrompts: Record<string, string> = {
+      journey: `Generate content for a travel journey titled "${title}". Provide:
       1. A compelling description (2-3 sentences)
       2. Suggested duration (e.g., "7 Days")
       3. Difficulty level (e.g., "Moderate", "Challenging")
@@ -96,7 +96,7 @@ export class AIContentService {
         "image_prompt": "string"
       }`,
 
-    experience: `Generate content for a travel experience titled "${title}". Provide:
+      experience: `Generate content for a travel experience titled "${title}". Provide:
 1. A compelling description (2-3 sentences)
 2. Duration (e.g., "Half Day", "Full Day")
 3. Group size (e.g., "2-8 people", "Private")
@@ -117,7 +117,7 @@ Format as JSON: {
   "image_url": "string (publicly accessible URL, e.g., Unsplash source)"
 }`,
 
-    package: `Generate content for a travel package titled "${title}". Provide:
+      package: `Generate content for a travel package titled "${title}". Provide:
       1. Excerpt (1-2 sentences)
       2. Full content (3-4 paragraphs)
       3. Category (e.g., "Adventure", "Luxury", "Budget")
@@ -138,7 +138,7 @@ Format as JSON: {
         "image_prompt": "string"
       }`,
 
-    mealPlan: `Generate content for a food dish or meal item titled "${title}". This is for a restaurant/hotel menu system where items can be served at breakfast, lunch, or dinner.
+      mealPlan: `Generate content for a food dish or meal item titled "${title}". This is for a restaurant/hotel menu system where items can be served at breakfast, lunch, or dinner.
 
 Provide:
 1. Dish description (1-2 sentences)
@@ -157,7 +157,7 @@ Format as JSON: {
   "meal_times": ["breakfast", "lunch", "dinner"]
 }`,
 
-    resortActivity: `Generate content for a resort activity titled "${title}". Provide:
+      resortActivity: `Generate content for a resort activity titled "${title}". Provide:
       1. Short description (1 sentence)
       2. Full detailed description (2-3 paragraphs)
       3. Icon name (choose from: Mountain, Tent, Trees, MapPin, Compass, Route, Camera, Coffee, Utensils, Bike, Binoculars, Sailboat, Sun, Star)
@@ -170,7 +170,7 @@ Format as JSON: {
         "image_prompt": "string"
       }`,
 
-    resortPackage: `Generate content for a resort package titled "${title}". Provide:
+      resortPackage: `Generate content for a resort package titled "${title}". Provide:
       1. Duration (e.g., "2 Days / 1 Night")
       2. Price (e.g., "₹8,999")
       3. Original price (e.g., "₹12,999")
@@ -191,7 +191,7 @@ Format as JSON: {
         "image_prompt": "string"
       }`,
 
-    blogPost: `Generate content for a travel blog post titled "${title}". Provide:
+      blogPost: `Generate content for a travel blog post titled "${title}". Provide:
       1. Excerpt (1-2 sentences)
       2. Full content (3-4 paragraphs)
       3. Category (e.g., "Adventure", "Luxury", "Budget")
@@ -212,7 +212,7 @@ Format as JSON: {
         "image_prompt": "string"
       }`,
 
-    destination: `Generate content for a travel destination titled "${title}". Provide:
+      destination: `Generate content for a travel destination titled "${title}". Provide:
       1. A compelling description (2-3 sentences)
       2. Suggested duration (e.g., "5-7 Days")
       3. Difficulty level (e.g., "Easy", "Moderate", "Challenging")
@@ -233,7 +233,7 @@ Format as JSON: {
         "overview": "string"
       }`,
 
-    place: `Generate content for a tourist place titled "${title}". Provide:
+      place: `Generate content for a tourist place titled "${title}". Provide:
       1. Place description (2-3 sentences)
       2. Highlights (array of 3 highlights as strings)
       
@@ -242,7 +242,7 @@ Format as JSON: {
         "highlights": ["highlight1", "highlight2", "highlight3"]
       }`,
 
-    activity: `Generate content for a travel activity titled "${title}". Provide:
+      activity: `Generate content for a travel activity titled "${title}". Provide:
       1. Activity title (starting with number like '1. Activity Name')
       2. Activity description (2-3 sentences)
       
@@ -251,7 +251,7 @@ Format as JSON: {
         "description": "string"
       }`,
 
-    itinerary: `Generate content for a travel itinerary day. Provide:
+      itinerary: `Generate content for a travel itinerary day. Provide:
       1. Day number (integer)
       2. Day title (1-2 sentences)
       3. Activities (array of 4-5 activities as strings)
@@ -262,7 +262,7 @@ Format as JSON: {
         "activities": ["activity1", "activity2", "activity3", "activity4"]
       }`,
 
-    faq: `Generate FAQ content for travel. Provide:
+      faq: `Generate FAQ content for travel. Provide:
       1. Question (string)
       2. Answer (2-3 sentences)
       
@@ -271,14 +271,14 @@ Format as JSON: {
         "answer": "string"
       }`,
 
-    travelInfo: `Generate travel information details. Provide:
+      travelInfo: `Generate travel information details. Provide:
       1. Details (array of 3-4 travel details as strings)
       
       Format as JSON: {
         "details": ["detail1", "detail2", "detail3"]
       }`,
 
-    season: `Generate seasonal travel information. Provide:
+      season: `Generate seasonal travel information. Provide:
       1. Season name (string)
       2. Weather description (string)
       3. Why visit (string)
@@ -293,7 +293,7 @@ Format as JSON: {
         "challenges": "string"
       }`,
 
-    accommodation: `Generate accommodation information. Provide:
+      accommodation: `Generate accommodation information. Provide:
       1. Description (2-3 sentences)
       2. Options (array of 3-5 accommodation options as strings)
       
@@ -302,14 +302,14 @@ Format as JSON: {
         "options": ["option1", "option2", "option3"]
       }`,
 
-    travelTips: `Generate travel tips. Provide:
+      travelTips: `Generate travel tips. Provide:
       1. Tips (array of 5-8 travel tips as strings)
       
       Format as JSON: {
         "tips": ["tip1", "tip2", "tip3", "tip4", "tip5"]
       }`,
 
-    destinationAll: `Generate COMPREHENSIVE travel destination information for "${title}" in Nepal/Himalayan region in ONE SINGLE RESPONSE.
+      destinationAll: `Generate COMPREHENSIVE travel destination information for "${title}" in Nepal/Himalayan region in ONE SINGLE RESPONSE.
       
 Provide ALL the following sections in structured JSON format:
 
@@ -431,11 +431,12 @@ Format as SINGLE JSON object:
     }
   ]
 }`,
-  };
+    };
 
-  // Type assertion to ensure we're accessing a valid key
-  return (contentTypePrompts[contentType] || contentTypePrompts.journey) as string;
-}
+    // Type assertion to ensure we're accessing a valid key
+    return (contentTypePrompts[contentType] ||
+      contentTypePrompts.journey) as string;
+  }
 
   private parseAIResponse(text: string, contentType: string): AIResponse {
     try {

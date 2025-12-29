@@ -22,9 +22,6 @@ import {
   BookOpen,
   Mountain,
   ChevronRight,
-  Facebook,
-  Twitter,
-  Linkedin,
   Link as LinkIcon,
   Copy,
   Check,
@@ -123,37 +120,6 @@ const BlogPost = () => {
     }
   };
 
-  const handleShare = async (platform?: string) => {
-    const url = window.location.href;
-    const title = blogPost?.title || '';
-    const text = blogPost?.excerpt || '';
-
-    switch (platform) {
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank');
-        break;
-      case 'linkedin':
-        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(text)}`, '_blank');
-        break;
-      default:
-        if (navigator.share) {
-          navigator.share({
-            title: title,
-            text: text,
-            url: url,
-          });
-        } else {
-          navigator.clipboard.writeText(url);
-          setIsCopied(true);
-          setTimeout(() => setIsCopied(false), 2000);
-        }
-        break;
-    }
-    setShowShareTooltip(false);
-  };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -267,54 +233,6 @@ const BlogPost = () => {
                     Share
                   </Button>
                   
-                  <AnimatePresence>
-                    {showShareTooltip && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        className="absolute top-full right-0 mt-2 bg-background border rounded-lg shadow-xl p-3 min-w-[200px] z-50"
-                      >
-                        <div className="grid grid-cols-4 gap-2 mb-3">
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => handleShare('facebook')}
-                            className="hover:bg-blue-50 hover:text-blue-600"
-                          >
-                            <Facebook className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => handleShare('twitter')}
-                            className="hover:bg-sky-50 hover:text-sky-600"
-                          >
-                            <Twitter className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => handleShare('linkedin')}
-                            className="hover:bg-blue-50 hover:text-blue-700"
-                          >
-                            <Linkedin className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => handleShare()}
-                            className="hover:bg-green-50 hover:text-green-600"
-                          >
-                            {isCopied ? <Check className="w-4 h-4" /> : <Link className="w-4 h-4" />}
-                          </Button>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {isCopied ? 'Copied!' : 'Copy link'}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               </div>
             </div>

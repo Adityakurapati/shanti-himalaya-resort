@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu, X, Phone, ChevronDown, Shield } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import logo from "@/assets/shanti-himalaya-logo.jpg";
 import type { Tables } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,11 +28,10 @@ const Header = () => {
   });
   
   const pathname = usePathname();
+  const router = useRouter();
 
   // Check if we're on resort-related pages
-  const isResortPage = pathname === "/our-resort" ||
-    pathname === "/our-resort/how-to-reach" ||
-    pathname === "/our-resort/set-menu-meals";
+  const isResortPage = pathname.startsWith("/our-resort");
 
   // Hide dropdown menus on Our Resort pages
   const showDropdowns = !isResortPage;
@@ -43,11 +42,27 @@ const Header = () => {
   ];
 
   const resortNavLinks = isResortPage ? [
-          { href: "#accommodation", label: "Accommodation" },
+    { href: "#accommodation", label: "Accommodation" },
     { href: "#packages", label: "Packages" },
     { href: "#gallery", label: "Gallery" },
     { href: "#activities", label: "Activities" },
   ] : [];
+
+  // Handle resort navigation click
+  const handleResortNavClick = (hash: string) => {
+    // If we're already on /our-resort, just scroll to section
+    if (pathname === "/our-resort") {
+      setIsMenuOpen(false);
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // If we're on a subpage, navigate to /our-resort with the hash
+      setIsMenuOpen(false);
+      router.push(`/our-resort${hash}`);
+    }
+  };
 
   // Fetch featured journeys, destinations, and experiences
   useEffect(() => {
@@ -141,13 +156,13 @@ const Header = () => {
 
             {/* Resort-specific Navigation */}
             {resortNavLinks.map((link: any) => (
-              <a
+              <button
                 key={link.href}
-                href={link.href}
+                onClick={() => handleResortNavClick(link.href)}
                 className="font-medium transition-all duration-300 text-foreground hover:text-primary"
               >
                 {link.label}
-              </a>
+              </button>
             ))}
 
             {/* Dropdown Menus - Hidden on Our Resort pages */}
@@ -306,14 +321,13 @@ const Header = () => {
 
               {/* Resort Navigation in Mobile */}
               {resortNavLinks.map((link: any) => (
-                <a
+                <button
                   key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-muted"
+                  onClick={() => handleResortNavClick(link.href)}
+                  className="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-muted text-left"
                 >
                   {link.label}
-                </a>
+                </button>
               ))}
 
               {/* Mobile Dropdown Sections - Hidden on Our Resort pages */}

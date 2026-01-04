@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import type React from "react"
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
@@ -12,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Edit, Trash2 } from "lucide-react"
 import ImageUploader from "./ImageUploader"
 import { useToast } from "@/hooks/use-toast"
+import { AIButton } from "./AIButton"
 import type { Tables } from "@/integrations/supabase/types";
 
 type DayItem = {
@@ -28,6 +28,7 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<DayItem | null>(null)
   const { toast } = useToast()
+  const [journeyInfo, setJourneyInfo] = useState<{title: string} | null>(null)
   const [form, setForm] = useState({
     day_number: 1,
     title: "",
@@ -49,10 +50,24 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
     setLoading(false)
   }
 
+  const fetchJourneyInfo = async () => {
+    const { data, error } = await supabase
+      .from("journeys")
+      .select("title")
+      .eq("id", journeyId)
+      .single()
+    
+    if (!error && data) {
+      setJourneyInfo(data)
+    }
+  }
+
   useEffect(() => {
     fetchDays()
+    fetchJourneyInfo()
+    
     // subscribe to changes
-    const channel = supabase
+    const daysChannel = supabase
       .channel(`journey-days-${journeyId}`)
       .on(
         "postgres_changes",
@@ -60,8 +75,9 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
         fetchDays,
       )
       .subscribe()
+    
     return () => {
-      supabase.removeChannel(channel)
+      supabase.removeChannel(daysChannel)
     }
   }, [journeyId])
 
@@ -108,6 +124,33 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
     toast({ title: "Day deleted" })
   }
 
+  const handleAIContentGenerated = (aiContent: Record<string, any>) => {
+    setForm(prev => ({
+      ...prev,
+      title: aiContent.title || prev.title,
+      description: aiContent.description || prev.description,
+      // You can also use image_prompt to suggest images or even generate them
+    }))
+    
+    // If AI provides activities, you can append them to the description
+    if (aiContent.activities) {
+      setForm(prev => ({
+        ...prev,
+        description: prev.description 
+          ? `${prev.description}\n\nKey Activities: ${aiContent.activities}`
+          : `Key Activities: ${aiContent.activities}`
+      }))
+    }
+    
+    // If AI provides image_prompt, you could use it to suggest an image
+    if (aiContent.image_prompt) {
+      toast({
+        title: "Image suggestion",
+        description: `AI suggests: "${aiContent.image_prompt}" for the day's image`,
+      })
+    }
+  }
+
   if (loading) return <div className="text-sm text-muted-foreground">Loading days…</div>
 
   return (
@@ -125,7 +168,16 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
             />
           </div>
           <div>
-            <Label htmlFor="title">Day Title</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="title">Day Title</Label>
+              <AIButton
+                title={form.title || journeyInfo?.title || `Day ${form.day_number}`}
+                contentType="daySchedule" // Using itinerary type for day schedule
+                onContentGenerated={handleAIContentGenerated}
+                disabled={!form.title.trim() && !journeyInfo?.title}
+                className="h-7 text-xs"
+              />
+            </div>
             <Input
               id="title"
               value={form.title}
@@ -190,7 +242,7 @@ export const DayScheduleEditor: React.FC<{ journeyId: string }> = ({ journeyId }
                   />
                 </div>
               )}
-              {d.description && <p className="text-sm text-muted-foreground">{d.description}</p>}
+              {d.description && <p className="text-sm text-muted-foreground whitespace-pre-line">{d.description}</p>}
             </CardContent>
           </Card>
         ))}

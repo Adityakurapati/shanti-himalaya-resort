@@ -22,7 +22,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                                                 <Sonner />
                                                 {children}
                                                 <WhatsAppButton />
-                                                <ChatBot />
                                         </TooltipProvider>
                                 </QueryClientProvider>
                         </body>

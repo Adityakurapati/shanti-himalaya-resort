@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface AIButtonProps {
   title: string;
-  contentType: 'journey' | 'experience' | 'package' | 'mealPlan' | 'resortActivity' | 'resortPackage';
+  contentType: 'journey' | 'experience' | 'package' | 'daySchedule' | 'resortActivity' | 'resortPackage';
   onContentGenerated: (content: Record<string, any>) => void;
   disabled?: boolean;
   className?: string;

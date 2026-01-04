@@ -179,10 +179,7 @@ const AdminPanel = () => {
                                                         <Package className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Blogs</span>
                                                 </TabsTrigger>
-                                                <TabsTrigger value="meals" className="flex items-center gap-2">
-                                                        <Utensils className="h-4 w-4" />
-                                                        <span className="hidden sm:inline">Meals</span>
-                                                </TabsTrigger>
+                                              
                                                 <TabsTrigger value="packages" className="flex items-center gap-2">
                                                         <Calendar className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Packages</span>

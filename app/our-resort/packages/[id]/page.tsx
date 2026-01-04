@@ -128,37 +128,6 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
                 </div>
               </div>
             </div>
-
-            <div className="lg:w-1/3">
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Quick Facts</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center">
-                      <Clock className="w-5 h-5 mr-3 text-white/70" />
-                      <div>
-                        <div className="font-medium">Duration</div>
-                        <div className="text-sm text-white/80">{pkg.duration}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <Users className="w-5 h-5 mr-3 text-white/70" />
-                      <div>
-                        <div className="font-medium">Best For</div>
-                        <div className="text-sm text-white/80">Couples & Families</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <Shield className="w-5 h-5 mr-3 text-white/70" />
-                      <div>
-                        <div className="font-medium">Included</div>
-                        <div className="text-sm text-white/80">All meals & activities</div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </section>

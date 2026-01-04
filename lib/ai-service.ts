@@ -6,7 +6,7 @@ export interface AIRequestPayload {
     | "journey"
     | "experience"
     | "package"
-    | "mealPlan"
+    | "daySchedule"
     | "resortActivity"
     | "resortPackage"
     | "blogPost"
@@ -262,6 +262,31 @@ Format as JSON: {
         "activities": ["activity1", "activity2", "activity3", "activity4"]
       }`,
 
+      // In your ai-service.ts file, add this to the contentTypePrompts object
+      daySchedule: `Generate content for a travel day in a journey itinerary for Day ${
+        context?.dayNumber || "N"
+      }. 
+Title/Theme: "${title}"
+Previous day context: ${
+        context?.previousDay
+          ? `Day ${context.previousDay.day_number}: ${
+              context.previousDay.title || "No title"
+            }`
+          : "First day of journey"
+      }
+
+Provide:
+1. Day Title (suggested name for this day, e.g., "Kathmandu Exploration" or "Trek to Base Camp")
+2. Brief Description (2-3 sentences describing the day's activities and experiences)
+3. Suggested Image Description for the day's highlight
+4. Key Activities (comma-separated, 3-5 main activities for this day)
+
+Format as JSON: {
+  "title": "string",
+  "description": "string",
+  "image_prompt": "string",
+  "activities": "comma, separated, list"
+}`,
       faq: `Generate FAQ content for travel. Provide:
       1. Question (string)
       2. Answer (2-3 sentences)

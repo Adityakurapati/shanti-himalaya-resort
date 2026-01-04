@@ -12,7 +12,6 @@ import DestinationsAdmin from "@/components/admin/DestinationsAdmin"
 import ExperiencesAdmin from "@/components/admin/ExperiencesAdmin"
 import PackagesAdmin from "@/components/admin/PackagesAdmin"
 import PendingUsersAdmin from "@/components/admin/PendingUsersAdmin"
-import { MenuMealsAdmin } from "@/components/admin/MenuMealsAdmin"
 import { ResortPackagesAdmin } from "@/components/admin/ResortPackagesAdmin"
 import { ResortActivitiesAdmin } from "@/components/admin/ResortActivitiesAdmin"
 import ResortGalleryAdmin from "@/components/admin/ResortGalleryAdmin"
@@ -230,9 +229,6 @@ const AdminPanel = () => {
                                                 <PackagesAdmin />
                                         </TabsContent>
 
-                                        <TabsContent value="meals">
-                                                <MenuMealsAdmin />
-                                        </TabsContent>
 
                                         <TabsContent value="packages">
                                                 <ResortPackagesAdmin />

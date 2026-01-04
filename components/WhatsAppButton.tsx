@@ -13,7 +13,7 @@ const WhatsAppButton = () => {
   return (
     <Button
       onClick={handleWhatsAppClick}
-      className="fixed bottom-6 right-24 w-14 h-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white z-50"
+      className="fixed bottom-6 right-5 w-12 h-12 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white z-50"
       size="lg"
     >
       <MessageCircle className="w-6 h-6" />

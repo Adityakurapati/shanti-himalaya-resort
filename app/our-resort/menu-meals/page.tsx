@@ -16,7 +16,10 @@ import {
   Mountain,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Trees,
+  Users,
+  Star
 } from "lucide-react"
 
 export default function MenuMealsPage() {
@@ -254,115 +257,144 @@ export default function MenuMealsPage() {
         </div>
       </section>
 
-      {/* ================= ABOUT DINING ================= */}
+      {/* ================= SHANTI HIMALAYA DINING EXPERIENCE ================= */}
       <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/10">
-        <div className="container mx-auto px-4 max-w-4xl text-center space-y-6">
-          <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full">
-            <Mountain className="w-12 h-12 text-primary" />
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Shanti Himalaya Dining Experience
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Our restaurant offers warm Himalayan hospitality, breathtaking panoramic
-            mountain views, and thoughtfully crafted multi-course meals. We serve
-            curated set menus using locally sourced organic ingredients while
-            accommodating all special dietary requirements with care.
-          </p>
-        </div>
-      </section>
-
-      {/* ================= MENU CARDS ================= */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Curated Dining Menus</h2>
-            <p className="text-muted-foreground text-lg">
-              Experience culinary excellence with our specially crafted menus
-            </p>
+            <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-6">
+              <Trees className="w-12 h-12 text-primary" />
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              SHANTI HIMALAYA DINING EXPERIENCE
+            </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Breakfast */}
-            <MenuCard
-              img="/sample/breakfast.jpg"
-              icon={<Coffee className="w-8 h-8 text-amber-600" />}
-              title="Breakfast"
-              price="₹349 per person"
-              desc="A wholesome start with Indian & continental options, fresh fruits, baked goods, and specialty teas served every morning."
-              features={["Fresh Juices", "Indian & Continental", "Baked Goods", "Specialty Teas"]}
-            />
-
-            {/* Lunch / Dinner Veg */}
-            <MenuCard
-              img="/sample/veg-thali.png"
-              icon={<ChefHat className="w-8 h-8 text-green-600" />}
-              title="Veg Lunch / Dinner"
-              price="₹549 per person"
-              desc="Comforting vegetarian meals featuring seasonal vegetables, traditional flavors, and authentic preparation methods."
-              features={["Seasonal Vegetables", "Traditional Flavors", "Multi-course Meal", "Local Spices"]}
-            />
-
-            {/* Non Veg */}
-            <MenuCard
-              img="/sample/non-veg.png"
-              icon={<Flame className="w-8 h-8 text-orange-600" />}
-              title="Non-Veg Lunch / Dinner"
-              price="₹749 per person"
-              desc="Delicious chicken and fish preparations served with traditional Indian accompaniments and modern presentations."
-              features={["Chicken/Fish Dishes", "Indian Accompaniments", "Modern Presentation", "Local Herbs"]}
-            />
+          <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+            <p>
+              At <span className="font-semibold text-foreground">Shanti Himalaya Wilderness Resort</span>, dining is more than just a meal; it's an immersive experience.
+            </p>
+            
+            <p>
+              Our main restaurant serves as the central dining area where you can enjoy a wide variety of dishes. This large restaurant not only serves finger-licking food, but also provides eye-soothing, gorgeous 180-degree views of greenery laden mountains in front.
+            </p>
+            
+            <p>
+              The restaurant provides Set Menu Meals and caters to any special dietary requirements. The Resort Cook strives to create flavorful dishes that satisfy diverse palates.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ================= SPECIAL EXPERIENCES ================= */}
+      {/* ================= SPECIAL OUTDOOR DINING EXPERIENCES ================= */}
+      <section className="py-20">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 px-6 py-2 text-sm">Outdoor Experiences</Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Unique Outdoor Dining Experiences
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Shanti Himalaya excels in providing memorable outdoor dining experiences
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Breakfast During Summers */}
+            <div className="bg-background rounded-xl p-6 shadow-card hover:shadow-xl transition-shadow border border-border/50">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-amber-100 rounded-lg">
+                  <Coffee className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Breakfast During Summers</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Imagine starting your day with a delightful picnic-style Breakfast amongst the nature in the Resort's courtyard.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Children's Picnic */}
+            <div className="bg-background rounded-xl p-6 shadow-card hover:shadow-xl transition-shadow border border-border/50">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Children's Picnic</h3>
+                  <p className="text-sm text-muted-foreground">
+                    The resort caters to families by offering special picnic experiences for children. We prepare a basket filled with snacks & drinks allowing children to enjoy a meal in the natural surroundings.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Sundowner Tea and Snacks */}
+            <div className="bg-background rounded-xl p-6 shadow-card hover:shadow-xl transition-shadow border border-border/50">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-orange-100 rounded-lg">
+                  <Star className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Sundowner Tea and Snacks</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Guests can indulge in a "sundowner" experience, enjoying tea and cookies as the sun sets through the mountains. This provides a relaxing way to conclude a day well spent in wilderness.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SPECIAL GOURMET EXPERIENCES ================= */}
       <section className="py-20 bg-gradient-to-b from-muted/30 to-transparent">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-12">
             <Badge className="mb-4 px-6 py-2 text-sm">Exclusive Experiences</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Special Gourmet Experiences
             </h2>
-            <p className="text-muted-foreground text-lg mt-4">
-              Create unforgettable memories with our unique dining experiences
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Shanti Himalaya Wilderness Glamps offers a few different special gourmet experiences
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "Outdoor Breakfasts & Summer Picnics",
-                desc: "Al fresco dining with mountain vistas",
+                icon: <Trees className="w-5 h-5 text-green-600" />,
+                title: "Special Village Meals",
+                desc: "Enjoy a dinner within the bush, with specially prepared meals."
               },
               {
-                title: "Children's Picnic Experiences",
-                desc: "Fun-filled meals for young guests",
+                icon: <Mountain className="w-5 h-5 text-blue-600" />,
+                title: "Sundowner at Hilltop",
+                desc: "Hike to a nearby hill top for sundowner drinks and snacks."
               },
               {
-                title: "Sundowner Tea & Snacks",
-                desc: "Evening refreshments with sunset views",
+                icon: <Flame className="w-5 h-5 text-orange-600" />,
+                title: "BonFlame-Bar-be-cue dinners",
+                desc: "Enjoy a meal cooked over a bonFlame."
               },
               {
-                title: "Bonfire Bar-be-cue Dinners",
-                desc: "Grilled delights under the stars",
+                icon: <Coffee className="w-5 h-5 text-amber-600" />,
+                title: "Outdoor Breakfasts",
+                desc: "Enjoy a breakfast served outside."
               },
               {
-                title: "Romantic Candle Light Meals",
-                desc: "Intimate dinners for couples",
-              },
-              {
-                title: "Village & Hilltop Dining",
-                desc: "Traditional local cuisine experiences",
-              },
+                icon: <Sparkles className="w-5 h-5 text-pink-600" />,
+                title: "Romantic Candle Light Meal",
+                desc: "Enjoy a romantic meal set in the Restaurant."
+              }
             ].map((item, i) => (
               <div
                 key={i}
-                className="bg-background rounded-xl p-6 shadow-card hover:shadow-xl transition-shadow border border-border/50 group hover:border-primary/30"
+                className="bg-background rounded-xl p-6 shadow-card hover:shadow-xl transition-shadow border border-border/50"
               >
                 <div className="flex items-start gap-4">
-                  <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition">
-                    <Sparkles className="w-5 h-5 text-primary" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    {item.icon}
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
@@ -371,6 +403,287 @@ export default function MenuMealsPage() {
                 </div>
               </div>
             ))}
+          </div>
+          
+          <div className="mt-12 text-center">
+            <p className="text-lg italic text-muted-foreground max-w-3xl mx-auto">
+              The combination of delicious food, stunning scenery, and the unique ambiance of the wilderness makes dining at Shanti Himalaya Wilderness Resort an experience you won't soon forget.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= OUR SET FOOD MENU MEALS ================= */}
+      <section className="py-12">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-10">
+      <h2 className="text-3xl md:text-4xl font-bold mb-3">OUR SET FOOD MENU MEALS</h2>
+      <p className="text-muted-foreground">Complete set meals for your convenience</p>
+    </div>
+
+    {/* Menu Cards Container */}
+    <div className="space-y-8">
+      {/* BREAKFAST CARD */}
+      <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
+        <div className="flex flex-col md:flex-row">
+          <div className="relative md:w-2/5 h-56 md:h-auto">
+            <Image
+              src="/sample/breakfast.jpg"
+              alt="Breakfast"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent md:bg-gradient-to-r md:from-black/30 md:via-black/10 md:to-transparent" />
+          </div>
+          <div className="md:w-3/5 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <Coffee className="w-6 h-6 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-bold">BREAKFAST</h3>
+            </div>
+            <Badge className="text-base px-5 py-2 bg-amber-50 text-amber-800 border-amber-200 mb-5">
+              Rs. 349* Per person per meal
+            </Badge>
+            <div className="mb-5">
+              <p className="text-muted-foreground mb-3 font-medium">Choose any Two Options:</p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Stuffed Parantha / Aalu Poorie / Poha</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Two Eggs prepared to your liking / Scrambled Egg</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Bread Toast with Butter / Jam</span>
+                </li>
+              </ul>
+            </div>
+            <div className="pt-4 border-t">
+              <p className="font-semibold text-primary">Hot Tea / Coffee included</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* LUNCH & DINNER CARDS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* VEG LUNCH/DINNER CARD */}
+        <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
+          <div className="relative h-48">
+            <Image
+              src="/sample/veg-thali.png"
+              alt="Vegetarian Thali"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute bottom-5 left-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <ChefHat className="w-5 h-5 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-white">VEG LUNCH / DINNER</h3>
+              </div>
+              <Badge className="bg-white/95 text-green-800 border-green-200 font-medium">
+                Rs. 549* Per person per meal
+              </Badge>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-2 gap-5">
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-green-700">Choose 1 Daal</h4>
+                <p className="text-sm text-muted-foreground">Daal Fry / Channa Daal / Rajma / Chole</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-green-700">Choose 1 Subzi</h4>
+                <p className="text-sm text-muted-foreground">Mix veg / Aalu Gobhi / Jeera Aalu</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-green-700">Rice</h4>
+                <p className="text-sm text-muted-foreground">Plain Rice / Jeera Rice</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-green-700">Desert</h4>
+                <p className="text-sm text-muted-foreground">Seviyan / Kheer / Halwa</p>
+              </div>
+            </div>
+            <div className="mt-6 pt-5 border-t">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium">Also includes:</span> Tawa Roti, Salad, Achar, Papad
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* NON-VEG LUNCH/DINNER CARD */}
+        <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
+          <div className="relative h-48">
+            <Image
+              src="/sample/non-veg.png"
+              alt="Non-Vegetarian Meal"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute bottom-5 left-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Flame className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-xl font-bold text-white">NON-VEG LUNCH / DINNER</h3>
+              </div>
+              <Badge className="bg-white/95 text-red-800 border-red-200 font-medium">
+                Rs. 749* Per person per meal
+              </Badge>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-2 gap-5">
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Daal</h4>
+                <p className="text-sm text-muted-foreground">Daal Fry / Channa Daal / Rajma / Chole</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Subzi</h4>
+                <p className="text-sm text-muted-foreground">Mix veg / Aalu Gobhi / Jeera Aalu</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Non-Veg</h4>
+                <p className="text-sm text-muted-foreground">Chicken Curry / Chicken Masala / Kadhai Chicken</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-2 text-red-700">Rice</h4>
+                <p className="text-sm text-muted-foreground">Plain Rice / Jeera Rice</p>
+              </div>
+            </div>
+            <div className="mt-6 pt-5 border-t">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium">Also includes:</span> Tawa Roti, Desert (Seviyan/Kheer/Halwa), Salad, Achar, Papad
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+      {/* ================= SNACKS & BONFlame ================= */}
+      <section className="py-20 bg-gradient-to-b from-muted/30 to-transparent">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Flame className="w-8 h-8 text-orange-600" />
+              <h2 className="text-4xl md:text-5xl font-bold">SNACKS & BONFlame</h2>
+            </div>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto italic">
+              Imagine the crackling of a bonFlame, the gentle hum of nocturnal insects, and the vast, star-studded sky above. This is the magic of our BonFlame evenings, where the thrill of the wilderness meets the delight of exquisite cuisine.
+            </p>
+          </div>
+
+          {/* SNACKS OPTIONS */}
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* 1 Veg + 1 Non Veg */}
+            <div className="bg-white rounded-xl shadow-card p-6">
+              <div className="text-center mb-6">
+                <Badge className="text-lg px-6 py-2 bg-blue-50 text-blue-800 border-blue-200 mb-2">
+                  1 VEG + 1 Non Veg
+                </Badge>
+                <p className="text-2xl font-bold">Rs. 500 Per Person</p>
+                <p className="text-sm text-muted-foreground mt-2">(Choose Any One from each category)</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                {/* Veg Options */}
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 text-green-700">Veg</h4>
+                  <ul className="space-y-2">
+                    <li className="text-muted-foreground">• Mixed Pakora</li>
+                    <li className="text-muted-foreground">• Masala Peanut</li>
+                    <li className="text-muted-foreground">• Egg Bhurji</li>
+                  </ul>
+                </div>
+                
+                {/* Non Veg Options */}
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 text-red-700">Non Veg</h4>
+                  <ul className="space-y-2">
+                    <li className="text-muted-foreground">• Chilli Chicken</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* 2 Veg + 2 Non Veg */}
+            <div className="bg-white rounded-xl shadow-card p-6">
+              <div className="text-center mb-6">
+                <Badge className="text-lg px-6 py-2 bg-purple-50 text-purple-800 border-purple-200 mb-2">
+                  2 Veg + 2 Non Veg
+                </Badge>
+                <p className="text-2xl font-bold">Rs. 850 Per Person</p>
+                <p className="text-sm text-muted-foreground mt-2">(Choose Any Two from each category)</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                {/* Veg Options */}
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 text-green-700">Veg</h4>
+                  <ul className="space-y-2">
+                    <li className="text-muted-foreground">• Mixed Pakora</li>
+                    <li className="text-muted-foreground">• Masala Peanut</li>
+                    <li className="text-muted-foreground">• Chilli Mushroom</li>
+                    <li className="text-muted-foreground">• Paneer Manchurian</li>
+                  </ul>
+                </div>
+                
+                {/* Non Veg Options */}
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 text-red-700">Non Veg</h4>
+                  <ul className="space-y-2">
+                    <li className="text-muted-foreground">• Chilli Chicken</li>
+                    <li className="text-muted-foreground">• Fried Chicken</li>
+                    <li className="text-muted-foreground">• Grilled Chicken</li>
+                    <li className="text-muted-foreground">• Egg Bhurji</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* BONFlame */}
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl shadow-card p-8 border border-orange-200">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="md:w-2/3">
+                <div className="flex items-center gap-3 mb-4">
+                  <Flame className="w-8 h-8 text-orange-600" />
+                  <h3 className="text-2xl font-bold text-orange-900">BONFlame</h3>
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  Flame-wood collection is a part of daily work schedule of rural women living in villages around the resort. We purchase the Flamewood from these women and encourage our Guests to contribute for our effort in helping in the upliftment of local women community.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg p-4 border border-orange-200">
+                    <p className="font-semibold text-lg text-orange-800">Bon Flame for 1 Hr</p>
+                    <p className="text-2xl font-bold text-orange-600">Rs. 600 in total</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-orange-200">
+                    <p className="font-semibold text-lg text-orange-800">Bon Flame for 2 Hrs</p>
+                    <p className="text-2xl font-bold text-orange-600">Rs. 900 in total</p>
+                  </div>
+                </div>
+              </div>
+              <div className="md:w-1/3 flex justify-center">
+                <div className="relative h-48 w-48 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                  <div className="absolute inset-0 animate-pulse bg-gradient-to-b from-yellow-300 to-orange-400 rounded-full opacity-70"></div>
+                  <Flame className="w-16 h-16 text-white" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -384,125 +697,52 @@ export default function MenuMealsPage() {
                 <Info className="w-8 h-8 text-primary" />
               </div>
               <div>
-                <h2 className="text-2xl md:text-3xl font-semibold">Dining Guidelines</h2>
+                <h2 className="text-2xl md:text-3xl font-semibold">HOUSE RULES</h2>
                 <p className="text-muted-foreground">For a smooth dining experience</p>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-primary">1</span>
-                  </div>
-                  <span className="text-sm">Same dishes for the entire group (per meal)</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-primary">2</span>
-                  </div>
-                  <span className="text-sm">Kitchen service ends at 10 PM</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-primary">3</span>
-                  </div>
-                  <span className="text-sm">Menu confirmation required 24 hours prior</span>
-                </li>
-              </ul>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-primary">4</span>
-                  </div>
-                  <span className="text-sm">Guests above 6 years will be charged fully</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-primary">5</span>
-                  </div>
-                  <span className="text-sm">Menu subject to local availability</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <span className="text-xs font-semibold text-primary">6</span>
-                  </div>
-                  <span className="text-sm">Special requests available on prior notice</span>
-                </li>
-              </ul>
+            <div className="space-y-6">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-semibold text-primary">1</span>
+                </div>
+                <span className="text-base">Same dishes for the entire group (for each meal).</span>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-semibold text-primary">2</span>
+                </div>
+                <span className="text-base">Our Team will retire at 10 pm every night. Post which no table service will be available.</span>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-semibold text-primary">3</span>
+                </div>
+                <span className="text-base">Please confirm the food menu at least 24 hours prior to check-in date.</span>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-semibold text-primary">4</span>
+                </div>
+                <span className="text-base">Anyone above 6 years will be charged in full.</span>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-semibold text-primary">5</span>
+                </div>
+                <span className="text-base">Due to remote location of Resort, any particular dish is subject to availability of that item locally.</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <Footer />
-    </div>
-  )
-}
-
-/* ================= ENHANCED MENU CARD ================= */
-function MenuCard({
-  img,
-  icon,
-  title,
-  price,
-  desc,
-  features,
-}: {
-  img: string
-  icon: React.ReactNode
-  title: string
-  price: string
-  desc: string
-  features?: string[]
-}) {
-  return (
-    <div className="rounded-2xl overflow-hidden shadow-card hover:shadow-2xl transition-all duration-300 group border border-border/50 hover:border-primary/30 bg-background">
-      <div className="relative h-64 overflow-hidden">
-        <Image
-          src={img}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        <div className="absolute top-4 right-4">
-          <Badge className="bg-white/90 backdrop-blur-sm text-foreground hover:bg-white">
-            {price}
-          </Badge>
-        </div>
-      </div>
-      <div className="p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            {icon}
-          </div>
-          <h3 className="text-xl font-bold">{title}</h3>
-        </div>
-        <Separator />
-        <p className="text-muted-foreground leading-relaxed">{desc}</p>
-        
-        {features && (
-          <div className="pt-2">
-            <h4 className="text-sm font-semibold mb-2">Includes:</h4>
-            <div className="flex flex-wrap gap-2">
-              {features.map((feature, i) => (
-                <Badge
-                  key={i}
-                  variant="outline"
-                  className="text-xs py-1"
-                >
-                  {feature}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        <Button variant="outline" className="w-full mt-4 group-hover:border-primary group-hover:text-primary">
-          View Full Menu
-        </Button>
-      </div>
     </div>
   )
 }

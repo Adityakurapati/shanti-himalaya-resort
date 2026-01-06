@@ -669,11 +669,11 @@ export default function MenuMealsPage() {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-white rounded-lg p-4 border border-orange-200">
-                    <p className="font-semibold text-lg text-orange-800">Bon Flame for 1 Hr</p>
+                    <p className="font-semibold text-lg text-orange-800">BONFIRE for 1 Hr</p>
                     <p className="text-2xl font-bold text-orange-600">Rs. 600 in total</p>
                   </div>
                   <div className="bg-white rounded-lg p-4 border border-orange-200">
-                    <p className="font-semibold text-lg text-orange-800">Bon Flame for 2 Hrs</p>
+                    <p className="font-semibold text-lg text-orange-800">BONFIRE for 2 Hrs</p>
                     <p className="text-2xl font-bold text-orange-600">Rs. 900 in total</p>
                   </div>
                 </div>

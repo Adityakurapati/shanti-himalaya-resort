@@ -144,21 +144,44 @@ const JourneysAdmin = () => {
         }
 
         const handleDelete = async (id: string) => {
-                if (!confirm("Are you sure you want to delete this journey?")) return
+  if (!confirm("Are you sure you want to delete this journey?")) return
 
-                try {
-                        const { error } = await supabase.from("journeys").delete().eq("id", id)
+  try {
+    // First, delete all enquiries related to this journey
+    const { error: enquiriesError } = await supabase
+      .from('enquiries')
+      .delete()
+      .eq('journey_id', id)
+    
+    if (enquiriesError) {
+      console.error('Error deleting related enquiries:', enquiriesError)
+      // If we can't delete enquiries, inform the user
+      const shouldProceed = confirm(
+        'This journey has associated enquiries. Deleting it will also delete all related enquiries. Continue?'
+      )
+      if (!shouldProceed) return
+      
+      // Try to delete again or show error
+      throw new Error('Cannot delete journey with related enquiries. Please delete enquiries first.')
+    }
 
-                        if (error) throw error
-                        toast({ title: "Journey deleted successfully" })
-                } catch (error: any) {
-                        toast({
-                                title: "Error deleting journey",
-                                description: error.message,
-                                variant: "destructive",
-                        })
-                }
-        }
+    // Then delete the journey
+    const { error } = await supabase.from("journeys").delete().eq("id", id)
+
+    if (error) throw error
+    toast({ 
+      title: "Journey deleted successfully",
+      description: "All related enquiries have also been removed."
+    })
+  } catch (error: any) {
+    console.error('Delete error:', error)
+    toast({
+      title: "Error deleting journey",
+      description: error.message || "This journey cannot be deleted because it has related enquiries.",
+      variant: "destructive",
+    })
+  }
+}
 
         const resetForm = () => {
                 setFormData({

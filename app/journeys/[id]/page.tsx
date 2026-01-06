@@ -471,8 +471,8 @@ const JourneyDetail = () => {
                                                 <div className="flex items-center space-x-4 mb-6">
                                                         <Badge
                                                                 className={`${journey.image_url
-                                                                                ? "bg-white/20 text-white border-white/30"
-                                                                                : "bg-white/20 text-white border-white/30"
+                                                                        ? "bg-white/20 text-white border-white/30"
+                                                                        : "bg-white/20 text-white border-white/30"
                                                                         }`}
                                                         >
                                                                 {journey.difficulty}
@@ -490,8 +490,8 @@ const JourneyDetail = () => {
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                                         <div
                                                                 className={`${journey.image_url
-                                                                                ? "bg-white/10 backdrop-blur-sm border-white/20"
-                                                                                : "bg-white/10 backdrop-blur-sm border-white/20"
+                                                                        ? "bg-white/10 backdrop-blur-sm border-white/20"
+                                                                        : "bg-white/10 backdrop-blur-sm border-white/20"
                                                                         } rounded-2xl p-4 shadow-lg border`}
                                                         >
                                                                 <div className="flex items-center space-x-3">
@@ -511,8 +511,8 @@ const JourneyDetail = () => {
 
                                                         <div
                                                                 className={`${journey.image_url
-                                                                                ? "bg-white/10 backdrop-blur-sm border-white/20"
-                                                                                : "bg-white/10 backdrop-blur-sm border-white/20"
+                                                                        ? "bg-white/10 backdrop-blur-sm border-white/20"
+                                                                        : "bg-white/10 backdrop-blur-sm border-white/20"
                                                                         } rounded-2xl p-4 shadow-lg border`}
                                                         >
                                                                 <div className="flex items-center space-x-3">
@@ -532,8 +532,8 @@ const JourneyDetail = () => {
 
                                                         <div
                                                                 className={`${journey.image_url
-                                                                                ? "bg-white/10 backdrop-blur-sm border-white/20"
-                                                                                : "bg-white/10 backdrop-blur-sm border-white/20"
+                                                                        ? "bg-white/10 backdrop-blur-sm border-white/20"
+                                                                        : "bg-white/10 backdrop-blur-sm border-white/20"
                                                                         } rounded-2xl p-4 shadow-lg border`}
                                                         >
                                                                 <div className="flex items-center space-x-3">
@@ -553,17 +553,12 @@ const JourneyDetail = () => {
                                                 </div>
 
                                                 <div className="flex flex-col sm:flex-row gap-4">
-                                                        <Button
-                                                                size="lg"
-                                                                className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${journey.image_url
-                                                                                ? "bg-white text-primary hover:bg-white/90"
-                                                                                : "bg-white text-primary hover:bg-white/90"
-                                                                        }`}
-                                                                onClick={handleEnquireNow}
-                                                        >
-                                                                <Mail className="w-5 h-5 mr-2" />
-                                                                Enquire Now
-                                                        </Button>
+                                                         <Button
+                                                                                        className="w-2xl hero-gradient mt-4"
+                                                                                        onClick={() => setIsEnquiryModalOpen(true)}
+                                                                                >
+                                                                                        Enquire Now
+                                                                                </Button>
                                                 </div>
                                         </div>
                                 </div>
@@ -580,85 +575,85 @@ const JourneyDetail = () => {
                                                                 {/* Journey Banner Image with Description side-by-side */}
 
                                                                 <div className="mb-8">
-                                  <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-  {/* Left Column - Overview & Activities */}
-  <div className="lg:w-1/2 space-y-6">
-    <div>
-      <h3 className="text-xl font-bold mb-4 text-foreground">Overview</h3>
-      <p className="text-muted-foreground leading-relaxed">{journey.description}</p>
-    </div>
+                                                                        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                                                                                {/* Left Column - Overview & Activities */}
+                                                                                <div className="lg:w-1/2 space-y-6">
+                                                                                        <div>
+                                                                                                <h3 className="text-xl font-bold mb-4 text-foreground">Overview</h3>
+                                                                                                <p className="text-muted-foreground leading-relaxed">{journey.description}</p>
+                                                                                        </div>
 
-    <div>
-      <h3 className="text-xl font-bold mb-4 text-foreground">Activities</h3>
-      <div className="space-y-3">
-        {journey.activities &&
-          journey.activities.map((activity: any, index: number) => (
-            <div key={index} className="flex items-start space-x-3">
-              <CheckCircle className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-              <span className="text-muted-foreground">{activity}</span>
-            </div>
-          ))}
-      </div>
-    </div>
-  </div>
+                                                                                        <div>
+                                                                                                <h3 className="text-xl font-bold mb-4 text-foreground">Activities</h3>
+                                                                                                <div className="space-y-3">
+                                                                                                        {journey.activities &&
+                                                                                                                journey.activities.map((activity: any, index: number) => (
+                                                                                                                        <div key={index} className="flex items-start space-x-3">
+                                                                                                                                <CheckCircle className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
+                                                                                                                                <span className="text-muted-foreground">{activity}</span>
+                                                                                                                        </div>
+                                                                                                                ))}
+                                                                                                </div>
+                                                                                        </div>
+                                                                                </div>
 
-  {/* Right Column - Journey Highlights */}
-  <div className="lg:w-1/2 mt-8 lg:mt-0">
-    <div className="flex items-center justify-between mb-4">
-      <h3 className="text-2xl font-display font-bold text-foreground flex items-center">
-        <Star className="w-6 h-6 text-yellow-500 mr-2" />
-        Journey Highlights
-      </h3>
-      {days.length > HIGHLIGHTS_PER_PAGE && (
-        <div className="flex items-center space-x-2">
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-8 w-8"
-            onClick={() => {
-              const prevIndex = highlightIndex - 1;
-              setHighlightIndex(
-                prevIndex < 0 ? Math.ceil(days.length / HIGHLIGHTS_PER_PAGE) - 1 : prevIndex
-              );
-            }}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-8 w-8"
-            onClick={() => {
-              const nextIndex = highlightIndex + 1;
-              const totalPages = Math.ceil(days.length / HIGHLIGHTS_PER_PAGE);
-              setHighlightIndex(nextIndex >= totalPages ? 0 : nextIndex);
-            }}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-    </div>
+                                                                                {/* Right Column - Journey Highlights */}
+                                                                                <div className="lg:w-1/2 mt-8 lg:mt-0">
+                                                                                        <div className="flex items-center justify-between mb-4">
+                                                                                                <h3 className="text-2xl font-display font-bold text-foreground flex items-center">
+                                                                                                        <Star className="w-6 h-6 text-yellow-500 mr-2" />
+                                                                                                        Journey Highlights
+                                                                                                </h3>
+                                                                                                {days.length > HIGHLIGHTS_PER_PAGE && (
+                                                                                                        <div className="flex items-center space-x-2">
+                                                                                                                <Button
+                                                                                                                        size="icon"
+                                                                                                                        variant="outline"
+                                                                                                                        className="h-8 w-8"
+                                                                                                                        onClick={() => {
+                                                                                                                                const prevIndex = highlightIndex - 1;
+                                                                                                                                setHighlightIndex(
+                                                                                                                                        prevIndex < 0 ? Math.ceil(days.length / HIGHLIGHTS_PER_PAGE) - 1 : prevIndex
+                                                                                                                                );
+                                                                                                                        }}
+                                                                                                                >
+                                                                                                                        <ChevronLeft className="h-4 w-4" />
+                                                                                                                </Button>
+                                                                                                                <Button
+                                                                                                                        size="icon"
+                                                                                                                        variant="outline"
+                                                                                                                        className="h-8 w-8"
+                                                                                                                        onClick={() => {
+                                                                                                                                const nextIndex = highlightIndex + 1;
+                                                                                                                                const totalPages = Math.ceil(days.length / HIGHLIGHTS_PER_PAGE);
+                                                                                                                                setHighlightIndex(nextIndex >= totalPages ? 0 : nextIndex);
+                                                                                                                        }}
+                                                                                                                >
+                                                                                                                        <ChevronRight className="h-4 w-4" />
+                                                                                                                </Button>
+                                                                                                        </div>
+                                                                                                )}
+                                                                                        </div>
 
-    {/* Highlights as Tags */}
-    <div className="flex flex-wrap gap-3">
-      {currentHighlights.map((day) => (
-        <Badge
-          key={day.id}
-          variant="outline"
-          className="px-4 py-2 border-primary/30 text-foreground hover:bg-primary/10 transition-colors"
-        >
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold">
-              {day.day_number}
-            </div>
-            <span>{day.title || `Day ${day.day_number}`}</span>
-          </div>
-        </Badge>
-      ))}
-    </div>
-  </div>
-</div>
+                                                                                        {/* Highlights as Tags */}
+                                                                                        <div className="flex flex-wrap gap-3">
+                                                                                                {currentHighlights.map((day) => (
+                                                                                                        <Badge
+                                                                                                                key={day.id}
+                                                                                                                variant="outline"
+                                                                                                                className="px-4 py-2 border-primary/30 text-foreground hover:bg-primary/10 transition-colors"
+                                                                                                        >
+                                                                                                                <div className="flex items-center space-x-2">
+                                                                                                                        <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center font-bold">
+                                                                                                                                {day.day_number}
+                                                                                                                        </div>
+                                                                                                                        <span>{day.title || `Day ${day.day_number}`}</span>
+                                                                                                                </div>
+                                                                                                        </Badge>
+                                                                                                ))}
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
                                                                 </div>
 
                                                         </div>

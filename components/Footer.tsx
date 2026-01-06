@@ -49,28 +49,22 @@ const Footer = () => {
   <h4 className="font-display font-semibold text-lg">Quick Links</h4>
   <div className="space-y-2">
     <a
-      href="/about"
+      href="/our-resort/accommodations"
       className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
     >
-      About Us
+      Accommodations
     </a>
     <a
-      href="/terms"
-      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
-    >
-      Terms & Conditions
-    </a>
-    <a
-      href="/gallery"
+      href="/our-resort#gallery"
       className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
     >
       Gallery
     </a>
     <a
-      href="/sitemap"
+      href="/our-resort#packages"
       className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
     >
-      Site Map
+      Packages
     </a>
     <a
       href="/blog"

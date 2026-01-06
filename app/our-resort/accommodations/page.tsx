@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
@@ -26,11 +26,76 @@ import {
   Utensils,
   Droplets,
   Wind,
-  Eye
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Maximize2
 } from "lucide-react"
 import Link from "next/link"
+import { supabase } from "@/integrations/supabase/client"
 
 const AccommodationsPage = () => {
+  const [accommodationImages, setAccommodationImages] = useState<{ id: string; image_url: string; title: string; description: string }[]>([])
+  const [loading, setLoading] = useState(true)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+
+  // Fetch accommodation images from gallery
+  useEffect(() => {
+    fetchAccommodationImages()
+  }, [])
+
+  const fetchAccommodationImages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("resort_gallery")
+        .select("*")
+        .order("display_order", { ascending: true })
+
+      if (error) throw error
+
+      // Filter images that start with "acc:" prefix and clean the URLs
+      const accImages = data
+        ?.filter(item => item.image_url?.startsWith("acc:"))
+        ?.map(item => ({
+          id: item.id,
+          image_url: item.image_url.replace(/^acc:/, ""), // Remove "acc:" prefix
+          title: item.title || "Premium Glamp",
+          description: item.description || ""
+        })) || []
+
+      setAccommodationImages(accImages)
+    } catch (error) {
+      console.error("Error fetching accommodation images:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === accommodationImages.length - 1 ? 0 : prevIndex + 1
+    )
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? accommodationImages.length - 1 : prevIndex - 1
+    )
+  }
+
+  const openFullscreen = (index: number) => {
+    setSelectedImageIndex(index)
+    setIsFullscreen(true)
+  }
+
+  const closeFullscreen = () => {
+    setIsFullscreen(false)
+    setSelectedImageIndex(null)
+  }
+
   const amenities = [
     { icon: <Bed className="w-5 h-5" />, label: "Large Plush Bedding", description: "Comfortable bedding for 2-3 adults" },
     { icon: <Droplets className="w-5 h-5" />, label: "Hot & Cold Water", description: "Attached bathroom with running water" },
@@ -189,7 +254,7 @@ const AccommodationsPage = () => {
             </div>
 
             <div>
-              <Card className="shadow-card border-muted">
+              <Card className="shadow-card border-muted overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
                   <CardTitle className="flex items-center">
                     <Star className="w-6 h-6 mr-3 text-gold" />
@@ -197,34 +262,134 @@ const AccommodationsPage = () => {
                     <Badge className="ml-auto bg-gold text-white">Only 4 Available</Badge>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
-                  <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg mb-6 flex items-center justify-center">
-                    <Mountain className="w-20 h-20 text-primary/30" />
-                  </div>
-                  
-                  <div className="space-y-4 mb-6">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Capacity</span>
-                      <span className="font-semibold">2-3 Adults</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Room Type</span>
-                      <span className="font-semibold">Premium Glamp</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">View</span>
-                      <span className="font-semibold flex items-center">
-                        <Eye className="w-4 h-4 mr-2 text-primary" />
-                        Valley & Mountain
-                      </span>
-                    </div>
+                <CardContent className="p-0">
+                  {/* Image Carousel Section */}
+                  <div className="relative">
+                    {loading ? (
+                      <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                      </div>
+                    ) : accommodationImages.length > 0 ? (
+                      <>
+                        {/* Main Carousel */}
+                        <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
+                          <div className="relative w-full h-full">
+                            <img
+                              src={accommodationImages[currentImageIndex]?.image_url || "/placeholder.svg"}
+                              alt={accommodationImages[currentImageIndex]?.title}
+                              className="w-full h-full object-cover transition-transform duration-500"
+                              onClick={() => openFullscreen(currentImageIndex)}
+                            />
+                            
+                            {/* Navigation Arrows */}
+                            {accommodationImages.length > 1 && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10"
+                                  onClick={prevImage}
+                                >
+                                  <ChevronLeft className="w-5 h-5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10"
+                                  onClick={nextImage}
+                                >
+                                  <ChevronRight className="w-5 h-5" />
+                                </Button>
+                              </>
+                            )}
+                            
+                            {/* Image Info Overlay */}
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white">
+                              <h3 className="font-semibold text-lg">
+                                {accommodationImages[currentImageIndex]?.title}
+                              </h3>
+                              {accommodationImages[currentImageIndex]?.description && (
+                                <p className="text-sm text-white/80 line-clamp-1">
+                                  {accommodationImages[currentImageIndex]?.description}
+                                </p>
+                              )}
+                              <div className="flex items-center justify-between mt-2">
+                                <Badge variant="outline" className="bg-white/20 border-white/30 text-white">
+                                  {currentImageIndex + 1} / {accommodationImages.length}
+                                </Badge>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-white hover:bg-white/20"
+                                  onClick={() => openFullscreen(currentImageIndex)}
+                                >
+                                  <Maximize2 className="w-4 h-4 mr-1" />
+                                  View Full
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Thumbnail Strip */}
+                        {accommodationImages.length > 1 && (
+                          <div className="flex gap-2 p-4 bg-muted/20 overflow-x-auto">
+                            {accommodationImages.map((image, index) => (
+                              <button
+                                key={image.id}
+                                className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                                  index === currentImageIndex 
+                                    ? 'border-primary ring-2 ring-primary/30' 
+                                    : 'border-transparent opacity-70 hover:opacity-100'
+                                }`}
+                                onClick={() => setCurrentImageIndex(index)}
+                              >
+                                <img
+                                  src={image.image_url}
+                                  alt={image.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex flex-col items-center justify-center p-8">
+                        <Bed className="w-16 h-16 text-primary/30 mb-4" />
+                        <p className="text-muted-foreground text-center">
+                          Accommodation images will be added soon
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="bg-luxury/10 p-4 rounded-lg border border-luxury/20">
-                    <p className="text-sm italic text-center">
-                      "Book your stay to embrace tranquillity, adventure, and the luxury of personal attention under the stars. 
-                      Nature's embrace awaits your arrival!"
-                    </p>
+                  {/* Room Details Below Carousel */}
+                  <div className="p-6 space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Capacity</span>
+                        <span className="font-semibold">2-3 Adults</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Room Type</span>
+                        <span className="font-semibold">Premium Glamp</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">View</span>
+                        <span className="font-semibold flex items-center">
+                          <Eye className="w-4 h-4 mr-2 text-primary" />
+                          Valley & Mountain
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-luxury/10 p-4 rounded-lg border border-luxury/20">
+                      <p className="text-sm italic text-center">
+                        "Book your stay to embrace tranquillity, adventure, and the luxury of personal attention under the stars. 
+                        Nature's embrace awaits your arrival!"
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -420,6 +585,121 @@ const AccommodationsPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Fullscreen Image Modal */}
+      {isFullscreen && selectedImageIndex !== null && (
+        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-6xl max-h-[90vh]">
+            {/* Close button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full"
+              onClick={closeFullscreen}
+            >
+              <X className="w-6 h-6" />
+            </Button>
+
+            {/* Navigation in fullscreen */}
+            {accommodationImages.length > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-12 h-12"
+                  onClick={() => {
+                    const newIndex = selectedImageIndex === 0 
+                      ? accommodationImages.length - 1 
+                      : selectedImageIndex - 1
+                    setSelectedImageIndex(newIndex)
+                  }}
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-12 h-12"
+                  onClick={() => {
+                    const newIndex = selectedImageIndex === accommodationImages.length - 1 
+                      ? 0 
+                      : selectedImageIndex + 1
+                    setSelectedImageIndex(newIndex)
+                  }}
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </>
+            )}
+
+            {/* Fullscreen Image */}
+            <div className="relative w-full h-full flex items-center justify-center">
+              <img
+                src={accommodationImages[selectedImageIndex]?.image_url}
+                alt={accommodationImages[selectedImageIndex]?.title}
+                className="max-w-full max-h-[80vh] object-contain"
+              />
+              
+              {/* Image info in fullscreen */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6 text-white">
+                <h3 className="text-xl font-semibold">
+                  {accommodationImages[selectedImageIndex]?.title}
+                </h3>
+                {accommodationImages[selectedImageIndex]?.description && (
+                  <p className="text-white/80 mt-2">
+                    {accommodationImages[selectedImageIndex]?.description}
+                  </p>
+                )}
+                <div className="flex items-center justify-between mt-4">
+                  <Badge variant="outline" className="bg-white/20 border-white/30">
+                    {selectedImageIndex + 1} / {accommodationImages.length}
+                  </Badge>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                      asChild
+                    >
+                      <a 
+                        href={accommodationImages[selectedImageIndex]?.image_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        download
+                      >
+                        Download
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Thumbnails in fullscreen */}
+            {accommodationImages.length > 1 && (
+              <div className="flex gap-2 mt-4 overflow-x-auto justify-center p-2">
+                {accommodationImages.map((image, index) => (
+                  <button
+                    key={image.id}
+                    className={`flex-shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-all ${
+                      index === selectedImageIndex 
+                        ? 'border-white ring-2 ring-white/50' 
+                        : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                    onClick={() => setSelectedImageIndex(index)}
+                  >
+                    <img
+                      src={image.image_url}
+                      alt={image.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Call to Action */}
       <section className="py-20 hero-gradient text-white">

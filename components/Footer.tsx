@@ -44,21 +44,48 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="font-display font-semibold text-lg">Quick Links</h4>
-            <div className="space-y-2">
-              {["About Us", "Terms & Conditions", "Gallery", "Site Map", "Blog", "Sustainable Tourism"].map((link: any) => (
-                <a
-                  key={link}
-                  href="#"
-                  className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
-                >
-                  {link}
-                </a>
-              ))}
-            </div>
-          </div>
+         {/* Quick Links */}
+<div className="space-y-4">
+  <h4 className="font-display font-semibold text-lg">Quick Links</h4>
+  <div className="space-y-2">
+    <a
+      href="/about"
+      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
+    >
+      About Us
+    </a>
+    <a
+      href="/terms"
+      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
+    >
+      Terms & Conditions
+    </a>
+    <a
+      href="/gallery"
+      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
+    >
+      Gallery
+    </a>
+    <a
+      href="/sitemap"
+      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
+    >
+      Site Map
+    </a>
+    <a
+      href="/blog"
+      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
+    >
+      Blog
+    </a>
+    <a
+      href="/sustainable-tourism"
+      className="block text-sm text-primary-foreground/80 hover:text-white transition-colors"
+    >
+      Sustainable Tourism
+    </a>
+  </div>
+</div>
 
           {/* Follow Us */}
           <div className="space-y-4">
@@ -73,7 +100,7 @@ const Footer = () => {
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <p className="text-sm text-primary-foreground/60">
-              © 2024 Shanti Himalaya Resort. All rights reserved.
+             © {new Date().getFullYear()} Shanti Himalaya Resort. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-sm text-primary-foreground/60 hover:text-white transition-colors">

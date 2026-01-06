@@ -272,7 +272,7 @@ const OurResort = () => {
                                                                                                 <Droplets className="w-5 h-5 text-accent" />
                                                                                         </div>
                                                                                         <div>
-                                                                                                <h4 className="font-semibold mb-1">Luxury Attached Bathroom</h4>
+                                                                                                <h4 className="font-semibold mb-1">Attached Bathroom</h4>
                                                                                                 <p className="text-sm text-muted-foreground">
                                                                                                         All Glamp Rooms have attached bathroom that has running hot and cold water—a definite
                                                                                                         luxury in the offbeat location where the property is situated.

@@ -375,7 +375,7 @@ export default function MenuMealsPage() {
               {
                 icon: <Flame className="w-5 h-5 text-orange-600" />,
                 title: "BonFlame-Bar-be-cue dinners",
-                desc: "Enjoy a meal cooked over a bonFlame."
+                desc: "Enjoy a meal cooked over a BONFIRE."
               },
               {
                 icon: <Coffee className="w-5 h-5 text-amber-600" />,
@@ -573,16 +573,16 @@ export default function MenuMealsPage() {
   </div>
 </section>
 
-      {/* ================= SNACKS & BONFlame ================= */}
+      {/* ================= SNACKS & BONFIRE ================= */}
       <section className="py-20 bg-gradient-to-b from-muted/30 to-transparent">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Flame className="w-8 h-8 text-orange-600" />
-              <h2 className="text-4xl md:text-5xl font-bold">SNACKS & BONFlame</h2>
+              <h2 className="text-4xl md:text-5xl font-bold">SNACKS & BONFIRE</h2>
             </div>
             <p className="text-muted-foreground text-lg max-w-3xl mx-auto italic">
-              Imagine the crackling of a bonFlame, the gentle hum of nocturnal insects, and the vast, star-studded sky above. This is the magic of our BonFlame evenings, where the thrill of the wilderness meets the delight of exquisite cuisine.
+              Imagine the crackling of a BONFIRE, the gentle hum of nocturnal insects, and the vast, star-studded sky above. This is the magic of our BONFIRE evenings, where the thrill of the wilderness meets the delight of exquisite cuisine.
             </p>
           </div>
 
@@ -605,7 +605,6 @@ export default function MenuMealsPage() {
                   <ul className="space-y-2">
                     <li className="text-muted-foreground">• Mixed Pakora</li>
                     <li className="text-muted-foreground">• Masala Peanut</li>
-                    <li className="text-muted-foreground">• Egg Bhurji</li>
                   </ul>
                 </div>
                 
@@ -613,6 +612,8 @@ export default function MenuMealsPage() {
                 <div>
                   <h4 className="font-semibold text-lg mb-3 text-red-700">Non Veg</h4>
                   <ul className="space-y-2">
+                    
+                    <li className="text-muted-foreground">• Egg Bhurji</li>
                     <li className="text-muted-foreground">• Chilli Chicken</li>
                   </ul>
                 </div>
@@ -655,13 +656,13 @@ export default function MenuMealsPage() {
             </div>
           </div>
 
-          {/* BONFlame */}
+          {/* BONFIRE */}
           <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl shadow-card p-8 border border-orange-200">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="md:w-2/3">
                 <div className="flex items-center gap-3 mb-4">
                   <Flame className="w-8 h-8 text-orange-600" />
-                  <h3 className="text-2xl font-bold text-orange-900">BONFlame</h3>
+                  <h3 className="text-2xl font-bold text-orange-900">BONFIRE</h3>
                 </div>
                 <p className="text-muted-foreground mb-4">
                   Flame-wood collection is a part of daily work schedule of rural women living in villages around the resort. We purchase the Flamewood from these women and encourage our Guests to contribute for our effort in helping in the upliftment of local women community.

@@ -146,9 +146,9 @@ const ExperienceDetail = () => {
                                                 <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 leading-tight">
                                                         {experience.title}
                                                 </h1>
-                                                <p className="text-xl text-white/90 leading-relaxed mb-8 max-w-2xl">
+                                                {/* <p className="text-xl text-white/90 leading-relaxed mb-8 max-w-2xl">
                                                         {experience.description}
-                                                </p>
+                                                </p> */}
 
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                                         <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">

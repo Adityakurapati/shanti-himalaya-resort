@@ -249,153 +249,142 @@ const DestinationDetail = () => {
                 <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50/30">
                         <Header />
 
-                        {/* Animated Hero Section */}
-                        <section className="pt-32 pb-20 relative overflow-hidden hero-gradient">
-                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-500/20"></div>
-                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
+                       // Replace the existing hero section with this updated version
 
-                                <div className="container mx-auto px-4 relative z-10">
-                                        <motion.div
-                                                initial={{ opacity: 0, y: 30 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ duration: 0.8 }}
-                                                className="max-w-6xl mx-auto"
-                                        >
-                                                <Link
-                                                        href="/destinations"
-                                                        className="inline-flex items-center text-foreground/70 hover:text-foreground mb-8 transition-all duration-300 group"
-                                                >
-                                                        <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                                                        Back to Destinations
-                                                </Link>
+{/* Animated Hero Section */}
+<section className="pt-32 pb-20 relative overflow-hidden">
+  {/* Conditional rendering for banner image or gradient */}
+  {destination.image_url ? (
+    <div className="absolute inset-0">
+      <img 
+        src={destination.image_url} 
+        alt={destination.name}
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+    </div>
+  ) : (
+    <>
+      <div className="absolute inset-0 hero-gradient"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-500/20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
+    </>
+  )}
 
-                                                <div className="flex flex-wrap gap-3 mb-6">
-                                                        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-3 py-1 text-sm">
-                                                                {destination.category}
-                                                        </Badge>
+  <div className="container mx-auto px-4 relative z-10">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="max-w-6xl mx-auto"
+    >
+      <Link
+        href="/destinations"
+        className={`inline-flex items-center mb-8 transition-all duration-300 group ${destination.image_url ? 'text-white/80 hover:text-white' : 'text-foreground/70 hover:text-foreground'}`}
+      >
+        <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+        Back to Destinations
+      </Link>
 
-                                                        {destination.featured && (
-                                                                <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 px-3 py-1 text-sm">
-                                                                        Featured
-                                                                </Badge>
-                                                        )}
-                                                </div>
+      <div className="flex flex-wrap gap-3 mb-6">
+        <Badge className={`px-3 py-1 text-sm ${destination.image_url ? 'bg-white/20 text-white backdrop-blur-sm border-white/30' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
+          {destination.category}
+        </Badge>
 
-                                                <motion.h1
-                                                        className="text-5xl md:text-7xl font-bold mb-6 text-luxury"
-                                                        initial={{ opacity: 0, y: 40 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ duration: 0.8, delay: 0.2 }}
-                                                >
-                                                        {destination.name}
-                                                </motion.h1>
+        {destination.featured && (
+          <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 px-3 py-1 text-sm backdrop-blur-sm">
+            Featured
+          </Badge>
+        )}
+      </div>
 
-                                                <motion.p
-                                                        className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl"
-                                                        initial={{ opacity: 0, y: 30 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ duration: 0.8, delay: 0.4 }}
-                                                >
-                                                        {destination.description}
-                                                </motion.p>
+      <motion.h1
+        className={`text-5xl md:text-7xl font-bold mb-6 ${destination.image_url ? 'text-white' : 'text-luxury'}`}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        {destination.name}
+      </motion.h1>
 
-                                                {/* Stats Grid */}
-                                                <motion.div
-                                                        className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8"
-                                                        initial={{ opacity: 0, y: 30 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ duration: 0.8, delay: 0.6 }}
-                                                >
-                                                        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
-                                                                <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-emerald-100 rounded-lg">
-                                                                                <Clock className="w-5 h-5 text-emerald-600" />
-                                                                        </div>
-                                                                        <div>
-                                                                                <p className="text-sm text-muted-foreground">Duration</p>
-                                                                                <p className="font-semibold text-foreground">{destination.duration}</p>
-                                                                        </div>
-                                                                </div>
-                                                        </div>
+      {/* Stats Grid - Updated for better visibility on both backgrounds */}
+      <motion.div
+        className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+      >
+        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-emerald-100 rounded-lg">
+              <Clock className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Duration</p>
+              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.duration}</p>
+            </div>
+          </div>
+        </div>
 
-                                                        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
-                                                                <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-amber-100 rounded-lg">
-                                                                                <Mountain className="w-5 h-5 text-amber-600" />
-                                                                        </div>
-                                                                        <div>
-                                                                                <p className="text-sm text-muted-foreground">Difficulty</p>
-                                                                                <p className="font-semibold text-foreground">{destination.difficulty}</p>
-                                                                        </div>
-                                                                </div>
-                                                        </div>
+        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-amber-100 rounded-lg">
+              <Mountain className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Difficulty</p>
+              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.difficulty}</p>
+            </div>
+          </div>
+        </div>
 
-                                                        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
-                                                                <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-teal-100 rounded-lg">
-                                                                                <Thermometer className="w-5 h-5 text-teal-600" />
-                                                                        </div>
-                                                                        <div>
-                                                                                <p className="text-sm text-muted-foreground">Best Time</p>
-                                                                                <p className="font-semibold text-foreground">{destination.best_time}</p>
-                                                                        </div>
-                                                                </div>
-                                                        </div>
+        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-teal-100 rounded-lg">
+              <Thermometer className="w-5 h-5 text-teal-600" />
+            </div>
+            <div>
+              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Best Time</p>
+              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.best_time}</p>
+            </div>
+          </div>
+        </div>
 
-                                                        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
-                                                                <div className="flex items-center space-x-3">
-                                                                        <div className="p-2 bg-cyan-100 rounded-lg">
-                                                                                <Compass className="w-5 h-5 text-cyan-600" />
-                                                                        </div>
-                                                                        <div>
-                                                                                <p className="text-sm text-muted-foreground">Altitude</p>
-                                                                                <p className="font-semibold text-foreground">{destination.altitude}</p>
-                                                                        </div>
-                                                                </div>
-                                                        </div>
-                                                </motion.div>
+        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-cyan-100 rounded-lg">
+              <Compass className="w-5 h-5 text-cyan-600" />
+            </div>
+            <div>
+              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Altitude</p>
+              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.altitude}</p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
-                                                <motion.div
-                                                        className="flex flex-col sm:flex-row gap-4"
-                                                        initial={{ opacity: 0, y: 30 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ duration: 0.8, delay: 0.8 }}
-                                                >
-                                                        <Button
-                                                                size="lg"
-                                                                className="hero-gradient text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300"
-                                                                onClick={() => {
-                                                                        window.location.href = `mailto:shantihimalaya@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
-                                                                }}
-                                                        >
-                                                                Enquire Now
-                                                        </Button>
-                                                </motion.div>
-                                        </motion.div>
-                                </div>
-                        </section>
+      <motion.div
+        className="flex flex-col sm:flex-row gap-4"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
+      >
+        <Button
+          size="lg"
+          className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${destination.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
+          onClick={() => {
+            window.location.href = `mailto:shantihimalaya@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
+          }}
+        >
+          Enquire Now
+        </Button>
+      </motion.div>
+    </motion.div>
+  </div>
+</section>
 
-                        {/* Destination Banner Image */}
-                        {destination.image_url && (
-                                <section className="py-8 bg-transparent">
-                                        <div className="container mx-auto px-4">
-                                                <div className="max-w-6xl mx-auto">
-                                                        <motion.div
-                                                                initial={{ opacity: 0, y: 20 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                transition={{ duration: 0.6 }}
-                                                                className="rounded-2xl overflow-hidden shadow-2xl"
-                                                        >
-                                                                <img
-                                                                        src={destination.image_url}
-                                                                        alt={destination.name}
-                                                                        className="w-full h-48 md:h-64 lg:h-80 object-cover"
-                                                                />
-                                                        </motion.div>
-                                                </div>
-                                        </div>
-                                </section>
-                        )}
+                
 
                         {/* Interactive Tabs Section */}
                         <section className="py-16 bg-transparent">

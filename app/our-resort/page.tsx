@@ -103,9 +103,17 @@ const OurResort = () => {
                                         .order("created_at", { ascending: false })
                                         .limit(3),
                         ])
-                        setGallery(gal || [])
-                        setActivitiesDb(acts || [])
-                        setPackagesDb(pkgs || [])
+
+                        // Filter only images with plain URLs (no prefix tags)
+                        const filteredGallery = (gal || []).filter(item => {
+                                const url = item.image_url;
+                                // Check if URL is a plain URL (starts with http/https)
+                                return url && (url.startsWith('http://') || url.startsWith('https://'));
+                        });
+                        setGallery(filteredGallery);
+                        setActivitiesDb(acts || []);
+                        setPackagesDb(pkgs || []);
+
                 }
                 load()
 
@@ -237,8 +245,8 @@ const OurResort = () => {
                                         </div>
                                 </div>
                         </section>
-                        
-                             {/* Accommodation Section */}
+
+                        {/* Accommodation Section */}
 
                         <section id="accommodation" className="py-20 bg-background">
                                 <div className="container mx-auto px-4">
@@ -704,7 +712,7 @@ const OurResort = () => {
                                                                                 alt={g.title || `Gallery ${index + 1}`}
                                                                                 className="w-full h-full object-cover"
                                                                         />
-                                                                        
+
                                                                 </button>
                                                         ))}
                                                 </div>

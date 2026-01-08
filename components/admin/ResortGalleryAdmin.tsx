@@ -42,8 +42,7 @@ const GALLERY_SECTIONS: GallerySection[] = [
     icon: <Bed className="w-4 h-4" />,
     description: "Room, suite, and accommodation photos",
     prefix: "acc:",
-  },
- 
+  }, 
 ];
 
 export const ResortGalleryAdmin = () => {

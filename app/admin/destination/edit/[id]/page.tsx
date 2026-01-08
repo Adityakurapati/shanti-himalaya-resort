@@ -2066,7 +2066,6 @@ const AdminDestinationEdit = () => {
                   onChange={(e) => {
                     const tips = e.target.value
                       .split("\n")
-                      .filter((t: string) => t.trim());
                     setFormData({ ...formData, travel_tips: tips });
                   }}
                   placeholder="Enter travel tips, one per line"
@@ -2074,6 +2073,8 @@ const AdminDestinationEdit = () => {
                 />
               </div>
             </form>
+
+            
           </div>
         )}
 

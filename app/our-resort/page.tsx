@@ -704,16 +704,7 @@ const OurResort = () => {
                                                                                 alt={g.title || `Gallery ${index + 1}`}
                                                                                 className="w-full h-full object-cover"
                                                                         />
-                                                                        {(g.title || g.description) && (
-                                                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-1">
-                                                                                        <div className="bg-white/95 backdrop-blur-sm p-2 rounded transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-center">
-                                                                                                {g.title && <h4 className="font-semibold text-xs text-foreground mb-1">{g.title}</h4>}
-                                                                                                {g.description && (
-                                                                                                        <p className="text-xs text-muted-foreground leading-tight">{g.description}</p>
-                                                                                                )}
-                                                                                        </div>
-                                                                                </div>
-                                                                        )}
+                                                                        
                                                                 </button>
                                                         ))}
                                                 </div>

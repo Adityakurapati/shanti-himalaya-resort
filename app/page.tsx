@@ -295,14 +295,14 @@ const Index = () => {
                                                                 title: "Best Time to Visit the Himalayas",
                                                                 excerpt:
                                                                         "Discover the perfect seasons for your mountain adventure and what to expect during each period.",
-                                                                date: "December 15, 2024",
+                                                                date: "December 15",
                                                                 category: "Travel Guide",
                                                                 readTime: "5 min read",
                                                         },
                                                         {
                                                                 title: "Essential Trekking Gear for High Altitude",
                                                                 excerpt: "Complete checklist of equipment you'll need for safe and comfortable high-altitude trekking.",
-                                                                date: "December 12, 2024",
+                                                                date: "December 12",
                                                                 category: "Adventure",
                                                                 readTime: "8 min read",
                                                         },
@@ -310,7 +310,7 @@ const Index = () => {
                                                                 title: "Cultural Etiquette in Mountain Villages",
                                                                 excerpt:
                                                                         "Learn about local customs and traditions to ensure respectful interactions with mountain communities.",
-                                                                date: "December 10, 2024",
+                                                                date: "December 10",
                                                                 category: "Culture",
                                                                 readTime: "6 min read",
                                                         },

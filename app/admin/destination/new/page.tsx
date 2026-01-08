@@ -1434,7 +1434,6 @@ const AdminDestinationNew = () => {
                       onChange={(e) => {
                         const options = e.target.value
                           .split("\n")
-                          .filter((o) => o.trim());
                         setFormData({
                           ...formData,
                           where_to_stay: {
@@ -1608,11 +1607,11 @@ const AdminDestinationNew = () => {
                   onChange={(e) => {
                     const tips = e.target.value
                       .split("\n")
-                      .filter((t) => t.trim());
                     setFormData({ ...formData, travel_tips: tips });
                   }}
                   placeholder="Enter travel tips, one per line"
                   rows={8}
+                  
                 />
               </div>
             </form>

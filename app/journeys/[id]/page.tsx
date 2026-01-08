@@ -40,6 +40,9 @@ type DaySchedule = {
         title: string | null;
         description: string | null;
         image_url: string | null;
+        duration: string | null;
+        accommodation: string | null;
+        meals: string | null;
 };
 
 const ActivityItem = ({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) => (
@@ -170,22 +173,7 @@ const DayCard = ({
                                                                                                 </div>
                                                                                         </div>
 
-                                                                                        {/* Activities */}
-                                                                                        <motion.div
-                                                                                                initial={{ opacity: 0 }}
-                                                                                                animate={{ opacity: 1 }}
-                                                                                                transition={{ delay: 0.4 }}
-                                                                                                className="space-y-3"
-                                                                                        >
-                                                                                                <h4 className="text-base font-semibold text-foreground">Activities & Amenities</h4>
-
-                                                                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                                                                        <ActivityItem icon={TrendingUp} title="Trekking" desc="Guided trek with expert" />
-                                                                                                        <ActivityItem icon={Home} title="Lodge Stay" desc="Comfortable accommodation" />
-                                                                                                        <ActivityItem icon={Utensils} title="Meals Included" desc="Breakfast, Lunch, Dinner" />
-                                                                                                        <ActivityItem icon={MapPin} title="Scenic Views" desc="Panoramic mountain views" />
-                                                                                                </div>
-                                                                                        </motion.div>
+                                
                                                                                 </div>
 
                                                                                 {/* ================= RIGHT COLUMN ================= */}
@@ -220,9 +208,9 @@ const DayCard = ({
                                                                                                 transition={{ delay: 0.5 }}
                                                                                                 className="flex flex-wrap gap-6 pt-4 border-t"
                                                                                         >
-                                                                                                <DetailItem icon={Clock} title="Duration" value="6–7 hours" color="blue" />
-                                                                                                <DetailItem icon={Home} title="Accommodation" value="Teahouse / Lodge" color="purple" />
-                                                                                                <DetailItem icon={Utensils} title="Meals" value="Breakfast, Lunch, Dinner" color="orange" />
+<DetailItem icon={Clock} title="Duration" value={day.duration || "6–7 hourss"} color="blue" />
+<DetailItem icon={Home} title="Accommodation" value={day.accommodation || "Teahouse / Lodge"} color="purple" />
+<DetailItem icon={Utensils} title="Meals" value={day.meals || "Breakfast, Lunch, Dinner"} color="orange" />
                                                                                         </motion.div>
                                                                                 </div>
                                                                         </div>

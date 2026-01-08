@@ -11,17 +11,46 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, Edit, Trash2, ImageIcon, ListOrdered, Bed, Home } from "lucide-react"
+import { Plus, Edit, Trash2, ImageIcon, ListOrdered, Bed, Home, Building, MapPin } from "lucide-react"
 import ImageUploader from "./ImageUploader"
 import type { Tables } from "@/integrations/supabase/types";
 import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type GalleryItem = Tables<"resort_gallery">
+
+type GallerySection = {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  description: string;
+  prefix: string;
+}
+
+const GALLERY_SECTIONS: GallerySection[] = [
+  {
+    id: "gallery",
+    name: "Gallery",
+    icon: <ImageIcon className="w-4 h-4" />,
+    description: "General resort images without any specific category",
+    prefix: "",
+  },
+  {
+    id: "accommodation",
+    name: "Accommodation",
+    icon: <Bed className="w-4 h-4" />,
+    description: "Room, suite, and accommodation photos",
+    prefix: "acc:",
+  },
+ 
+];
 
 export const ResortGalleryAdmin = () => {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editing, setEditing] = useState<GalleryItem | null>(null)
+  const [activeTab, setActiveTab] = useState<string>("all")
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -29,7 +58,7 @@ export const ResortGalleryAdmin = () => {
     title: "",
     description: "",
     display_order: 0,
-    is_accommodation: false,
+    section: "gallery",
   })
 
   useEffect(() => {
@@ -50,16 +79,60 @@ export const ResortGalleryAdmin = () => {
     }
   }
 
+  const getSectionFromImageUrl = (imageUrl: string | null): GallerySection => {
+    if (!imageUrl) return GALLERY_SECTIONS[0];
+    
+    for (const section of GALLERY_SECTIONS) {
+      if (section.prefix && imageUrl.startsWith(section.prefix)) {
+        return section;
+      }
+    }
+    
+    return GALLERY_SECTIONS[0]; // Default to gallery
+  }
+
+  const getCleanImageUrl = (imageUrl: string | null): string => {
+    if (!imageUrl) return "";
+    
+    for (const section of GALLERY_SECTIONS) {
+      if (section.prefix && imageUrl.startsWith(section.prefix)) {
+        return imageUrl.replace(section.prefix, "");
+      }
+    }
+    
+    return imageUrl;
+  }
+
+  const getSectionItems = (sectionPrefix: string): GalleryItem[] => {
+    if (sectionPrefix === "all") {
+      return items;
+    }
+    
+    const section = GALLERY_SECTIONS.find(s => s.id === sectionPrefix);
+    if (!section) return [];
+    
+    if (section.prefix === "") {
+      // Gallery images (no prefix)
+      return items.filter(item => {
+        const hasNoPrefix = !GALLERY_SECTIONS.some(s => 
+          s.prefix !== "" && item.image_url?.startsWith(s.prefix)
+        );
+        return hasNoPrefix;
+      });
+    }
+    
+    return items.filter(item => item.image_url?.startsWith(section.prefix));
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Process the image URL: add "acc:" prefix if it's an accommodation image
-    let processedImageUrl = formData.image_url
-    if (formData.is_accommodation && formData.image_url && !formData.image_url.startsWith("acc:")) {
-      processedImageUrl = `acc:${formData.image_url}`
-    } else if (!formData.is_accommodation && formData.image_url.startsWith("acc:")) {
-      // Remove the prefix if it's no longer an accommodation image
-      processedImageUrl = formData.image_url.replace(/^acc:/, "")
+    // Process the image URL: add prefix based on selected section
+    const selectedSection = GALLERY_SECTIONS.find(s => s.id === formData.section);
+    let processedImageUrl = formData.image_url;
+    
+    if (selectedSection?.prefix && !formData.image_url.startsWith(selectedSection.prefix)) {
+      processedImageUrl = `${selectedSection.prefix}${formData.image_url}`;
     }
 
     const payload = {
@@ -91,9 +164,8 @@ export const ResortGalleryAdmin = () => {
   }
 
   const handleEdit = (item: GalleryItem) => {
-    // Check if the image URL has "acc:" prefix
-    const isAccommodation = item.image_url?.startsWith("acc:") || false
-    const cleanImageUrl = isAccommodation ? item.image_url?.replace(/^acc:/, "") || "" : item.image_url || ""
+    const section = getSectionFromImageUrl(item.image_url);
+    const cleanImageUrl = getCleanImageUrl(item.image_url);
 
     setEditing(item)
     setFormData({
@@ -101,7 +173,7 @@ export const ResortGalleryAdmin = () => {
       title: item.title || "",
       description: item.description || "",
       display_order: item.display_order || 0,
-      is_accommodation: isAccommodation,
+      section: section.id,
     })
     setIsDialogOpen(true)
   }
@@ -124,7 +196,7 @@ export const ResortGalleryAdmin = () => {
       title: "", 
       description: "", 
       display_order: 0,
-      is_accommodation: false 
+      section: "gallery"
     })
     setEditing(null)
     setIsDialogOpen(false)
@@ -132,6 +204,11 @@ export const ResortGalleryAdmin = () => {
 
   const handleImageUpload = (url: string) => {
     setFormData({ ...formData, image_url: url })
+  }
+
+  const getSectionIcon = (sectionId: string) => {
+    const section = GALLERY_SECTIONS.find(s => s.id === sectionId);
+    return section?.icon || <ImageIcon className="w-4 h-4" />;
   }
 
   return (
@@ -161,25 +238,29 @@ export const ResortGalleryAdmin = () => {
                 />
               </div>
               
-              <div className="flex items-center space-x-2 p-3 border rounded-md">
-                <div className="flex items-center space-x-2 flex-1">
-                  <Bed className="w-4 h-4 text-primary" />
-                  <div>
-                    <Label htmlFor="is_accommodation" className="cursor-pointer font-medium">
-                      Accommodation Image
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      {formData.is_accommodation 
-                        ? "Will add 'acc:' prefix to image URL" 
-                        : "Regular gallery image"}
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  id="is_accommodation"
-                  checked={formData.is_accommodation}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_accommodation: checked })}
-                />
+              <div>
+                <Label htmlFor="section">Image Category</Label>
+                <Select
+                  value={formData.section}
+                  onValueChange={(value) => setFormData({ ...formData, section: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GALLERY_SECTIONS.map((section) => (
+                      <SelectItem key={section.id} value={section.id}>
+                        <div className="flex items-center gap-2">
+                          {section.icon}
+                          <span>{section.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {GALLERY_SECTIONS.find(s => s.id === formData.section)?.description}
+                </p>
               </div>
 
               <div>
@@ -188,7 +269,7 @@ export const ResortGalleryAdmin = () => {
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder={formData.is_accommodation ? "e.g., Deluxe Room, Suite, etc." : "Image title"}
+                  placeholder="Image title"
                 />
               </div>
               
@@ -199,7 +280,7 @@ export const ResortGalleryAdmin = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  placeholder={formData.is_accommodation ? "e.g., Room amenities, view, size, etc." : "Image description"}
+                  placeholder="Image description"
                 />
               </div>
               
@@ -218,8 +299,14 @@ export const ResortGalleryAdmin = () => {
                 <div className="p-3 bg-muted rounded-md text-sm">
                   <p className="font-medium mb-1">Image URL will be saved as:</p>
                   <code className="text-xs break-all bg-background p-2 rounded block">
-                    {formData.is_accommodation ? `acc:${formData.image_url}` : formData.image_url}
+                    {formData.section === "gallery" 
+                      ? formData.image_url 
+                      : `${GALLERY_SECTIONS.find(s => s.id === formData.section)?.prefix}${formData.image_url}`
+                    }
                   </code>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Category: {GALLERY_SECTIONS.find(s => s.id === formData.section)?.name}
+                  </p>
                 </div>
               )}
 
@@ -236,62 +323,124 @@ export const ResortGalleryAdmin = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {items.map((item: any) => {
-          const isAccommodation = item.image_url?.startsWith("acc:")
-          const cleanImageUrl = isAccommodation ? item.image_url?.replace(/^acc:/, "") : item.image_url
+      <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid grid-cols-3 md:grid-cols-6">
+          <TabsTrigger value="all" className="flex items-center gap-2">
+            <ImageIcon className="w-4 h-4" />
+            All Images
+          </TabsTrigger>
+          {GALLERY_SECTIONS.map((section) => (
+            <TabsTrigger 
+              key={section.id} 
+              value={section.id}
+              className="flex items-center gap-2"
+            >
+              {section.icon}
+              {section.name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        
+        {["all", ...GALLERY_SECTIONS.map(s => s.id)].map((tabId) => {
+          const sectionItems = getSectionItems(tabId);
+          const sectionInfo = tabId === "all" 
+            ? { name: "All Images", icon: <ImageIcon className="w-5 h-5" /> }
+            : GALLERY_SECTIONS.find(s => s.id === tabId);
           
           return (
-            <Card key={item.id} className={isAccommodation ? "border-primary/30 border-2" : ""}>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center justify-between">
-                  <span className="truncate flex items-center gap-2">
-                    {isAccommodation && <Home className="w-4 h-4 text-primary" />}
-                    {item.title || "Untitled"}
+            <TabsContent key={tabId} value={tabId} className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  {sectionInfo?.icon}
+                  {sectionInfo?.name} 
+                  <span className="text-sm font-normal text-muted-foreground">
+                    ({sectionItems.length} items)
                   </span>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <ListOrdered className="w-3 h-3" /> {item.display_order ?? 0}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-32 rounded overflow-hidden mb-3 bg-muted flex items-center justify-center relative">
-                  {cleanImageUrl ? (
-                    <>
-                      <img
-                        src={cleanImageUrl || "/placeholder.svg"}
-                        alt={item.title || "Gallery"}
-                        className="w-full h-full object-cover"
-                      />
-                      {isAccommodation && (
-                        <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded flex items-center gap-1">
-                          <Bed className="w-3 h-3" />
-                          <span>Accommodation</span>
+                </h3>
+              </div>
+              
+              {sectionItems.length === 0 ? (
+                <Card>
+                  <CardContent className="py-8 text-center text-muted-foreground">
+                    <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No images in this category yet.</p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4"
+                      onClick={() => {
+                        if (tabId !== "all") {
+                          setFormData(prev => ({ ...prev, section: tabId }));
+                        }
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add {tabId === "all" ? "Image" : sectionInfo?.name} Image
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {sectionItems.map((item) => {
+                    const section = getSectionFromImageUrl(item.image_url);
+                    const cleanImageUrl = getCleanImageUrl(item.image_url);
+                    
+                    return (
+                      <Card key={item.id} className="relative">
+                        <div className="absolute top-2 left-2 z-10">
+                          <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded ${
+                            section.id === "gallery" 
+                              ? "bg-muted text-muted-foreground" 
+                              : "bg-primary/90 text-primary-foreground"
+                          }`}>
+                            {section.icon}
+                            <span>{section.name}</span>
+                          </div>
                         </div>
-                      )}
-                    </>
-                  ) : (
-                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                  )}
+                        
+                        <CardHeader>
+                          <CardTitle className="text-lg truncate">
+                            {item.title || "Untitled"}
+                            <span className="text-xs text-muted-foreground flex items-center gap-1 ml-2">
+                              <ListOrdered className="w-3 h-3" /> {item.display_order ?? 0}
+                            </span>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="h-32 rounded overflow-hidden mb-3 bg-muted flex items-center justify-center relative">
+                            {cleanImageUrl ? (
+                              <img
+                                src={cleanImageUrl || "/placeholder.svg"}
+                                alt={item.title || "Gallery"}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                            )}
+                          </div>
+                          {item.description && (
+                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                          )}
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
                 </div>
-                {item.description && (
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
-                )}
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )
+              )}
+            </TabsContent>
+          );
         })}
-      </div>
+      </Tabs>
     </div>
   )
 }

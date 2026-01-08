@@ -152,14 +152,14 @@ const AccommodationsPage = () => {
 
   const seasons = {
     "Season & Mid-Season": [
-      "15 April 2024 To 30 June",
-      "01 Oct 2024 To 20 Nov",
-      "20 Dec 2024 To 5 Jan"
+      "15 April To 30 June",
+      "01 Oct To 20 Nov",
+      "20 Dec To 5 Jan"
     ],
     "Off Season": [
-      "05 Jan 2024 To 15 April",
-      "01 July 2024 To 30 Sep",
-      "20 Nov 2024 to 20 Dec 2024"
+      "05 Jan To 15 April",
+      "01 July To 30 Sep",
+      "20 Nov to 20 Dec"
     ]
   }
 

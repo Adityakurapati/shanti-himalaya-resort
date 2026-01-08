@@ -351,17 +351,17 @@ const DestinationDetail = () => {
           </div>
         </div>
 
-        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-cyan-100 rounded-lg">
-              <Compass className="w-5 h-5 text-cyan-600" />
-            </div>
-            <div>
-              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Altitude</p>
-              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.altitude}</p>
-            </div>
-          </div>
-        </div>
+                {/* <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+                <div className="flex items-center space-x-3">
+                <div className="p-2 bg-cyan-100 rounded-lg">
+                <Compass className="w-5 h-5 text-cyan-600" />
+                </div>
+                <div>
+                <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Altitude</p>
+                <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.altitude}</p>
+                </div>
+                </div>
+                </div> */}
       </motion.div>
 
       <motion.div
@@ -405,7 +405,7 @@ const DestinationDetail = () => {
                                                                         Itinerary
                                                                 </TabsTrigger>
                                                                 <TabsTrigger value="transport" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Transport
+                                                                        How To Reach
                                                                 </TabsTrigger>
                                                                 <TabsTrigger value="besttime" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
                                                                         Best Time to Visit

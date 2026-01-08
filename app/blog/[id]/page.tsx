@@ -29,7 +29,11 @@ import {
   Star,
   Sparkles,
   MapPin,
-  Camera
+  Camera,
+  Map,
+  Compass,
+  Navigation,
+  ExternalLink
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -108,7 +112,7 @@ const BlogPost = () => {
   const handleLike = async () => {
     setIsLiked(!isLiked);
     setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-    
+
     // Update in database
     try {
       await supabase
@@ -119,7 +123,6 @@ const BlogPost = () => {
       console.error('Error updating likes:', error);
     }
   };
-
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -152,12 +155,12 @@ const BlogPost = () => {
           >
             <h1 className="text-4xl font-bold text-foreground mb-4">Blog Post Not Found</h1>
             <p className="text-muted-foreground mb-6">The blog post you're looking for doesn't exist.</p>
-            <LinkIcon href="/blog">
+            <Link href="/blog">
               <Button size="lg" className="gap-2">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Blog
               </Button>
-            </LinkIcon>
+            </Link>
           </motion.div>
         </div>
         <Footer />
@@ -192,53 +195,28 @@ const BlogPost = () => {
         )}
       </AnimatePresence>
 
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-12 overflow-hidden">
+      {/* Hero Section - Reduced height */}
+      <section className="relative pt-20 pb-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-background" />
         <div className="container mx-auto px-4 max-w-6xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-4"
           >
             {/* Navigation */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-6">
               <Link href="/blog">
                 <Button variant="ghost" size="sm" className="gap-2 hover:bg-primary/10">
                   <ArrowLeft className="w-4 h-4" />
                   Back to Blog
                 </Button>
               </Link>
-              
-              <div className="flex items-center gap-3">
-                <Button
-                  size="sm"
-                  variant={isBookmarked ? "default" : "outline"}
-                  onClick={() => setIsBookmarked(!isBookmarked)}
-                  className="gap-2"
-                >
-                  <BookmarkPlus className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-                  {isBookmarked ? 'Saved' : 'Save'}
-                </Button>
-                
-                <div className="relative">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setShowShareTooltip(!showShareTooltip)}
-                    className="gap-2"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    Share
-                  </Button>
-                  
-                </div>
-              </div>
             </div>
 
             {/* Category and Featured Badge */}
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -267,7 +245,7 @@ const BlogPost = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight text-foreground"
+              className="text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-tight text-foreground"
             >
               {blogPost.title}
             </motion.h1>
@@ -277,53 +255,46 @@ const BlogPost = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl"
+              className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-4xl"
             >
               {blogPost.excerpt}
             </motion.p>
 
-            {/* Author and Meta */}
+            {/* Author and Meta - Compact */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-col md:flex-row md:items-center justify-between py-6 border-y border-border"
+              className="flex flex-col md:flex-row md:items-center justify-between py-4"
             >
-              <div className="flex items-center gap-4 mb-4 md:mb-0">
+              <div className="flex items-center gap-4 mb-3 md:mb-0">
                 <div className="relative">
-                  <div className="w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center overflow-hidden border-2 border-background shadow-lg">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center overflow-hidden border-2 border-background shadow-lg">
                     {blogPost.author_avatar ? (
-                      <img 
-                        src={blogPost.author_avatar} 
+                      <img
+                        src={blogPost.author_avatar}
                         alt={blogPost.author}
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-7 h-7 text-white" />
+                      <User className="w-6 h-6 text-white" />
                     )}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full border-2 border-background flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-white" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">{blogPost.author}</h3>
+                  <h3 className="font-semibold">{blogPost.author}</h3>
                   <div className="flex items-center flex-wrap gap-3 text-sm text-muted-foreground mt-1">
                     <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{blogPost.published_date ? new Date(blogPost.published_date).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+                      <Calendar className="w-3 h-3" />
+                      <span>{blogPost.published_date ? new Date(blogPost.published_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
                       }) : 'N/A'}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-3 h-3" />
                       <span>{blogPost.read_time}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
-                      <span>{blogPost.views} views</span>
                     </div>
                   </div>
                 </div>
@@ -332,11 +303,11 @@ const BlogPost = () => {
               {/* Like Button */}
               <Button
                 variant="outline"
-                size="lg"
+                size="sm"
                 onClick={handleLike}
                 className={`gap-2 ${isLiked ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' : ''}`}
               >
-                <Heart className={`w-5 h-5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
                 <span>{likeCount} Likes</span>
               </Button>
             </motion.div>
@@ -344,33 +315,32 @@ const BlogPost = () => {
         </div>
       </section>
 
-      {/* Featured Image */}
+      {/* Featured Image - Reduced margin */}
       {blogPost.image_url && (
-        <section className="container mx-auto px-4 max-w-6xl mb-12">
+        <section className="container mx-auto px-4 max-w-6xl mb-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, duration: 0.5 }}
-            className="relative rounded-2xl overflow-hidden shadow-2xl"
+            className="relative rounded-xl overflow-hidden shadow-lg"
           >
             <img
               src={blogPost.image_url}
               alt={blogPost.title}
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[400px] md:h-[450px] object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 flex items-center gap-2 text-white/80">
-              <Camera className="w-5 h-5" />
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 text-white/80">
+              <Camera className="w-4 h-4" />
               <span className="text-sm">Featured Image</span>
             </div>
           </motion.div>
         </section>
       )}
 
-      {/* Main Content */}
-      <section className="py-12">
+      {/* Main Content - Moved closer to image */}
+      <section className="py-8">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Main Article */}
             <div className="lg:col-span-3">
               <motion.article
@@ -379,22 +349,20 @@ const BlogPost = () => {
                 transition={{ delay: 0.7 }}
                 className="prose prose-lg max-w-none"
               >
-                <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-border shadow-lg">
+                <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-border">
                   <div
-                    className="text-foreground leading-relaxed space-y-6"
+                    className="text-foreground leading-relaxed space-y-4"
                     dangerouslySetInnerHTML={{ __html: blogPost.content }}
                   />
                 </div>
 
-               
-
                 {/* Tags */}
-                <div className="mt-12 pt-8 border-t border-border">
-                  <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <Tag className="w-6 h-6 text-primary" />
+                <div className="mt-8 pt-6 border-t border-border">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Tag className="w-5 h-5 text-primary" />
                     Related Tags
                   </h3>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {blogPost.tags?.map((tag: string, index: number) => (
                       <motion.div
                         key={tag}
@@ -402,9 +370,9 @@ const BlogPost = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <Badge 
-                          variant="outline" 
-                          className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
+                        <Badge
+                          variant="outline"
+                          className="px-3 py-1.5 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
                           onClick={() => router.push(`/blog?tag=${tag}`)}
                         >
                           #{tag}
@@ -416,33 +384,30 @@ const BlogPost = () => {
 
                 {/* Author Bio */}
                 {blogPost.author_bio && (
-                  <Card className="mt-12 shadow-xl border-primary/20 hover-lift">
-                    <CardContent className="p-8">
-                      <div className="flex flex-col md:flex-row items-start gap-6">
+                  <Card className="mt-8 shadow-lg border-primary/20">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row items-start gap-4">
                         <div className="relative">
-                          <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center overflow-hidden border-4 border-background shadow-xl">
+                          <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center overflow-hidden border-3 border-background">
                             {blogPost.author_avatar ? (
-                              <img 
-                                src={blogPost.author_avatar} 
+                              <img
+                                src={blogPost.author_avatar}
                                 alt={blogPost.author}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <User className="w-10 h-10 text-white" />
+                              <User className="w-8 h-8 text-white" />
                             )}
-                          </div>
-                          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full border-2 border-background flex items-center justify-center">
-                            <Star className="w-4 h-4 text-white" />
                           </div>
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-xl font-display font-semibold">About {blogPost.author}</h3>
-                            <Badge className="bg-primary/10 text-primary">
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-lg font-semibold">About {blogPost.author}</h3>
+                            <Badge className="bg-primary/10 text-primary text-xs">
                               Author
                             </Badge>
                           </div>
-                          <p className="text-muted-foreground leading-relaxed">
+                          <p className="text-muted-foreground leading-relaxed text-sm">
                             {blogPost.author_bio}
                           </p>
                         </div>
@@ -453,12 +418,9 @@ const BlogPost = () => {
               </motion.article>
             </div>
 
-            {/* Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-32 space-y-8">
-               
-
-                {/* Related Posts */}
+                {/* Related Posts - Previous design */}
                 <Card className="shadow-lg border-primary/10">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-2 mb-4">
@@ -478,8 +440,8 @@ const BlogPost = () => {
                               <div className="flex items-start gap-3">
                                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                                   {post.image_url ? (
-                                    <img 
-                                      src={post.image_url} 
+                                    <img
+                                      src={post.image_url}
                                       alt={post.title}
                                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                     />
@@ -490,7 +452,7 @@ const BlogPost = () => {
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors mb-1">
+                                  <h4 className="text-sm font-medium group-hover:text-primary transition-colors mb-1 whitespace-normal">
                                     {post.title}
                                   </h4>
                                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -507,10 +469,9 @@ const BlogPost = () => {
                     </div>
                   </CardContent>
                 </Card>
-
-               
               </div>
             </div>
+
           </div>
         </div>
       </section>

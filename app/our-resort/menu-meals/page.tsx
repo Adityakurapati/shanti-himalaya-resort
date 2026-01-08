@@ -365,7 +365,7 @@ export default function MenuMealsPage() {
               {
                 icon: <Trees className="w-5 h-5 text-green-600" />,
                 title: "Special Village Meals",
-                desc: "Enjoy a dinner within the bush, with specially prepared meals."
+                desc: "Experience special home-cooked meals during village visits, often featuring fresh, locally sourced ingredients prepared by host families as part of an authentic cultural immersion, moving beyond typical tourist fare to offer genuine taste of local life and tradition."
               },
               {
                 icon: <Mountain className="w-5 h-5 text-blue-600" />,

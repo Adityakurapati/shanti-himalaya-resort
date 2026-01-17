@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ChatBot from "@/components/ChatBot";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import CookieConsent from "@/components/Cookies";
 import { ReactNode } from "react";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                                                 <Sonner />
                                                 {children}
                                                 <WhatsAppButton />
+                                                <CookieConsent />
                                         </TooltipProvider>
                                 </QueryClientProvider>
                         </body>

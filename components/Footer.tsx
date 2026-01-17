@@ -103,9 +103,6 @@ const Footer = () => {
                 <a href="/privacy" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Privacy Policy
                 </a>
-                <a href="/cookies" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
-                  Cookies
-                </a>
               </div>
             </div>
           </div>

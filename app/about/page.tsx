@@ -125,14 +125,7 @@ const AboutUsPage = () => {
               experiential stays and expertly guided hikes & treks that connect travelers with the landscapes,
               cultures and spirit of the Himalayas.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
-                <Link href="/contact">Contact Our Experts</Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                <Link href="/tours">View Our Tours</Link>
-              </Button>
-            </div>
+            
           </div>
         </div>
       </section>
@@ -167,7 +160,7 @@ const AboutUsPage = () => {
       </section>
 
      {/* Our Team */}
-<section className="py-20 mountain-gradient">
+<section id="team" className="py-20 mountain-gradient">
   <div className="container mx-auto px-4">
     <div className="text-center mb-16">
       <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
@@ -393,9 +386,6 @@ const AboutUsPage = () => {
               <div className="flex flex-wrap justify-center gap-4">
                 <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
                   <Link href="/contact">Contact Us Now</Link>
-                </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                  <Link href="/tours">View All Tours</Link>
                 </Button>
               </div>
             </CardContent>

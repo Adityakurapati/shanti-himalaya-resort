@@ -32,8 +32,12 @@ import {
   X,
   Maximize2
 } from "lucide-react"
-import Link from "next/link"
 import { supabase } from "@/integrations/supabase/client"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const AccommodationsPage = () => {
   const [accommodationImages, setAccommodationImages] = useState<{ id: string; image_url: string; title: string; description: string }[]>([])
@@ -41,6 +45,26 @@ const AccommodationsPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+  
+  // Booking Modal State
+  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<{
+    name: string;
+    price: string;
+    description: string;
+  } | null>(null)
+  
+  // Form State
+  const [bookingForm, setBookingForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    checkInDate: "",
+    checkOutDate: "",
+    adults: "2",
+    children: "0",
+    specialRequests: ""
+  })
 
   // Fetch accommodation images from gallery
   useEffect(() => {
@@ -56,12 +80,11 @@ const AccommodationsPage = () => {
 
       if (error) throw error
 
-      // Filter images that start with "acc:" prefix and clean the URLs
       const accImages = data
         ?.filter(item => item.image_url?.startsWith("acc:"))
         ?.map(item => ({
           id: item.id,
-          image_url: item.image_url.replace(/^acc:/, ""), // Remove "acc:" prefix
+          image_url: item.image_url.replace(/^acc:/, ""),
           title: item.title || "Premium Glamp",
           description: item.description || ""
         })) || []
@@ -94,6 +117,101 @@ const AccommodationsPage = () => {
   const closeFullscreen = () => {
     setIsFullscreen(false)
     setSelectedImageIndex(null)
+  }
+
+  // Open booking modal
+  const openBookingModal = (plan: { name: string; price: string; description: string }) => {
+    setSelectedPlan(plan)
+    setShowBookingModal(true)
+    
+    // Set default check-in to tomorrow
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const defaultCheckIn = tomorrow.toISOString().split('T')[0]
+    
+    // Set default check-out to 2 days from now
+    const dayAfterTomorrow = new Date()
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2)
+    const defaultCheckOut = dayAfterTomorrow.toISOString().split('T')[0]
+    
+    setBookingForm(prev => ({
+      ...prev,
+      checkInDate: defaultCheckIn,
+      checkOutDate: defaultCheckOut
+    }))
+  }
+
+  // Close booking modal
+  const closeBookingModal = () => {
+    setShowBookingModal(false)
+    setSelectedPlan(null)
+    setBookingForm({
+      name: "",
+      phone: "",
+      email: "",
+      checkInDate: "",
+      checkOutDate: "",
+      adults: "2",
+      children: "0",
+      specialRequests: ""
+    })
+  }
+
+  // Handle form input changes
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setBookingForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  // Handle select changes
+  const handleSelectChange = (name: string, value: string) => {
+    setBookingForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  // Generate Gmail link with form data
+  const generateBookingEmail = () => {
+    if (!selectedPlan) return "#"
+
+    const subject = `Booking Inquiry for ${selectedPlan.name} - Shanti Himalaya`
+    
+    const body = `Dear Shanti Himalaya Team,
+
+I would like to book the ${selectedPlan.name} accommodation.
+
+Plan Details:
+- Plan: ${selectedPlan.name}
+- Price: ${selectedPlan.price}
+- Description: ${selectedPlan.description}
+
+My Details:
+- Name: ${bookingForm.name}
+- Phone: ${bookingForm.phone}
+- Email: ${bookingForm.email}
+- Check-in Date: ${bookingForm.checkInDate}
+- Check-out Date: ${bookingForm.checkOutDate}
+- Number of Adults: ${bookingForm.adults}
+- Number of Children: ${bookingForm.children}
+- Special Requests: ${bookingForm.specialRequests || "None"}
+
+Please confirm availability and provide the booking procedure.
+
+Thank you,
+${bookingForm.name}`
+
+    return `mailto:shantihimalaya@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
+  // Handle form submission
+  const handleSubmitBooking = () => {
+    if (!bookingForm.name || !bookingForm.phone || !bookingForm.email || 
+        !bookingForm.checkInDate || !bookingForm.checkOutDate) {
+      alert("Please fill in all required fields")
+      return
+    }
+
+    const emailLink = generateBookingEmail()
+    window.open(emailLink, '_blank')
+    closeBookingModal()
   }
 
   const amenities = [
@@ -426,8 +544,12 @@ const AccommodationsPage = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="tel:919910775073">Book Now</Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => openBookingModal(plan)}
+                  >
+                    Book Now
                   </Button>
                 </CardContent>
               </Card>
@@ -701,6 +823,198 @@ const AccommodationsPage = () => {
         </div>
       )}
 
+      {/* Booking Modal */}
+      <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-display">
+              Book {selectedPlan?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Fill in your details to send a booking inquiry to Shanti Himalaya
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Plan Details Summary */}
+            {selectedPlan && (
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <Badge className="bg-primary">{selectedPlan.name}</Badge>
+                    <span className="text-xl font-bold">{selectedPlan.price}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{selectedPlan.description}</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Personal Details */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-medium">
+                    Full Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={bookingForm.name}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm font-medium">
+                    Phone Number <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                    value={bookingForm.phone}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email Address <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={bookingForm.email}
+                  onChange={handleFormChange}
+                  required
+                />
+              </div>
+
+              {/* Stay Dates */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="checkInDate" className="text-sm font-medium">
+                    Check-in Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="checkInDate"
+                    name="checkInDate"
+                    type="date"
+                    value={bookingForm.checkInDate}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="checkOutDate" className="text-sm font-medium">
+                    Check-out Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="checkOutDate"
+                    name="checkOutDate"
+                    type="date"
+                    value={bookingForm.checkOutDate}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Number of Guests */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="adults" className="text-sm font-medium">
+                    Number of Adults
+                  </Label>
+                  <Select 
+                    value={bookingForm.adults} 
+                    onValueChange={(value) => handleSelectChange("adults", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select adults" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                        <SelectItem key={num} value={num.toString()}>
+                          {num} Adult{num > 1 ? 's' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="children" className="text-sm font-medium">
+                    Number of Children
+                  </Label>
+                  <Select 
+                    value={bookingForm.children} 
+                    onValueChange={(value) => handleSelectChange("children", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select children" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[0, 1, 2, 3, 4, 5, 6].map((num) => (
+                        <SelectItem key={num} value={num.toString()}>
+                          {num} Child{num !== 1 ? 'ren' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Special Requests */}
+              <div className="space-y-2">
+                <Label htmlFor="specialRequests" className="text-sm font-medium">
+                  Special Requests (Optional)
+                </Label>
+                <Textarea
+                  id="specialRequests"
+                  name="specialRequests"
+                  placeholder="Any dietary requirements, accessibility needs, or special requests..."
+                  value={bookingForm.specialRequests}
+                  onChange={handleFormChange}
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <Button
+              className="flex-1"
+              onClick={handleSubmitBooking}
+              disabled={!bookingForm.name || !bookingForm.phone || !bookingForm.email || 
+                        !bookingForm.checkInDate || !bookingForm.checkOutDate}
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Send Booking Inquiry
+            </Button>
+            <Button
+              variant="outline"
+              onClick={closeBookingModal}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+          </div>
+
+          <p className="text-xs text-muted-foreground text-center pt-2">
+            Your details will open in your email client. Click send to complete your booking inquiry.
+          </p>
+        </DialogContent>
+      </Dialog>
+
       {/* Call to Action */}
       <section className="py-20 hero-gradient text-white">
         <div className="container mx-auto px-4">
@@ -713,9 +1027,26 @@ const AccommodationsPage = () => {
               blend of adventure and comfort in the Himalayas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90">
+              <Button 
+                size="lg" 
+                className="bg-white text-primary hover:bg-white/90"
+                onClick={() => window.open('tel:+919910775073', '_blank')}
+              >
                 <Phone className="w-5 h-5 mr-2" />
                 Call Now: +91 99107 75073
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white/10"
+                onClick={() => openBookingModal({
+                  name: "Premium Glamp",
+                  price: "Various Plans",
+                  description: "Luxury accommodation with meal options"
+                })}
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Email for Booking
               </Button>
             </div>
           </div>

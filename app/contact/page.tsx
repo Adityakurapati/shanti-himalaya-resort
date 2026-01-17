@@ -312,60 +312,43 @@ const ContactPage = () => {
                 </CardContent>
               </Card>
 
-              {/* Social Media */}
-              <Card className="shadow-card border-0">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-display font-bold text-foreground">
-                    Follow Our Journey
-                  </CardTitle>
-                  <p className="text-muted-foreground">
-                    Join our community of adventure seekers and stay updated.
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    {socialMedia.map((social, index) => (
-                      <a
-                        key={index}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group"
-                      >
-                        <div className={`${social.color} text-white p-4 rounded-lg text-center transition-transform group-hover:scale-105`}>
-                          <social.icon className="w-6 h-6 mx-auto mb-2" />
-                          <p className="text-sm font-medium">{social.name}</p>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Office Hours */}
-              <Card className="shadow-card border-0">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-display font-bold text-foreground">
-                    Office Hours
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-muted-foreground">Monday - Friday</span>
-                      <span className="font-semibold">9:00 AM - 6:00 PM IST</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-muted-foreground">Saturday</span>
-                      <span className="font-semibold">10:00 AM - 4:00 PM IST</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-muted-foreground">Sunday</span>
-                      <span className="font-semibold text-primary">Emergency Only</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+             {/* Social Media */}
+<Card className="shadow-card border-0">
+  <CardHeader>
+    <CardTitle className="text-2xl font-display font-bold text-foreground">
+      Follow Our Journey
+    </CardTitle>
+    <p className="text-muted-foreground">
+      Join our community of adventure seekers and stay updated.
+    </p>
+  </CardHeader>
+  <CardContent>
+    <div className="flex justify-center space-x-4">
+      {socialMedia.map((social, index) => (
+        <a
+          key={index}
+          href={social.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group"
+        >
+          <div className={`
+            ${social.color} 
+            w-12 h-12 
+            rounded-full 
+            flex items-center justify-center
+            text-white 
+            transition-all 
+            group-hover:scale-110 
+            group-hover:shadow-lg
+          `}>
+            <social.icon className="w-5 h-5" />
+          </div>
+        </a>
+      ))}
+    </div>
+  </CardContent>
+</Card>
             </div>
           </div>
         </div>

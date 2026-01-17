@@ -20,9 +20,8 @@ export interface AIRequestPayload {
     | "accommodation"
     | "travelTips"
     | "destinationAll";
-
   existingData?: Record<string, any>;
-  context?: Record<string, any>; // Add context property
+  context?: Record<string, any>;
 }
 
 export interface AIResponse {
@@ -31,32 +30,39 @@ export interface AIResponse {
 }
 
 export class AIContentService {
-  private ai: GoogleGenAI;
+  private ai: GoogleGenAI | null = null;
+  private isClient: boolean;
 
   constructor() {
-    const apiKey =
-      process.env.GEMINI_API_KEY || "AIzaSyDvLlmHAXvm3Gu0fV5_RNogslmadVZQLFs";
+    this.isClient = typeof window !== "undefined";
+    
+    // Only initialize on server-side
+    if (!this.isClient) {
+      const apiKey = process.env.GEMINI_API_KEY;
 
-    if (!apiKey || apiKey === "your-fallback-api-key-here") {
-      console.warn("Gemini API key is not set. AI features will not work.");
+      if (!apiKey) {
+        console.warn("Gemini API key is not set. AI features will not work.");
+      } else {
+        this.ai = new GoogleGenAI({ apiKey });
+      }
     }
-
-    this.ai = new GoogleGenAI({ apiKey });
   }
 
   async generateContent(payload: AIRequestPayload): Promise<AIResponse> {
     try {
-      if (
-        !process.env.NEXT_PUBLIC_GEMINI_API_KEY &&
-        !process.env.GEMINI_API_KEY
-      ) {
+      // For client-side requests, we need to make an API call
+      if (this.isClient) {
+        return await this.generateContentViaAPI(payload);
+      }
+
+      // Server-side: use the initialized AI instance
+      if (!this.ai) {
         throw new Error(
-          "API key is not configured. Please set NEXT_PUBLIC_GEMINI_API_KEY in your environment."
+          "API key is not configured. Please set GEMINI_API_KEY in your environment."
         );
       }
 
       const prompt = this.buildPrompt(payload);
-
       const response = await this.ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
@@ -74,6 +80,29 @@ export class AIContentService {
       throw error;
     }
   }
+
+  private async generateContentViaAPI(payload: AIRequestPayload): Promise<AIResponse> {
+    try {
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("API Generation Error:", error);
+      throw new Error("Failed to generate content via API. Please check if the API endpoint is running.");
+    }
+  }
+
 
   private buildPrompt(payload: AIRequestPayload): string {
     const { title, contentType, existingData, context } = payload;

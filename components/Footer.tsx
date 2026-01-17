@@ -83,16 +83,19 @@ const Footer = () => {
                 <a href="/about" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   About Us
                 </a>
-                <a href="/accommodations" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                {/* <a href="/accommodations" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Accommodations
                 </a>
                 <a href="/gallery" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Gallery
-                </a>
+                </a> */}
               </div>
               <div className="space-y-2">
                 <a href="/sustainable-tourism" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Sustainable Tourism
+                </a>
+                <a href="/about#team" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                  Our Team
                 </a>
                 <a href="/terms" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Terms & Conditions
@@ -113,20 +116,7 @@ const Footer = () => {
             <p className="text-sm text-primary-foreground/60 text-center md:text-left">
               © {new Date().getFullYear()} Shanti Himalaya. All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-4 md:mt-0">
-              <a href="/privacy" className="text-sm text-primary-foreground/60 hover:text-white transition-colors">
-                Privacy Policy
-              </a>
-              <a href="/terms" className="text-sm text-primary-foreground/60 hover:text-white transition-colors">
-                Terms & Conditions
-              </a>
-              <a href="/cookies" className="text-sm text-primary-foreground/60 hover:text-white transition-colors">
-                Cookies
-              </a>
-              <a href="/sustainable-tourism" className="text-sm text-primary-foreground/60 hover:text-white transition-colors">
-                Sustainable Tourism
-              </a>
-            </div>
+           
           </div>
         </div>
       </div>

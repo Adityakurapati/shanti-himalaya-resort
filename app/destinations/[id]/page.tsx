@@ -646,77 +646,161 @@ const DestinationDetail = () => {
                                                         </TabsContent>
 
                                                         {/* Itinerary Tab */}
-                                                        {/* Itinerary Tab - Alternative Design */}
-                                                        <TabsContent value="itinerary">
-                                                                {getItinerary().length > 0 ? (
-                                                                        <div className="space-y-8">
-                                                                                {getItinerary().map((day: any, index: number) => (
-                                                                                        <FadeInSection key={day.id || index} delay={index * 0.1}>
-                                                                                                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
-                                                                                                        {/* Left Content - Day Info */}
-                                                                                                        <div className="lg:col-span-2">
-                                                                                                                <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 rounded-2xl h-full shadow-lg">
-                                                                                                                        <Badge className="bg-white/20 text-white border-0 mb-3">Day {day.day}</Badge>
-                                                                                                                        <h3 className="text-xl font-bold mb-4">{day.title}</h3>
-                                                                                                                        <div className="flex items-center space-x-2 text-white/80">
-                                                                                                                                <Calendar className="w-4 h-4" />
-                                                                                                                                <span className="text-sm">Full Day Experience</span>
-                                                                                                                        </div>
-                                                                                                                </div>
-                                                                                                        </div>
+<TabsContent value="itinerary">
+    {getItinerary().length > 0 ? (
+        <div className="space-y-8">
+            {getItinerary().map((day: any, index: number) => (
+                <FadeInSection key={day.id || index} delay={index * 0.1}>
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/20 overflow-hidden">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full">
+                            {/* Left Column - Day Info & Activities */}
+                            <div className="lg:col-span-5 p-6">
+                                <div className="h-full flex flex-col">
+                                    {/* Day Header */}
+                                    <div className="mb-6">
+                                        <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 mb-3 px-3 py-1 text-sm">
+                                            Day {day.day}
+                                        </Badge>
+                                        <h3 className="text-2xl font-bold text-foreground mb-2">{day.title}</h3>
+                                    </div>
 
-                                                                                                        {/* Right Content - Activities & Image */}
-                                                                                                        <div className="lg:col-span-3">
-                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                                                                                                                        <CardContent className="p-6">
-                                                                                                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                                                                                                        {/* Activities List */}
-                                                                                                                                        <div className="md:col-span-2">
-                                                                                                                                                <h4 className="font-semibold text-foreground mb-3 flex items-center">
-                                                                                                                                                        <Activity className="w-4 h-4 text-emerald-500 mr-2" />
-                                                                                                                                                        Activities
-                                                                                                                                                </h4>
-                                                                                                                                                <ul className="space-y-2">
-                                                                                                                                                        {day.activities && day.activities.map((activity: any, idx: number) => (
-                                                                                                                                                                <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
-                                                                                                                                                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                                                                                                                                                                        <span>{activity}</span>
-                                                                                                                                                                </li>
-                                                                                                                                                        ))}
-                                                                                                                                                </ul>
-                                                                                                                                        </div>
+                                    {/* Activities Section */}
+                                    <div className="flex-grow">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h4 className="font-semibold text-foreground text-lg flex items-center">
+                                                <Activity className="w-5 h-5 text-emerald-500 mr-2" />
+                                                Day Activities
+                                            </h4>
+                                            {day.meals && (
+                                                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                                    {day.meals}
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="space-y-3 pr-2">
+                                            {day.activities && day.activities.map((activity: any, idx: number) => (
+                                                <motion.div 
+                                                    key={idx}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: idx * 0.05 }}
+                                                    className="flex items-start space-x-3 group"
+                                                >
+                                                    <div className="flex-shrink-0 mt-1">
+                                                        <div className="w-2 h-2 bg-emerald-500 rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+                                                    </div>
+                                                    <div className="flex-grow">
+                                                        <p className="text-foreground/90 leading-relaxed text-sm md:text-base group-hover:text-emerald-600 transition-colors duration-300">
+                                                            {activity}
+                                                        </p>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
 
-                                                                                                                                        {/* Image */}
-                                                                                                                                        <div className="md:col-span-1">
-                                                                                                                                                {day.image_url ? (
-                                                                                                                                                        <div className="rounded-lg overflow-hidden h-32 md:h-full">
-                                                                                                                                                                <img
-                                                                                                                                                                        src={day.image_url}
-                                                                                                                                                                        alt={`Day ${day.day}`}
-                                                                                                                                                                        className="w-full h-full object-cover"
-                                                                                                                                                                />
-                                                                                                                                                        </div>
-                                                                                                                                                ) : (
-                                                                                                                                                        <div className="rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 h-32 md:h-full flex items-center justify-center">
-                                                                                                                                                                <Calendar className="w-8 h-8 text-gray-400" />
-                                                                                                                                                        </div>
-                                                                                                                                                )}
-                                                                                                                                        </div>
-                                                                                                                                </div>
-                                                                                                                        </CardContent>
-                                                                                                                </Card>
-                                                                                                        </div>
-                                                                                                </div>
-                                                                                        </FadeInSection>
-                                                                                ))}
-                                                                        </div>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <Calendar className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No itinerary information available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
+                                        {/* Additional Info */}
+                                        {(day.highlights || day.tips) && (
+                                            <div className="mt-8 pt-6 border-t border-gray-100">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {day.highlights && (
+                                                        <div>
+                                                            <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
+                                                                <Star className="w-4 h-4 text-amber-500 mr-2" />
+                                                                Key Highlights
+                                                            </h5>
+                                                            <p className="text-sm text-muted-foreground">{day.highlights}</p>
+                                                        </div>
+                                                    )}
+                                                    {day.tips && (
+                                                        <div>
+                                                            <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
+                                                                <Lightbulb className="w-4 h-4 text-teal-500 mr-2" />
+                                                                Travel Tips
+                                                            </h5>
+                                                            <p className="text-sm text-muted-foreground">{day.tips}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Accomodation info if available */}
+                                    {day.accommodation && (
+                                        <div className="mt-6 pt-6 border-t border-gray-100">
+                                            <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
+                                                <Hotel className="w-4 h-4 text-teal-500 mr-2" />
+                                                Accommodation
+                                            </h5>
+                                            <p className="text-sm text-muted-foreground">{day.accommodation}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Right Column - Image Gallery */}
+                            <div className="lg:col-span-7 bg-gradient-to-br from-gray-50 to-gray-100/50 p-0">
+                                {day.image_url ? (
+                                    <div className="h-full relative overflow-hidden">
+                                        {/* Main Image */}
+                                        <div className="h-full min-h-[400px] lg:min-h-full relative group">
+                                            <img
+                                                src={day.image_url}
+                                                alt={`Day ${day.day} - ${day.title}`}
+                                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                            
+                                        </div>
+
+                                        {/* Additional Images Gallery */}
+                                        {day.additional_images && day.additional_images.length > 0 && (
+                                            <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-3">
+                                                <p className="text-white text-sm mb-2 font-medium">More Views</p>
+                                                <div className="flex gap-2 overflow-x-auto max-w-[300px]">
+                                                    {day.additional_images.map((img: string, idx: number) => (
+                                                        <button
+                                                            key={idx}
+                                                            className="flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors"
+                                                            onClick={() => {
+                                                                // You could implement a lightbox here
+                                                                console.log('Open image:', img);
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={img}
+                                                                alt={`View ${idx + 1}`}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    /* Fallback when no image */
+                                    <div className="h-full min-h-[400px] lg:min-h-full flex flex-col items-center justify-center p-8 text-center">
+                                        </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </FadeInSection>
+            ))}
+        </div>
+    ) : (
+        <div className="text-center py-16 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/20">
+            <Calendar className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-gray-400 mb-3">Itinerary Coming Soon</h3>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                We're currently curating the perfect itinerary for {destination.name}. 
+                Check back soon for detailed day-by-day planning.
+            </p>
+        </div>
+    )}
+</TabsContent>
 
                                                         {/* Transport Tab */}
                                                         <TabsContent value="transport">

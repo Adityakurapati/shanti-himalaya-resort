@@ -234,7 +234,7 @@ const AboutUsPage = () => {
         <CardContent className="p-0">
           <div className="relative h-fit md:h-fit overflow-hidden">
             <img
-    src="/teams/team main.jpg"
+    src="https://ik.imagekit.io/cyigpptqp/Team%20main.jpg"
     alt="Shanti Himalaya Team"
     className="w-full h-auto max-h-[500px] object-cover"
   />

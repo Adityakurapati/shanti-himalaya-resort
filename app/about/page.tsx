@@ -31,7 +31,7 @@ const AboutUsPage = () => {
     name: "Giri",
     description: "The founder of an offbeat Himalayan camp and travel initiative, he specializes in curating cultural hikes and treks across the Himalayas. Driven by a passion for authentic travel, he creates experiences that connect travelers with local traditions, landscapes, and lesser-known trails.",
     role: "Founder & Cultural Curator",
-    imageUrl: "/teams/giri.jpg",
+    imageUrl: "https://ik.imagekit.io/cyigpptqp/Giri.jpg",
     experience: "15+ years",
     featured: true
   },
@@ -39,21 +39,21 @@ const AboutUsPage = () => {
     name: "Ajit Negi",
     description: "An outgoing and deeply rooted explorer of the Himalayas, he specializes in organizing immersive cultural trips and guided hikes across the region. With a strong connection to local communities, he blends adventure with authentic cultural experiences.",
     role: "Cultural Explorer & Guide",
-    imageUrl: "/teams/ajit-negi.jpg",
+    imageUrl: "https://ik.imagekit.io/cyigpptqp/Ajit-Negi.jpg",
     experience: "12+ years"
   },
   {
     name: "Anuj Mallik",
     description: "A dynamic sales and marketing professional with a natural eye for photography, he specializes in curating and selling meaningful travel & stay experiences. With a deep appreciation for nature and detail, he connects clients to thoughtfully designed trips.",
     role: "Marketing & Experience Curator",
-    imageUrl: "/teams/anuj-mallik.jpg",
+    imageUrl: "https://ik.imagekit.io/cyigpptqp/Anuj-Mallik.jpg",
     experience: "10+ years"
   },
   {
     name: "Som Bose",
     description: "A highly knowledgeable Trip Leader and founder of Experiential Himalaya, Som specializes in leading Himalayan trips that offer clients truly enriching experiences. With deep regional knowledge and years of hands-on expertise.",
     role: "Trip Leader & Founder",
-    imageUrl: "/teams/som.jpg",
+    imageUrl: "https://ik.imagekit.io/cyigpptqp/Som.jpg",
     experience: "18+ years",
     featured: true
   },
@@ -61,7 +61,7 @@ const AboutUsPage = () => {
     name: "Phunchok",
     description: "A seasoned Trek Leader overseeing operations in Ladakh and Kashmir area, Phunchok is a man for all seasons. With strong knowledge of the region's terrain, culture, and high-altitude conditions, he ensures safe, well-paced, and comfortable treks.",
     role: "Trek Leader & Operations",
-    imageUrl: "/teams/phunchok.jpg",
+    imageUrl: "https://ik.imagekit.io/cyigpptqp/Phunchok.jpg",
     experience: "14+ years"
   }
 ];

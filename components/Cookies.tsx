@@ -40,7 +40,7 @@ const CookieConsent = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => window.open('/privacy-policy', '_blank')}
+              onClick={() => window.open('/privacy', '_blank')}
               className="text-primary hover:text-primary/80 underline underline-offset-4"
             >
               Privacy Policy

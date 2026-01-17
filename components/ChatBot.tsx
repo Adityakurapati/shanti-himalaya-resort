@@ -48,7 +48,7 @@ const ChatBot = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-goog-api-key': 'AIzaSyAnxFnPj-KcNCoZkh8n9WqYZ2C-P676EUA'
+          'X-goog-api-key': `${process.env.GEMINI_API_KEY}`
         },
         body: JSON.stringify({
           contents: [{

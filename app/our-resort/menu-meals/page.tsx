@@ -297,15 +297,7 @@ export default function MenuMealsPage() {
               <Badge className="mb-4 bg-white/20 backdrop-blur-sm">
                 View {diningCurrentSlide + 1} of {diningImages.length}
               </Badge>
-              <h3 className="text-2xl md:text-3xl font-bold mb-2">
-                {diningCurrentSlide % 2 === 0 ? "Main Dining Hall" : "Private Dining"}
-              </h3>
-              <p className="text-white/80">
-                {diningCurrentSlide % 2 === 0
-                  ? "Spacious hall with panoramic windows and traditional decor"
-                  : "Intimate setting perfect for family gatherings and special occasions"
-                }
-              </p>
+             
             </div>
           </div>
         </div>

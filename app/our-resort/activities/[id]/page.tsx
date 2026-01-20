@@ -161,15 +161,6 @@ export default async function ActivityDetailPage({ params }: { params: { id: str
                     </div>
                   </div>
 
-                  <div className="bg-primary/5 p-4 rounded-lg mb-6">
-                    <h4 className="font-semibold mb-2 text-foreground">Activity Highlights</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Guided experience by local experts</li>
-                      <li>• Connect with nature and culture</li>
-                      <li>• Safe and enjoyable for all ages</li>
-                      <li>• Memorable Himalayan experience</li>
-                    </ul>
-                  </div>
 
                   <Button className="w-full hero-gradient text-white" size="lg" asChild>
                     <a href="tel:919910775073">
@@ -227,13 +218,6 @@ export default async function ActivityDetailPage({ params }: { params: { id: str
               })}
             </div>
 
-            <div className="text-center mt-12">
-              <Link href="/our-resort#activities">
-                <Button variant="outline" size="lg">
-                  View All Activities
-                </Button>
-              </Link>
-            </div>
           </div>
         </section>
       )}

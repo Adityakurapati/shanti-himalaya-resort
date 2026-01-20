@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MessageCircle, Send, Bot, User, X } from "lucide-react";
@@ -112,23 +112,52 @@ User question: ${inputMessage}`
     }
   };
 
+  const clearChat = () => {
+    setMessages([
+      {
+        id: '1',
+        text: "Hello! I'm your Shanti Himalaya assistant. I can help you with information about our resort, packages, booking, and travel guidance. How can I assist you today?",
+        isUser: false,
+        timestamp: new Date()
+      }
+    ]);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hero-gradient hover-glow z-50"
-          size="lg"
+          className="w-10 h-10 rounded-full shadow-lg hero-gradient hover-glow z-50"
+          size="sm"
         >
           <MessageCircle className="w-6 h-6" />
         </Button>
       </DialogTrigger>
       
       <DialogContent className="sm:max-w-lg max-h-[600px] flex flex-col p-0">
-        <DialogHeader className="p-6 pb-4 border-b">
-          <DialogTitle className="flex items-center space-x-2">
+        <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
+          <div className="flex items-center space-x-2">
             <Bot className="w-6 h-6 text-primary" />
-            <span>Shanti Himalaya Assistant</span>
-          </DialogTitle>
+            <DialogTitle>Shanti Himalaya Assistant</DialogTitle>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearChat}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </DialogHeader>
         
         <Card className="flex-1 border-0 shadow-none">

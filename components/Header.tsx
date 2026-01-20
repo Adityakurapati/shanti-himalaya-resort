@@ -118,6 +118,14 @@ const Header = () => {
 
   const isActive = (path: string) => pathname === path;
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border shadow-sm">
       <div className="container mx-auto px-4">

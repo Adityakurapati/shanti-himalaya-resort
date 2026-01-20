@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -226,22 +226,22 @@ const OurResort = () => {
                         </div>
 
                         {/* Hero Section */}
-                       {/* Hero Section with Scrolling Himalayan Images */}
-                                               <section className="relative h-screen flex items-center justify-center overflow-hidden">
-                                                       <div className="absolute inset-0">
-                                                               {/* Hero Background Image */}
-                                                               <div className="relative h-full w-full">
-                                                                       <Image
-                                                                               src="/hero/home_hero.jpg"
-                                                                               alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
-                                                                               fill
-                                                                               priority
-                                                                               className="object-cover"
-                                                                               sizes="100vw"
-                                                                       />
-                                                               </div>
-                                                               <div className="absolute inset-0 hero-gradient opacity-30" />
-                                                       </div >
+                        {/* Hero Section with Scrolling Himalayan Images */}
+                        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+                                <div className="absolute inset-0">
+                                        {/* Hero Background Image */}
+                                        <div className="relative h-full w-full">
+                                                <Image
+                                                        src="/hero/home_hero.jpg"
+                                                        alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+                                                        fill
+                                                        priority
+                                                        className="object-cover"
+                                                        sizes="100vw"
+                                                />
+                                        </div>
+                                        <div className="absolute inset-0 hero-gradient opacity-30" />
+                                </div >
                                 <div className="container mx-auto px-4 relative z-10">
                                         <div className="max-w-4xl mx-auto text-center">
                                                 <Badge className="mb-6 bg-white/20 text-white border-white/30 text-lg px-6 py-2">
@@ -358,51 +358,51 @@ const OurResort = () => {
                                                 {/* Right Column: Image and Amenities Grid */}
                                                 <div className="space-y-6">
                                                         {/* Image Section */}
-                                                       <div className="relative">
-  <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
-    {/* Background Image */}
-    <Image
-      src="/hero/home_hero3.jpg"
-      alt="Shanti Himalaya Resort - Nature's Embrace"
-      fill
-      className="object-cover"
-      sizes="(max-width: 768px) 100vw, 50vw"
-    />
-    
-    {/* Dark overlay for better text readability */}
-    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
-    
-    <div className="relative z-10 h-full flex items-center justify-center">
-      <div className="text-center p-8">
-        <h3 className="text-2xl font-display font-bold text-white mb-4">Nature's Embrace Awaits</h3>
-        <p className="text-white/90 max-w-md mx-auto mb-6">
-          Experience wilderness glamping in the lap of Mother Nature.
-          Beyond Corbett - Where peace, spirituality, serenity and bounty of nature still exists.
-        </p>
-        <Button
-          variant="outline"
-          className="border-white text-white hover:bg-white hover:text-primary bg-transparent backdrop-blur-sm"
-          asChild
-        >
-          <Link href="/our-resort/accommodations">
-            View All Details
-          </Link>
-        </Button>
-      </div>
-    </div>
-  </div>
-  
-  <Badge className="absolute top-6 right-6 bg-gold text-white text-sm px-4 py-2 shadow-lg backdrop-blur-sm">
-    Only 4 Exclusive Glamps
-  </Badge>
-  
-  <div className="absolute bottom-6 left-6">
-    <Badge variant="outline" className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
-      <MapPin className="w-3 h-3 mr-2" />
-      Himalayan Valley View
-    </Badge>
-  </div>
-</div>
+                                                        <div className="relative">
+                                                                <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
+                                                                        {/* Background Image */}
+                                                                        <Image
+                                                                                src="/hero/home_hero3.jpg"
+                                                                                alt="Shanti Himalaya Resort - Nature's Embrace"
+                                                                                fill
+                                                                                className="object-cover"
+                                                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                                        />
+
+                                                                        {/* Dark overlay for better text readability */}
+                                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+
+                                                                        <div className="relative z-10 h-full flex items-center justify-center">
+                                                                                <div className="text-center p-8">
+                                                                                        <h3 className="text-2xl font-display font-bold text-white mb-4">Nature's Embrace Awaits</h3>
+                                                                                        <p className="text-white/90 max-w-md mx-auto mb-6">
+                                                                                                Experience wilderness glamping in the lap of Mother Nature.
+                                                                                                Beyond Corbett - Where peace, spirituality, serenity and bounty of nature still exists.
+                                                                                        </p>
+                                                                                        <Button
+                                                                                                variant="outline"
+                                                                                                className="border-white text-white hover:bg-white hover:text-primary bg-transparent backdrop-blur-sm"
+                                                                                                asChild
+                                                                                        >
+                                                                                                <Link href="/our-resort/accommodations">
+                                                                                                        View All Details
+                                                                                                </Link>
+                                                                                        </Button>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+
+                                                                <Badge className="absolute top-6 right-6 bg-gold text-white text-sm px-4 py-2 shadow-lg backdrop-blur-sm">
+                                                                        Only 4 Exclusive Glamps
+                                                                </Badge>
+
+                                                                <div className="absolute bottom-6 left-6">
+                                                                        <Badge variant="outline" className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
+                                                                                <MapPin className="w-3 h-3 mr-2" />
+                                                                                Himalayan Valley View
+                                                                        </Badge>
+                                                                </div>
+                                                        </div>
 
                                                         {/* Amenities Grid Section */}
                                                         <Card className="shadow-card">
@@ -833,14 +833,6 @@ const OurResort = () => {
                                                 )}
                                         </div>
 
-                                        {/* View All Activities Link */}
-                                        <div className="text-center mt-12">
-                                                <Link href="/our-resort/activities">
-                                                        <Button variant="outline" size="lg">
-                                                                View All Activities
-                                                        </Button>
-                                                </Link>
-                                        </div>
                                 </div>
                         </section>
 
@@ -848,16 +840,127 @@ const OurResort = () => {
                         <section id="location" className="py-20 mountain-gradient">
                                 <div className="container mx-auto px-4">
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                                                {/* ROW 1 — LEFT : Image */}
-                                                <div className="relative h-80 rounded-2xl overflow-hidden shadow-card group">
-                                                        <Image
-                                                                src="/location.png"
-                                                                alt="Resort Location"
-                                                                fill
-                                                                priority
-                                                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                                        />
-                                                        <div className="absolute inset-0 bg-black/20" />
+                                                {/* ROW 1 — LEFT : Image Carousel */}
+                                                <div className="relative">
+                                                        {/* Location Images Array */}
+                                                        {(() => {
+                                                                const locationImages = [
+                                                                        "20211015_120119.jpg",
+                                                                        "20211015_120415.jpg",
+                                                                        "20211015_124129.jpg",
+                                                                        "20211021_093903.jpg",
+                                                                        "20211021_093918.jpg",
+                                                                        "20220106_102543.jpg",
+                                                                        "20220106_102552.jpg",
+                                                                        "20220106_102556.jpg",
+                                                                        "20220106_105411.jpg",
+                                                                        "20220106_110635.jpg",
+                                                                        "20220106_110642.jpg",
+                                                                        "20220106_110644.jpg",
+                                                                        "20220106_110706.jpg",
+                                                                        "20220106_110718.jpg",
+                                                                        "20220106_110727.jpg",
+                                                                        "20220116_174513.jpg",
+                                                                        "20220116_174645.jpg",
+                                                                        "20220117_174613.jpg",
+                                                                        "Snowfall View Gujrugarhi.jpg",
+                                                                        "Sunrise.jpg",
+                                                                        "Top Temple.jpg",
+                                                                ];
+
+                                                                // State for the carousel
+                                                                const [currentLocationSlide, setCurrentLocationSlide] = useState(0);
+                                                                const locationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+                                                                // Helper function to get image path
+                                                                const getLocationImagePath = (filename: string) => {
+                                                                        const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || '';
+                                                                        return `${basePath}/Views/${filename}`;
+                                                                };
+
+                                                                // Start interval function
+                                                                const startLocationInterval = () => {
+                                                                        if (locationIntervalRef.current) {
+                                                                                clearInterval(locationIntervalRef.current);
+                                                                        }
+
+                                                                        locationIntervalRef.current = setInterval(() => {
+                                                                                setCurrentLocationSlide((prev) => (prev + 1) % locationImages.length);
+                                                                        }, 4000);
+                                                                };
+
+                                                                // Initialize interval
+                                                                useEffect(() => {
+                                                                        startLocationInterval();
+
+                                                                        return () => {
+                                                                                if (locationIntervalRef.current) {
+                                                                                        clearInterval(locationIntervalRef.current);
+                                                                                }
+                                                                        };
+                                                                }, [locationImages.length]);
+
+                                                                // Navigation handler
+                                                                const handleLocationNavigation = (action: 'next' | 'prev') => {
+                                                                        if (locationIntervalRef.current) {
+                                                                                clearInterval(locationIntervalRef.current);
+                                                                        }
+
+                                                                        if (action === 'next') {
+                                                                                setCurrentLocationSlide((prev) => (prev + 1) % locationImages.length);
+                                                                        } else {
+                                                                                setCurrentLocationSlide((prev) => (prev - 1 + locationImages.length) % locationImages.length);
+                                                                        }
+
+                                                                        setTimeout(() => {
+                                                                                startLocationInterval();
+                                                                        }, 5000);
+                                                                };
+
+                                                                return (
+                                                                        <div className="relative h-80 rounded-2xl overflow-hidden shadow-card group">
+                                                                                {/* Current Image */}
+                                                                                <img
+                                                                                        src={getLocationImagePath(locationImages[currentLocationSlide])}
+                                                                                        alt={`Location view ${currentLocationSlide + 1}`}
+                                                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                                       
+                                                                                />
+
+                                                                                {/* Overlay */}
+                                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+
+                                                                                {/* Navigation Buttons */}
+                                                                                <button
+                                                                                        onClick={() => handleLocationNavigation('prev')}
+                                                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                                                                                        aria-label="Previous image"
+                                                                                >
+                                                                                        <ChevronLeft className="w-5 h-5" />
+                                                                                </button>
+
+                                                                                <button
+                                                                                        onClick={() => handleLocationNavigation('next')}
+                                                                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                                                                                        aria-label="Next image"
+                                                                                >
+                                                                                        <ChevronRight className="w-5 h-5" />
+                                                                                </button>
+
+                                                                                {/* Image Counter */}
+                                                                                <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                                                                                        <span className="font-semibold">{currentLocationSlide + 1}</span> / <span className="text-white/80">{locationImages.length}</span>
+                                                                                </div>
+
+                                                                                {/* Image Title Overlay */}
+                                                                                <div className="absolute bottom-4 left-4">
+                                                                                        <Badge className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
+                                                                                                Location Gallery
+                                                                                        </Badge>
+                                                                                </div>
+                                                                        </div>
+                                                                );
+                                                        })()}
                                                 </div>
 
                                                 {/* ROW 1 — RIGHT : Location Content */}
@@ -922,6 +1025,7 @@ const OurResort = () => {
                                         </div>
                                 </div>
                         </section>
+
 
                         {/* Enquire Section */}
                         <section className="py-20 bg-background">

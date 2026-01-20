@@ -226,8 +226,22 @@ const OurResort = () => {
                         </div>
 
                         {/* Hero Section */}
-                        <section id="our-resort" className="pt-32 pb-16 hero-gradient text-white relative overflow-hidden">
-                                <div className="absolute inset-0 bg-black/20"></div>
+                       {/* Hero Section with Scrolling Himalayan Images */}
+                                               <section className="relative h-screen flex items-center justify-center overflow-hidden">
+                                                       <div className="absolute inset-0">
+                                                               {/* Hero Background Image */}
+                                                               <div className="relative h-full w-full">
+                                                                       <Image
+                                                                               src="/hero/home_hero.jpg"
+                                                                               alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+                                                                               fill
+                                                                               priority
+                                                                               className="object-cover"
+                                                                               sizes="100vw"
+                                                                       />
+                                                               </div>
+                                                               <div className="absolute inset-0 hero-gradient opacity-30" />
+                                                       </div >
                                 <div className="container mx-auto px-4 relative z-10">
                                         <div className="max-w-4xl mx-auto text-center">
                                                 <Badge className="mb-6 bg-white/20 text-white border-white/30 text-lg px-6 py-2">
@@ -344,37 +358,51 @@ const OurResort = () => {
                                                 {/* Right Column: Image and Amenities Grid */}
                                                 <div className="space-y-6">
                                                         {/* Image Section */}
-                                                        <div className="relative">
-                                                                <div className="h-96 bg-gradient-to-br from-primary to-accent rounded-2xl shadow-card overflow-hidden flex items-center justify-center">
-                                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                                                        <div className="relative z-10 text-center p-8">
-                                                                                <Mountain className="w-24 h-24 text-white/40 mx-auto mb-6" />
-                                                                                <h3 className="text-2xl font-display font-bold text-white mb-4">Nature's Embrace Awaits</h3>
-                                                                                <p className="text-white/90 max-w-md mx-auto mb-6">
-                                                                                        Experience wilderness glamping in the lap of Mother Nature.
-                                                                                        Beyond Corbett - Where peace, spirituality, serenity and bounty of nature still exists.
-                                                                                </p>
-                                                                                <Button
-                                                                                        variant="outline"
-                                                                                        className="border-white text-white hover:bg-white hover:text-primary bg-transparent"
-                                                                                        asChild
-                                                                                >
-                                                                                        <Link href="/our-resort/accommodations">
-                                                                                                View All Details
-                                                                                        </Link>
-                                                                                </Button>
-                                                                        </div>
-                                                                </div>
-                                                                <Badge className="absolute top-6 right-6 bg-gold text-white text-sm px-4 py-2 shadow-lg">
-                                                                        Only 4 Exclusive Glamps
-                                                                </Badge>
-                                                                <div className="absolute bottom-6 left-6">
-                                                                        <Badge variant="outline" className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
-                                                                                <MapPin className="w-3 h-3 mr-2" />
-                                                                                Himalayan Valley View
-                                                                        </Badge>
-                                                                </div>
-                                                        </div>
+                                                       <div className="relative">
+  <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
+    {/* Background Image */}
+    <Image
+      src="/hero/home_hero3.jpg"
+      alt="Shanti Himalaya Resort - Nature's Embrace"
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, 50vw"
+    />
+    
+    {/* Dark overlay for better text readability */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+    
+    <div className="relative z-10 h-full flex items-center justify-center">
+      <div className="text-center p-8">
+        <h3 className="text-2xl font-display font-bold text-white mb-4">Nature's Embrace Awaits</h3>
+        <p className="text-white/90 max-w-md mx-auto mb-6">
+          Experience wilderness glamping in the lap of Mother Nature.
+          Beyond Corbett - Where peace, spirituality, serenity and bounty of nature still exists.
+        </p>
+        <Button
+          variant="outline"
+          className="border-white text-white hover:bg-white hover:text-primary bg-transparent backdrop-blur-sm"
+          asChild
+        >
+          <Link href="/our-resort/accommodations">
+            View All Details
+          </Link>
+        </Button>
+      </div>
+    </div>
+  </div>
+  
+  <Badge className="absolute top-6 right-6 bg-gold text-white text-sm px-4 py-2 shadow-lg backdrop-blur-sm">
+    Only 4 Exclusive Glamps
+  </Badge>
+  
+  <div className="absolute bottom-6 left-6">
+    <Badge variant="outline" className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
+      <MapPin className="w-3 h-3 mr-2" />
+      Himalayan Valley View
+    </Badge>
+  </div>
+</div>
 
                                                         {/* Amenities Grid Section */}
                                                         <Card className="shadow-card">

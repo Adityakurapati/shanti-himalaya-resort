@@ -19,55 +19,174 @@ import {
   Sparkles,
   Trees,
   Users,
-  Star
+  Star,
+  Camera // Add Camera icon
 } from "lucide-react"
 
 export default function MenuMealsPage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const scrollRef = useRef<HTMLDivElement>(null)
+  // Dining carousel states
+  const [diningCurrentSlide, setDiningCurrentSlide] = useState(0)
+  const diningScrollRef = useRef<HTMLDivElement>(null)
+  const diningIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Bonfire gallery states
+  const [bonfireCurrentSlide, setBonfireCurrentSlide] = useState(0)
+  const bonfireIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Dining images
+  // Update the diningImages array with your actual images
   const diningImages = [
-    "/sample/dining-1.jpg",
-    "/sample/dining-2.jpg",
-    "/sample/dining-3.jpg",
-    "/sample/dining-4.jpg",
-    "/sample/dining-5.jpg",
-    "/sample/dining-6.jpg",
-    "/sample/dining-7.jpg",
-    "/sample/dining-8.jpg",
+    "20211229_151508_6d97a77.jpg",
+    "20211229_152449.jpg",
+    "20220101_113943.jpg",
+    "20220122_194501.jpg",
+    "20220123_094139.jpg",
+    "20220123_094142.jpg",
+    "20220123_094146.jpg",
+    "Restaurant Inside 1.jpg",
+    "Restaurant Inside 2.jpg",
+    "Restaurant Inside 3.jpg",
+    "Restaurant Inside 5.jpg",
+    "Restaurant Inside I.jpg",
+    "Restaurant Inside II.jpg",
+    "Restaurant Inside.jpg",
+    "Restaurant Table 1.jpg",
+    "Restaurant Table 3.jpg",
+    "Restaurant Table 5.jpg",
+    "Restaurant Table Long View.jpg",
+    "Restaurant Table View.jpg",
+    "Restaurant View.jpg",
+    "Restuarant Lounge.jpg",
+    "Restuarant Table 2.jpg",
+    "Retaurant View.jpg"
   ]
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % diningImages.length)
+  // Create a helper function to get the full image path
+  const getDiningImagePath = (filename: string) => {
+    const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || ''
+    return `${basePath}/Restaurnt/${filename}`
+  }
+  // Bonfire images array
+  const bonfireImageFiles = [
+    "20211017_155650.jpg",
+    "20211017_155652.jpg",
+    "20211017_155748.jpg",
+    "20211215_175342.jpg",
+    "20220101_213005.jpg",
+    "20220101_213148.jpg",
+    "20220113_203013.jpg",
+    "20220113_203048.jpg",
+    "20220113_203055.jpg",
+    "20220113_203102.jpg",
+    "20220113_203109.jpg",
+    "20220113_203118.jpg"
+  ]
+
+  // Dining carousel effects
+  const startDiningInterval = () => {
+    // Clear existing interval
+    if (diningIntervalRef.current) {
+      clearInterval(diningIntervalRef.current)
+    }
+    
+    // Start new interval
+    diningIntervalRef.current = setInterval(() => {
+      setDiningCurrentSlide((prev) => (prev + 1) % diningImages.length)
     }, 4000)
+  }
 
-    return () => clearInterval(interval)
-  }, [diningImages.length])
+  // Bonfire carousel effects
+  const startBonfireInterval = () => {
+    // Clear existing interval
+    if (bonfireIntervalRef.current) {
+      clearInterval(bonfireIntervalRef.current)
+    }
+    
+    // Start new interval
+    bonfireIntervalRef.current = setInterval(() => {
+      setBonfireCurrentSlide((prev) => (prev + 1) % bonfireImageFiles.length)
+    }, 5000)
+  }
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        left: currentSlide * scrollRef.current.offsetWidth,
+    startDiningInterval()
+    startBonfireInterval()
+
+    return () => {
+      if (diningIntervalRef.current) {
+        clearInterval(diningIntervalRef.current)
+      }
+      if (bonfireIntervalRef.current) {
+        clearInterval(bonfireIntervalRef.current)
+      }
+    }
+  }, [diningImages.length, bonfireImageFiles.length])
+
+  useEffect(() => {
+    if (diningScrollRef.current) {
+      diningScrollRef.current.scrollTo({
+        left: diningCurrentSlide * diningScrollRef.current.offsetWidth,
         behavior: "smooth"
       })
     }
-  }, [currentSlide])
+  }, [diningCurrentSlide])
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % diningImages.length)
+  // Dining navigation functions
+  const handleDiningNavigation = (action: 'next' | 'prev' | 'set', index?: number) => {
+    // Clear the interval
+    if (diningIntervalRef.current) {
+      clearInterval(diningIntervalRef.current)
+    }
+    
+    // Update slide
+    if (action === 'next') {
+      setDiningCurrentSlide((prev) => (prev + 1) % diningImages.length)
+    } else if (action === 'prev') {
+      setDiningCurrentSlide((prev) => (prev - 1 + diningImages.length) % diningImages.length)
+    } else if (action === 'set' && index !== undefined) {
+      setDiningCurrentSlide(index)
+    }
+    
+    // Restart interval after 5 seconds
+    setTimeout(() => {
+      startDiningInterval()
+    }, 5000)
   }
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + diningImages.length) % diningImages.length)
+  // Bonfire navigation functions
+  const handleBonfireNavigation = (action: 'next' | 'prev' | 'set', index?: number) => {
+    // Clear the interval
+    if (bonfireIntervalRef.current) {
+      clearInterval(bonfireIntervalRef.current)
+    }
+    
+    // Update slide
+    if (action === 'next') {
+      setBonfireCurrentSlide((prev) => (prev + 1) % bonfireImageFiles.length)
+    } else if (action === 'prev') {
+      setBonfireCurrentSlide((prev) => (prev - 1 + bonfireImageFiles.length) % bonfireImageFiles.length)
+    } else if (action === 'set' && index !== undefined) {
+      setBonfireCurrentSlide(index)
+    }
+    
+    // Restart interval after 5 seconds
+    setTimeout(() => {
+      startBonfireInterval()
+    }, 5000)
   }
 
   // Featured images above carousel
   const featuredImages = [
-    "/sample/dining-hero.jpg",
-    "/sample/dining-view-1.jpg",
-    "/sample/dining-view-2.jpg",
+    "/dining/dining-1.jpg",
+    "/dining/dining-2.jpg",
+    "/dining/dining-3.jpg"
   ]
+
+  // Get current bonfire image path
+  const getBonfireImagePath = (index: number) => {
+    const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || ''
+    return `${basePath}/Bonfire/${bonfireImageFiles[index]}`
+  }
 
   return (
     <div className="bg-background">
@@ -76,7 +195,7 @@ export default function MenuMealsPage() {
       {/* ================= HERO BANNER ================= */}
       <section className="relative h-[90vh]">
         <Image
-          src="/sample/dining-hero.jpg"
+          src="/dining/dining-hero.jpg"
           alt="Luxury Dining"
           fill
           priority
@@ -117,8 +236,7 @@ export default function MenuMealsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">
                   <h3 className="text-xl font-semibold">Dining Space {i + 1}</h3>
-                  <p className="text-sm text-white/80">Panoramic Mountain Views</p>
-                </div>
+                 </div>
               </div>
             ))}
           </div>
@@ -126,137 +244,139 @@ export default function MenuMealsPage() {
       </section>
 
       {/* ================= ENHANCED AUTO-SCROLLING CAROUSEL ================= */}
-      <section className="py-20 bg-gradient-to-b from-muted/10 to-transparent">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Our Dining Spaces
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-              Explore our beautifully designed dining areas that blend traditional
-              elegance with modern comfort
-            </p>
-          </div>
+<section className="py-12">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-12">
+      <h2 className="text-4xl md:text-5xl font-bold mb-4">
+        Our Dining Spaces
+      </h2>
+      <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+        Explore our beautifully designed dining areas that blend traditional
+        elegance with modern comfort
+      </p>
+    </div>
 
-          {/* Carousel Container */}
-          <div className="relative max-w-6xl mx-auto">
-            {/* Navigation Buttons */}
-            <Button
-              onClick={prevSlide}
-              size="icon"
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full shadow-lg"
-              variant="secondary"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-            
-            <Button
-              onClick={nextSlide}
-              size="icon"
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full shadow-lg"
-              variant="secondary"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-
-            {/* Auto-scrolling Carousel */}
-            <div
-              ref={scrollRef}
-              className="flex overflow-x-hidden snap-x snap-mandatory scroll-smooth rounded-2xl shadow-2xl"
-            >
-              {diningImages.map((src, i) => (
-                <div
-                  key={i}
-                  className="min-w-full relative h-[500px] snap-center"
-                >
-                  <Image
-                    src={src}
-                    alt={`Dining view ${i + 1}`}
-                    fill
-                    className="object-cover"
-                    priority={i === 0}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                    <div className="max-w-2xl mx-auto text-center">
-                      <Badge className="mb-4 bg-white/20 backdrop-blur-sm">
-                        View {i + 1} of {diningImages.length}
-                      </Badge>
-                      <h3 className="text-2xl md:text-3xl font-bold mb-2">
-                        {i % 2 === 0 ? "Main Dining Hall" : "Private Dining"}
-                      </h3>
-                      <p className="text-white/80">
-                        {i % 2 === 0 
-                          ? "Spacious hall with panoramic windows and traditional decor"
-                          : "Intimate setting perfect for family gatherings and special occasions"
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Dots Indicator */}
-            <div className="flex justify-center gap-2 mt-6">
-              {diningImages.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentSlide(i)}
-                  className={`h-3 w-3 rounded-full transition-all ${
-                    i === currentSlide 
-                      ? "bg-primary w-8" 
-                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                  }`}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            {/* Thumbnail Navigation */}
-            <div className="mt-8 grid grid-cols-4 md:grid-cols-8 gap-3">
-              {diningImages.map((src, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentSlide(i)}
-                  className={`relative h-20 rounded-lg overflow-hidden transition-all ${
-                    i === currentSlide 
-                      ? "ring-2 ring-primary ring-offset-2 scale-105" 
-                      : "opacity-70 hover:opacity-100 hover:scale-102"
-                  }`}
-                >
-                  <Image
-                    src={src}
-                    alt={`Thumbnail ${i + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className={`absolute inset-0 ${
-                    i === currentSlide ? "bg-primary/20" : "bg-black/20"
-                  }`} />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 pt-12 border-t">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">4</div>
-              <p className="text-muted-foreground">Unique Dining Areas</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">120+</div>
-              <p className="text-muted-foreground">Guest Capacity</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">180°</div>
-              <p className="text-muted-foreground">Mountain Views</p>
+    {/* Main Carousel Layout */}
+    <div className="flex flex-col lg:flex-row gap-8">
+      {/* Left: Main Canvas (70%) */}
+      <div className="lg:w-[70%]">
+        <div className="relative rounded-2xl shadow-2xl overflow-hidden">
+          {/* Current Image */}
+          <img
+            src={getDiningImagePath(diningImages[diningCurrentSlide])}
+            alt={`Dining view ${diningCurrentSlide + 1}`}
+            className="w-full h-[500px] object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/placeholder.svg";
+            }}
+          />
+          
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          
+          {/* Navigation Buttons */}
+          <button
+            onClick={() => handleDiningNavigation('prev')}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+            aria-label="Previous image"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <button
+            onClick={() => handleDiningNavigation('next')}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+            aria-label="Next image"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+          
+          {/* Image Info */}
+          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+            <div className="max-w-2xl">
+              <Badge className="mb-4 bg-white/20 backdrop-blur-sm">
+                View {diningCurrentSlide + 1} of {diningImages.length}
+              </Badge>
+              <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                {diningCurrentSlide % 2 === 0 ? "Main Dining Hall" : "Private Dining"}
+              </h3>
+              <p className="text-white/80">
+                {diningCurrentSlide % 2 === 0
+                  ? "Spacious hall with panoramic windows and traditional decor"
+                  : "Intimate setting perfect for family gatherings and special occasions"
+                }
+              </p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
+      {/* Right: Thumbnail Gallery (30%) - Show 12 images at a time */}
+      <div className="lg:w-[30%]">
+        <div className="h-[500px] overflow-y-auto rounded-xl border border-border/50 p-2">
+          <div className="grid grid-cols-3 gap-2">
+            {diningImages.map((filename, index) => (
+              <button
+                key={filename}
+                onClick={() => handleDiningNavigation('set', index)}
+                className={`relative aspect-square rounded-lg overflow-hidden transition-all ${
+                  index === diningCurrentSlide
+                    ? "ring-2 ring-primary ring-offset-1 scale-105"
+                    : "opacity-70 hover:opacity-100 hover:scale-102"
+                }`}
+              >
+                <img
+                  src={getDiningImagePath(filename)}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+                <div
+                  className={`absolute inset-0 ${
+                    index === diningCurrentSlide
+                      ? "bg-primary/20"
+                      : "bg-black/20 hover:bg-black/30"
+                  }`}
+                />
+                {/* Image number badge */}
+                <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                  {index + 1}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        {/* Thumbnail Gallery Info */}
+        <div className="mt-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            Showing {diningImages.length} images • Click any image to view
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Dots Indicator (Mobile) */}
+    <div className="flex justify-center gap-2 mt-6 lg:hidden">
+      {diningImages.slice(0, Math.min(10, diningImages.length)).map((_, i) => (
+        <button
+          key={i}
+          onClick={() => handleDiningNavigation('set', i)}
+          className={`h-2 w-2 rounded-full transition-all ${
+            i === diningCurrentSlide
+              ? "bg-primary w-8"
+              : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+          }`}
+          aria-label={`Go to slide ${i + 1}`}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+      
+      
       {/* ================= SHANTI HIMALAYA DINING EXPERIENCE ================= */}
       <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/10">
         <div className="container mx-auto px-4 max-w-4xl">
@@ -268,16 +388,16 @@ export default function MenuMealsPage() {
               SHANTI HIMALAYA DINING EXPERIENCE
             </h2>
           </div>
-          
+
           <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
             <p>
               At <span className="font-semibold text-foreground">Shanti Himalaya Wilderness Resort</span>, dining is more than just a meal; it's an immersive experience.
             </p>
-            
+
             <p>
               Our main restaurant serves as the central dining area where you can enjoy a wide variety of dishes. This large restaurant not only serves finger-licking food, but also provides eye-soothing, gorgeous 180-degree views of greenery laden mountains in front.
             </p>
-            
+
             <p>
               The restaurant provides Set Menu Meals and caters to any special dietary requirements. The Resort Cook strives to create flavorful dishes that satisfy diverse palates.
             </p>
@@ -404,7 +524,7 @@ export default function MenuMealsPage() {
               </div>
             ))}
           </div>
-          
+
           <div className="mt-12 text-center">
             <p className="text-lg italic text-muted-foreground max-w-3xl mx-auto">
               The combination of delicious food, stunning scenery, and the unique ambiance of the wilderness makes dining at Shanti Himalaya Wilderness Resort an experience you won't soon forget.
@@ -415,163 +535,163 @@ export default function MenuMealsPage() {
 
       {/* ================= OUR SET FOOD MENU MEALS ================= */}
       <section className="py-12">
-  <div className="container mx-auto px-4">
-    <div className="text-center mb-10">
-      <h2 className="text-3xl md:text-4xl font-bold mb-3">OUR SET FOOD MENU MEALS</h2>
-      <p className="text-muted-foreground">Complete set meals for your convenience</p>
-    </div>
-
-    {/* Menu Cards Container */}
-    <div className="space-y-8">
-      {/* BREAKFAST CARD */}
-      <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
-        <div className="flex flex-col md:flex-row">
-          <div className="relative md:w-2/5 h-56 md:h-auto">
-            <Image
-              src="/sample/breakfast.jpg"
-              alt="Breakfast"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent md:bg-gradient-to-r md:from-black/30 md:via-black/10 md:to-transparent" />
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">OUR SET FOOD MENU MEALS</h2>
+            <p className="text-muted-foreground">Complete set meals for your convenience</p>
           </div>
-          <div className="md:w-3/5 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Coffee className="w-6 h-6 text-amber-600" />
-              </div>
-              <h3 className="text-2xl font-bold">BREAKFAST</h3>
-            </div>
-            <Badge className="text-base px-5 py-2 bg-amber-50 text-amber-800 border-amber-200 mb-5">
-              Rs. 349* Per person per meal
-            </Badge>
-            <div className="mb-5">
-              <p className="text-muted-foreground mb-3 font-medium">Choose any Two Options:</p>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Stuffed Parantha / Aalu Poorie / Poha</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Two Eggs prepared to your liking / Scrambled Egg</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Bread Toast with Butter / Jam</span>
-                </li>
-              </ul>
-            </div>
-            <div className="pt-4 border-t">
-              <p className="font-semibold text-primary">Hot Tea / Coffee included</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* LUNCH & DINNER CARDS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* VEG LUNCH/DINNER CARD */}
-        <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
-          <div className="relative h-48">
-            <Image
-              src="/sample/veg-thali.png"
-              alt="Vegetarian Thali"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            <div className="absolute bottom-5 left-5">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <ChefHat className="w-5 h-5 text-green-600" />
+          {/* Menu Cards Container */}
+          <div className="space-y-8">
+            {/* BREAKFAST CARD */}
+            <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
+              <div className="flex flex-col md:flex-row">
+                <div className="relative md:w-2/5 h-56 md:h-auto">
+                  <Image
+                    src="/dining/breakfast.jpg"
+                    alt="Breakfast"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent md:bg-gradient-to-r md:from-black/30 md:via-black/10 md:to-transparent" />
                 </div>
-                <h3 className="text-xl font-bold text-white">VEG LUNCH / DINNER</h3>
-              </div>
-              <Badge className="bg-white/95 text-green-800 border-green-200 font-medium">
-                Rs. 549* Per person per meal
-              </Badge>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-2 gap-5">
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-green-700">Choose 1 Daal</h4>
-                <p className="text-sm text-muted-foreground">Daal Fry / Channa Daal / Rajma / Chole</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-green-700">Choose 1 Subzi</h4>
-                <p className="text-sm text-muted-foreground">Mix veg / Aalu Gobhi / Jeera Aalu</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-green-700">Rice</h4>
-                <p className="text-sm text-muted-foreground">Plain Rice / Jeera Rice</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-green-700">Desert</h4>
-                <p className="text-sm text-muted-foreground">Seviyan / Kheer / Halwa</p>
-              </div>
-            </div>
-            <div className="mt-6 pt-5 border-t">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium">Also includes:</span> Tawa Roti, Salad, Achar, Papad
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* NON-VEG LUNCH/DINNER CARD */}
-        <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
-          <div className="relative h-48">
-            <Image
-              src="/sample/non-veg.png"
-              alt="Non-Vegetarian Meal"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            <div className="absolute bottom-5 left-5">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <Flame className="w-5 h-5 text-red-600" />
+                <div className="md:w-3/5 p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-amber-100 rounded-lg">
+                      <Coffee className="w-6 h-6 text-amber-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold">BREAKFAST</h3>
+                  </div>
+                  <Badge className="text-base px-5 py-2 bg-amber-50 text-amber-800 border-amber-200 mb-5">
+                    Rs. 349* Per person per meal
+                  </Badge>
+                  <div className="mb-5">
+                    <p className="text-muted-foreground mb-3 font-medium">Choose any Two Options:</p>
+                    <ul className="space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span>Stuffed Parantha / Aalu Poorie / Poha</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span>Two Eggs prepared to your liking / Scrambled Egg</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span>Bread Toast with Butter / Jam</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <p className="font-semibold text-primary">Hot Tea / Coffee included</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-white">NON-VEG LUNCH / DINNER</h3>
-              </div>
-              <Badge className="bg-white/95 text-red-800 border-red-200 font-medium">
-                Rs. 749* Per person per meal
-              </Badge>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-2 gap-5">
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Daal</h4>
-                <p className="text-sm text-muted-foreground">Daal Fry / Channa Daal / Rajma / Chole</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Subzi</h4>
-                <p className="text-sm text-muted-foreground">Mix veg / Aalu Gobhi / Jeera Aalu</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Non-Veg</h4>
-                <p className="text-sm text-muted-foreground">Chicken Curry / Chicken Masala / Kadhai Chicken</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-2 text-red-700">Rice</h4>
-                <p className="text-sm text-muted-foreground">Plain Rice / Jeera Rice</p>
               </div>
             </div>
-            <div className="mt-6 pt-5 border-t">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium">Also includes:</span> Tawa Roti, Desert (Seviyan/Kheer/Halwa), Salad, Achar, Papad
-              </p>
+
+            {/* LUNCH & DINNER CARDS */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* VEG LUNCH/DINNER CARD */}
+              <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
+                <div className="relative h-48">
+                  <Image
+                    src="/dining/veg-thali.png"
+                    alt="Vegetarian Thali"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-5 left-5">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <ChefHat className="w-5 h-5 text-green-600" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">VEG LUNCH / DINNER</h3>
+                    </div>
+                    <Badge className="bg-white/95 text-green-800 border-green-200 font-medium">
+                      Rs. 549* Per person per meal
+                    </Badge>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-green-700">Choose 1 Daal</h4>
+                      <p className="text-sm text-muted-foreground">Daal Fry / Channa Daal / Rajma / Chole</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-green-700">Choose 1 Subzi</h4>
+                      <p className="text-sm text-muted-foreground">Mix veg / Aalu Gobhi / Jeera Aalu</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-green-700">Rice</h4>
+                      <p className="text-sm text-muted-foreground">Plain Rice / Jeera Rice</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-green-700">Desert</h4>
+                      <p className="text-sm text-muted-foreground">Seviyan / Kheer / Halwa</p>
+                    </div>
+                  </div>
+                  <div className="mt-6 pt-5 border-t">
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Also includes:</span> Tawa Roti, Salad, Achar, Papad
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* NON-VEG LUNCH/DINNER CARD */}
+              <div className="bg-white rounded-xl shadow-card overflow-hidden border border-border/50">
+                <div className="relative h-48">
+                  <Image
+                    src="/dining/non-veg.png"
+                    alt="Non-Vegetarian Meal"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-5 left-5">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-red-100 rounded-lg">
+                        <Flame className="w-5 h-5 text-red-600" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">NON-VEG LUNCH / DINNER</h3>
+                    </div>
+                    <Badge className="bg-white/95 text-red-800 border-red-200 font-medium">
+                      Rs. 749* Per person per meal
+                    </Badge>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Daal</h4>
+                      <p className="text-sm text-muted-foreground">Daal Fry / Channa Daal / Rajma / Chole</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Subzi</h4>
+                      <p className="text-sm text-muted-foreground">Mix veg / Aalu Gobhi / Jeera Aalu</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-red-700">Choose 1 Non-Veg</h4>
+                      <p className="text-sm text-muted-foreground">Chicken Curry / Chicken Masala / Kadhai Chicken</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2 text-red-700">Rice</h4>
+                      <p className="text-sm text-muted-foreground">Plain Rice / Jeera Rice</p>
+                    </div>
+                  </div>
+                  <div className="mt-6 pt-5 border-t">
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Also includes:</span> Tawa Roti, Desert (Seviyan/Kheer/Halwa), Salad, Achar, Papad
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* ================= SNACKS & BONFIRE ================= */}
       <section className="py-20 bg-gradient-to-b from-muted/30 to-transparent">
@@ -597,7 +717,7 @@ export default function MenuMealsPage() {
                 <p className="text-2xl font-bold">Rs. 500 Per Person</p>
                 <p className="text-sm text-muted-foreground mt-2">(Choose Any One from each category)</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-6">
                 {/* Veg Options */}
                 <div>
@@ -607,12 +727,12 @@ export default function MenuMealsPage() {
                     <li className="text-muted-foreground">• Masala Peanut</li>
                   </ul>
                 </div>
-                
+
                 {/* Non Veg Options */}
                 <div>
                   <h4 className="font-semibold text-lg mb-3 text-red-700">Non Veg</h4>
                   <ul className="space-y-2">
-                    
+
                     <li className="text-muted-foreground">• Egg Bhurji</li>
                     <li className="text-muted-foreground">• Chilli Chicken</li>
                   </ul>
@@ -629,7 +749,7 @@ export default function MenuMealsPage() {
                 <p className="text-2xl font-bold">Rs. 850 Per Person</p>
                 <p className="text-sm text-muted-foreground mt-2">(Choose Any Two from each category)</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-6">
                 {/* Veg Options */}
                 <div>
@@ -641,7 +761,7 @@ export default function MenuMealsPage() {
                     <li className="text-muted-foreground">• Paneer Manchurian</li>
                   </ul>
                 </div>
-                
+
                 {/* Non Veg Options */}
                 <div>
                   <h4 className="font-semibold text-lg mb-3 text-red-700">Non Veg</h4>
@@ -689,6 +809,117 @@ export default function MenuMealsPage() {
         </div>
       </section>
 
+      {/* ================= BONFIRE GALLERY ================= */}
+      <section className="py-20 bg-gradient-to-b from-muted/10 to-transparent">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Camera className="w-8 h-8 text-orange-600" />
+              <h2 className="text-4xl md:text-5xl font-bold">Bonfire Memories</h2>
+            </div>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Experience the warmth and magic of our bonfire evenings through these captured moments
+            </p>
+          </div>
+
+          {/* Main Carousel */}
+          <div className="relative max-w-4xl mx-auto mb-8">
+            {/* Main Image Container */}
+            <div className="relative h-[500px] rounded-xl overflow-hidden shadow-2xl">
+              <div className="h-full bg-gradient-to-br from-orange-900/20 to-amber-900/20 flex items-center justify-center relative group">
+                {/* Current bonfire image */}
+                <img
+                  src={getBonfireImagePath(bonfireCurrentSlide)}
+                  alt={`Bonfire scene ${bonfireCurrentSlide + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-500"
+                  onError={(e) => {
+                    // Fallback if image fails to load
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+              </div>
+
+              {/* Navigation Buttons */}
+              <button
+                onClick={() => handleBonfireNavigation('prev')}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => handleBonfireNavigation('next')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+
+              {/* Image Counter */}
+              <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm z-10">
+                <span className="font-semibold">{bonfireCurrentSlide + 1}</span> / <span className="text-white/80">{bonfireImageFiles.length}</span>
+              </div>
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex justify-center gap-2 mt-6">
+              {bonfireImageFiles.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleBonfireNavigation('set', i)}
+                  className={`h-2 w-2 rounded-full transition-all ${i === bonfireCurrentSlide
+                    ? "bg-orange-600 w-8"
+                    : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                    }`}
+                  aria-label={`Go to image ${i + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Thumbnail Gallery Grid */}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              {bonfireImageFiles.map((image, index) => (
+                <button
+                  key={image}
+                  onClick={() => handleBonfireNavigation('set', index)}
+                  className={`relative aspect-square rounded-lg overflow-hidden transition-all group ${index === bonfireCurrentSlide
+                    ? "ring-2 ring-orange-500 ring-offset-2 scale-105"
+                    : "opacity-90 hover:opacity-100 hover:scale-102"
+                    }`}
+                >
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_PATH || ''}/Bonfire/${image}`}
+                    alt={`Bonfire scene ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      (e.target as HTMLImageElement).src = "/placeholder.svg";
+                    }}
+                  />
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Selected indicator */}
+                  {index === bonfireCurrentSlide && (
+                    <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                      <Flame className="w-3 h-3" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Description */}
+            <div className="text-center mt-10">
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Each bonfire tells a story — of laughter, warmth, and unforgettable moments shared under the starlit Himalayan sky.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ================= HOUSE RULES ================= */}
       <section className="py-20">
         <div className="container mx-auto px-4 max-w-3xl">
@@ -710,28 +941,28 @@ export default function MenuMealsPage() {
                 </div>
                 <span className="text-base">Same dishes for the entire group (for each meal).</span>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
                   <span className="text-xs font-semibold text-primary">2</span>
                 </div>
                 <span className="text-base">Our Team will retire at 10 pm every night. Post which no table service will be available.</span>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
                   <span className="text-xs font-semibold text-primary">3</span>
                 </div>
                 <span className="text-base">Please confirm the food menu at least 24 hours prior to check-in date.</span>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
                   <span className="text-xs font-semibold text-primary">4</span>
                 </div>
                 <span className="text-base">Anyone above 6 years will be charged in full.</span>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
                   <span className="text-xs font-semibold text-primary">5</span>

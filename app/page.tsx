@@ -29,6 +29,56 @@ const Index = () => {
                 Array<{ id: string; name: string; duration: string; price: string; description: string; badge: string }>
         >([])
 
+
+        // Add these states at the top with other state declarations
+        const [resortCurrentImage, setResortCurrentImage] = useState(0)
+
+        // Add resort images array (replace with your actual image paths)
+        const resortImages = [
+                "20220116_124349 - Copy.jpg",
+                "20220116_124514 - Copy (2).jpg",
+                "20220116_124521 - Copy (2).jpg",
+                "20220116_125100 - Copy.jpg",
+                "20220116_125114 - Copy (2).jpg",
+                "Camp Ext 1.jpg",
+                "Camp Ext 2.jpg",
+                "Camp View Out.jpg",
+                "IMG_20220107_105940_644.webp",
+                "Resort Night View (2).jpg",
+                "Resort Night View (3) - Copy.jpg",
+                "Resort View.jpg",
+                "View 6.jpg",
+                "View Himalaya.jpg",
+                "View Umbrella.jpg"
+        ]
+
+
+        // Add helper function to get image path
+        const getImagePath = (filename: string) => {
+                const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || ''
+                return `${basePath}/Exterior/${encodeURIComponent(filename)}`
+        }
+
+        // Add auto slide effect for resort carousel
+        useEffect(() => {
+                const interval = setInterval(() => {
+                        setResortCurrentImage((prev) => (prev + 1) % resortImages.length)
+                }, 5000) // Change image every 5 seconds
+
+                return () => clearInterval(interval)
+        }, [resortImages.length])
+
+        // Resort carousel navigation functions
+        const nextResortImage = () => {
+                setResortCurrentImage((prev) => (prev + 1) % resortImages.length)
+        }
+
+        const prevResortImage = () => {
+                setResortCurrentImage((prev) => (prev - 1 + resortImages.length) % resortImages.length)
+        }
+
+
+
         const himalayanImages = [
                 "/api/placeholder/1920/800", // Mountain peaks
                 "/api/placeholder/1920/800", // Valley view
@@ -75,23 +125,16 @@ const Index = () => {
                         {/* Hero Section with Scrolling Himalayan Images */}
                         <section className="relative h-screen flex items-center justify-center overflow-hidden">
                                 <div className="absolute inset-0">
-                                        <div className="h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center relative">
-                                                <Mountain className="w-32 h-32 text-white/10" />
-
-                                                {/* Navigation Controls */}
-                                                <button
-                                                        onClick={prevHeroImage}
-                                                        className="absolute left-8 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all"
-                                                >
-                                                        <ChevronLeft className="w-6 h-6" />
-                                                </button>
-
-                                                <button
-                                                        onClick={nextHeroImage}
-                                                        className="absolute right-8 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all"
-                                                >
-                                                        <ChevronRight className="w-6 h-6" />
-                                                </button>
+                                        {/* Hero Background Image */}
+                                        <div className="relative h-full w-full">
+                                                <Image
+                                                        src="/hero/home_hero3.jpg"
+                                                        alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+                                                        fill
+                                                        priority
+                                                        className="object-cover"
+                                                        sizes="100vw"
+                                                />
 
                                                 {/* Image indicators */}
                                                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -105,8 +148,8 @@ const Index = () => {
                                                         ))}
                                                 </div>
                                         </div>
-                                        <div className="absolute inset-0 hero-gradient opacity-70" />
-                                </div>
+                                        <div className="absolute inset-0 hero-gradient opacity-30" />
+                                </div >
 
                                 <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
                                         <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
@@ -144,10 +187,10 @@ const Index = () => {
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Our Resort Section */}
-                        <section className="py-20 bg-background">
+                        < section className="py-20 bg-background" >
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Shanti Himalaya Resort</h2>
@@ -157,8 +200,8 @@ const Index = () => {
                                                 </p>
                                         </div>
 
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                                                <div className="space-y-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 px-24 items-center">
+                                                <div className="space-y-2">
                                                         <div>
                                                                 <h3 className="text-2xl font-display font-semibold mb-6">Luxury Wilderness Experience</h3>
                                                                 <div className="space-y-4">
@@ -188,32 +231,52 @@ const Index = () => {
                                                 </div>
 
                                                 <div className="relative">
-                                                        <div className="h-96 bg-gradient-to-br from-primary via-accent to-gold rounded-2xl shadow-card overflow-hidden">
-                                                                <div className="h-full flex items-center justify-center">
-                                                                        <div className="text-center text-white">
-                                                                                <Mountain className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                                                                                <p className="text-lg font-semibold">Resort Gallery</p>
-                                                                                <p className="text-sm opacity-80">Himalayan Luxury</p>
-                                                                        </div>
+                                                        {/* Resort Carousel Container */}
+                                                        <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
+                                                                {/* Current Image */}
+                                                                <img
+                                                                        src={getImagePath(resortImages[resortCurrentImage])}
+                                                                        alt={`Resort view ${resortCurrentImage + 1}`}
+                                                                        className="w-full h-full object-cover transition-opacity duration-500"
+                                                                        onError={(e) => {
+                                                                                (e.target as HTMLImageElement).src = "/placeholder.svg";
+                                                                        }}
+                                                                />
+
+                                                                {/* Image Overlay */}
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+
+                                                                {/* Navigation Buttons */}
+                                                                <button
+                                                                        onClick={prevResortImage}
+                                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                                                                        aria-label="Previous image"
+                                                                >
+                                                                        <ChevronLeft className="w-6 h-6" />
+                                                                </button>
+
+                                                                <button
+                                                                        onClick={nextResortImage}
+                                                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                                                                        aria-label="Next image"
+                                                                >
+                                                                        <ChevronRight className="w-6 h-6" />
+                                                                </button>
+
+                                                                {/* Image Counter */}
+                                                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm z-10">
+                                                                        <span className="font-semibold">{resortCurrentImage + 1}</span> / <span className="text-white/80">{resortImages.length}</span>
                                                                 </div>
                                                         </div>
 
-                                                        {/* Resort Controls */}
-                                                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                                                                {[...Array(4)].map((_: string, index: number) => (
-                                                                        <div
-                                                                                key={index}
-                                                                                className={`w-3 h-3 rounded-full transition-all ${index === 0 ? "bg-white" : "bg-white/50"}`}
-                                                                        />
-                                                                ))}
-                                                        </div>
+                                                        {/* Removed the dots indicator completely */}
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Epic Journeys Section */}
-                        <section className="py-20 mountain-gradient">
+                        < section className="py-20 mountain-gradient" >
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Epic Journeys</h2>
@@ -277,10 +340,10 @@ const Index = () => {
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Blog Section */}
-                        <section className="py-20 bg-background">
+                        < section className="py-20 bg-background" >
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Latest from Our Blog</h2>
@@ -344,10 +407,10 @@ const Index = () => {
                                                 </Link>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Amazing Destinations Section */}
-                        <section className="py-20 mountain-gradient">
+                        < section className="py-20 mountain-gradient" >
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Amazing Destinations</h2>
@@ -415,10 +478,10 @@ const Index = () => {
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Experiential Stays Section */}
-                        <section className="py-20 bg-background">
+                        < section className="py-20 bg-background" >
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Experiential Stays</h2>
@@ -513,10 +576,10 @@ const Index = () => {
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Unique Experiences Section */}
-                        <section className="py-20 mountain-gradient">
+                        < section className="py-20 mountain-gradient" >
                                 <div className="container mx-auto px-4">
                                         <div className="text-center mb-16">
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Unique Experiences</h2>
@@ -598,10 +661,10 @@ const Index = () => {
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         {/* Our Story Section */}
-                        <section className="py-20 bg-background">
+                        < section className="py-20 bg-background" >
                                 <div className="container mx-auto px-4">
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                                 <div>
@@ -642,11 +705,9 @@ const Index = () => {
                                                         </div>
 
                                                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                                                <Button size="lg" className="hero-gradient hover-glow">
-                                                                        Learn About Our Mission
-                                                                </Button>
+                                                                
                                                                 <Link href="/our-resort">
-                                                                        <Button size="lg" variant="outline">
+                                                                <Button size="lg" className="hero-gradient hover-glow">
                                                                                 Experience Our Vision
                                                                         </Button>
                                                                 </Link>
@@ -654,10 +715,10 @@ const Index = () => {
                                                 </div>
                                         </div>
                                 </div>
-                        </section>
+                        </section >
 
                         <Footer />
-                </div>
+                </div >
         )
 }
 

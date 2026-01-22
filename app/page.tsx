@@ -29,22 +29,38 @@ import Link from "next/link";
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import activitiesImage from "@/assets/activities.jpg"
+import { Json } from "@/types"
 
 const Index = () => {
     const [currentHeroImage, setCurrentHeroImage] = useState(0)
-    const [experientialStays, setExperientialStays] = useState<
-        Array<{
-            id: string;
-            name: string;
-            duration: string;
-            price: string;
-            description: string;
-            badge: string;
-            amenities: string;
-            highlights: string;
-            images: Array<{ image_url: string; is_featured: boolean }>
-        }>
-    >([])
+    
+    const [experientialStays, setExperientialStays] = useState<{
+    id: string;
+    name: string;
+    duration: string | null;
+    description: string | null;
+    badge: string | null;
+    location: string | null;
+    categories: string[] | null; // Change from Json | null to string[] | null
+    address: string | null;
+    overview: string | null;
+    connectivity: Json | null;
+    restaurant_description: string | null;
+    is_active: boolean | null;
+    created_at: string | null;
+    updated_at: string | null;
+    featuredImage?: string;
+    imageCount?: number;
+    images: {
+        image_url: string;
+        is_featured: boolean | null;
+        caption?: string | null;
+        id?: string;
+        image_order?: number | null;
+        stay_id?: string;
+        created_at?: string | null;
+    }[];
+}[]>([]);
     const [currentStayIndex, setCurrentStayIndex] = useState(0)
 
     // State for resort images carousel
@@ -158,12 +174,12 @@ const Index = () => {
     // Helper function to get image path
     const getImagePath = (folder: string, filename: string) => {
         const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || 'https://cdn.jsdelivr.net/gh/Adityakurapati/assets__@main'
-        
+
         // For Resort images, they're in "Exterior" folder
         if (folder === "Resort") {
             return `${basePath}/Exterior/${encodeURIComponent(filename)}`
         }
-        
+
         // For other sections, they're in "HERO/[folder]" structure
         return `${basePath}/HERO/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`
     }
@@ -208,9 +224,9 @@ const Index = () => {
                             .order("image_order", { ascending: true })
 
                         const categories = parseJSON(stay.categories, [])
-                        
+
                         const featuredImage = imagesData?.find(img => img.is_featured)?.image_url ||
-                            imagesData?.[0]?.image_url 
+                            imagesData?.[0]?.image_url
 
                         return {
                             ...stay,
@@ -352,7 +368,7 @@ const Index = () => {
     // Navigation functions for all carousels with auto-slide pause
     const nextImage = (setter: React.Dispatch<React.SetStateAction<number>>, images: string[], setAutoSlide: React.Dispatch<React.SetStateAction<boolean>>) => {
         setter((prev) => (prev + 1) % images.length)
-        
+
         // Pause auto-slide for 3 seconds after user interaction
         setAutoSlide(false)
         setTimeout(() => {
@@ -362,7 +378,7 @@ const Index = () => {
 
     const prevImage = (setter: React.Dispatch<React.SetStateAction<number>>, images: string[], setAutoSlide: React.Dispatch<React.SetStateAction<boolean>>) => {
         setter((prev) => (prev - 1 + images.length) % images.length)
-        
+
         // Pause auto-slide for 3 seconds after user interaction
         setAutoSlide(false)
         setTimeout(() => {
@@ -382,7 +398,9 @@ const Index = () => {
                             src={getImagePath("HERO", heroImages[heroCurrentImage])}
                             alt="Shanti Himalaya - Himalayan Adventure"
                             className="w-full h-full object-cover transition-opacity duration-1000"
-                           
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/placeholder.svg";
+                            }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
 
@@ -816,7 +834,6 @@ const Index = () => {
                                             <CardContent className="p-6">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <h3 className="text-xl font-semibold">{stay.name}</h3>
-                                                    <span className="text-primary font-bold">{stay.price || "Custom Price"}</span>
                                                 </div>
                                                 <div className="text-sm text-muted-foreground mb-2">{stay.duration || "Flexible Duration"}</div>
                                                 <p className="text-sm text-muted-foreground line-clamp-2 mb-3">

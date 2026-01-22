@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      accommodation_options: {
+        Row: {
+          capacity: string | null
+          created_at: string | null
+          features: string | null
+          id: string
+          image_url: string | null
+          name: string
+          sort_order: number | null
+          stay_id: string
+        }
+        Insert: {
+          capacity?: string | null
+          created_at?: string | null
+          features?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          sort_order?: number | null
+          stay_id: string
+        }
+        Update: {
+          capacity?: string | null
+          created_at?: string | null
+          features?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          sort_order?: number | null
+          stay_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accommodation_options_stay_id_fkey"
+            columns: ["stay_id"]
+            isOneToOne: false
+            referencedRelation: "experiential_stays"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -243,40 +284,52 @@ export type Database = {
       }
       experiential_stays: {
         Row: {
-          amenities: string | null
+          address: string | null
           badge: string | null
-          created_at: string
+          categories: Json | null
+          connectivity: Json | null
+          created_at: string | null
           description: string | null
           duration: string | null
-          highlights: string | null
           id: string
+          is_active: boolean | null
+          location: string | null
           name: string
-          price: string | null
-          updated_at: string
+          overview: string | null
+          restaurant_description: string | null
+          updated_at: string | null
         }
         Insert: {
-          amenities?: string | null
+          address?: string | null
           badge?: string | null
-          created_at?: string
+          categories?: Json | null
+          connectivity?: Json | null
+          created_at?: string | null
           description?: string | null
           duration?: string | null
-          highlights?: string | null
           id?: string
+          is_active?: boolean | null
+          location?: string | null
           name: string
-          price?: string | null
-          updated_at?: string
+          overview?: string | null
+          restaurant_description?: string | null
+          updated_at?: string | null
         }
         Update: {
-          amenities?: string | null
+          address?: string | null
           badge?: string | null
-          created_at?: string
+          categories?: Json | null
+          connectivity?: Json | null
+          created_at?: string | null
           description?: string | null
           duration?: string | null
-          highlights?: string | null
           id?: string
+          is_active?: boolean | null
+          location?: string | null
           name?: string
-          price?: string | null
-          updated_at?: string
+          overview?: string | null
+          restaurant_description?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -629,28 +682,31 @@ export type Database = {
       }
       stay_images: {
         Row: {
-          created_at: string
+          caption: string | null
+          created_at: string | null
           id: string
           image_order: number | null
           image_url: string
           is_featured: boolean | null
-          stay_id: string | null
+          stay_id: string
         }
         Insert: {
-          created_at?: string
+          caption?: string | null
+          created_at?: string | null
           id?: string
           image_order?: number | null
           image_url: string
           is_featured?: boolean | null
-          stay_id?: string | null
+          stay_id: string
         }
         Update: {
-          created_at?: string
+          caption?: string | null
+          created_at?: string | null
           id?: string
           image_order?: number | null
           image_url?: string
           is_featured?: boolean | null
-          stay_id?: string | null
+          stay_id?: string
         }
         Relationships: [
           {

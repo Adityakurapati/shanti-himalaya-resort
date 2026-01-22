@@ -281,7 +281,6 @@ export default function StayImagesManager({ stayId, stayName, onUpdate }: StayIm
               value={selectedImageUrl}
               onChange={setSelectedImageUrl}
               label="Stay Image"
-              folder="experiential-stays"
             />
             
             <div className="space-y-2">

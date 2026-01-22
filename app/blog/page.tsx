@@ -38,6 +38,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = React.useState<Tables<"packages">[]>([]);
@@ -143,7 +144,7 @@ const Blog = () => {
 
     // Update likes count in database
     const newLikes = isLiked[postId] ? (post.likes || 0) - 1 : (post.likes || 0) + 1;
-    
+
     try {
       const { error } = await supabase
         .from('packages')
@@ -163,7 +164,7 @@ const Blog = () => {
 
   const filteredPosts = blogPosts.filter((post: any) => {
     const matchesCategory = selectedCategory === "All Posts" || post.category === selectedCategory;
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.content.toLowerCase().includes(searchQuery.toLowerCase());
@@ -172,12 +173,12 @@ const Blog = () => {
 
   // Get featured posts (is_featured = true)
   const featuredPosts = blogPosts.filter((post: any) => post.is_featured === true);
-  
+
   // Get popular posts for sidebar (sort by views)
-  const popularPosts = [...blogPosts].sort((a: any, b: any) => 
+  const popularPosts = [...blogPosts].sort((a: any, b: any) =>
     (b.views || 0) - (a.views || 0)
   ).slice(0, 5);
-  
+
   // Get recent posts
   const recentPosts = [...blogPosts].slice(0, 12);
 
@@ -213,29 +214,38 @@ const Blog = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-12 hero-gradient text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          {/* Hero Background Image */}
+          <div className="relative h-full w-full">
+            <Image
+              src="/hero/blogs.jpg"
+              alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+          </div>
+          <div className="absolute inset-0 hero-gradient opacity-60" />
+        </div>
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <Badge className="mb-6 bg-white/20 text-white border-white/30 backdrop-blur-sm">
+          <div className="max-w-4xl  mx-auto text-center">
+             <Badge className="mb-6 text-xl bg-white/20 text-white border-white/30 backdrop-blur-sm">
               <Sparkles className="w-4 h-4 mr-2" />
               Stories & Insights
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+            <h1 className="text-5xl text-white md:text-7xl font-display font-bold mb-6">
               Travel
               <span className="block text-luxury">Stories</span>
             </h1>
-            <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto mb-8">
+            <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto mb-8">
               Discover insider tips, cultural insights, and inspiring stories from the heart of the Himalayas.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
+     
 
       {/* Categories Filter Bar */}
       <section className="sticky px-24 top-16 z-40 bg-white/80 backdrop-blur-md border-b shadow-sm">
@@ -453,8 +463,8 @@ const Blog = () => {
                 <p className="text-muted-foreground mb-6">
                   Try adjusting your search term or category filter
                 </p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setSearchQuery('');
                     setSelectedCategory('All Posts');
@@ -614,8 +624,8 @@ const Blog = () => {
                     onClick={() => setFeaturedIndex(index)}
                     className={cn(
                       "w-3 h-3 rounded-full transition-all",
-                      index === featuredIndex 
-                        ? "bg-primary w-8" 
+                      index === featuredIndex
+                        ? "bg-primary w-8"
                         : "bg-primary/30 hover:bg-primary/50"
                     )}
                   />
@@ -645,8 +655,8 @@ const Blog = () => {
                       <div className="flex space-x-3 cursor-pointer items-start">
                         <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
                           {post.image_url ? (
-                            <img 
-                              src={post.image_url} 
+                            <img
+                              src={post.image_url}
                               alt={post.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
@@ -691,10 +701,10 @@ const Blog = () => {
                     const count = blogPosts.filter((post: any) => post.category === category).length;
                     const categoryPosts = blogPosts.filter((post: any) => post.category === category);
                     const topPost = categoryPosts.sort((a: any, b: any) => (b.views || 0) - (a.views || 0))[0];
-                    
+
                     return (
                       <div key={category} className="group">
-                        <div 
+                        <div
                           className="flex items-center justify-between cursor-pointer p-2 rounded-lg hover:bg-primary/5 transition-colors"
                           onClick={() => setSelectedCategory(category)}
                         >

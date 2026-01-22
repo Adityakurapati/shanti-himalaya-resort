@@ -374,7 +374,7 @@ const DestinationDetail = () => {
           size="lg"
           className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${destination.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
           onClick={() => {
-            window.location.href = `mailto:shantihimalaya@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
+            window.location.href = `mailto:shantihimalayas@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
           }}
         >
           Enquire Now
@@ -1038,7 +1038,9 @@ const DestinationDetail = () => {
                                                                         size="lg"
                                                                         className="bg-white text-emerald-600 hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl text-lg px-8 py-4"
                                                                 >
-                                                                        Enquire Now
+                                                                         <a href="tel:919910775073">
+Enquire Now                    </a>
+                                                                        
                                                                 </Button>
                                                         </motion.div>
 

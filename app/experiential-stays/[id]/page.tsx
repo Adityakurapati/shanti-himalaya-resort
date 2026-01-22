@@ -31,6 +31,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useRef } from "react";
+import { toast } from "@/hooks/use-toast";
 
 // Helper function to properly parse accommodation features
 const parseAccommodationFeatures = (featuresData: any): string[] => {
@@ -302,29 +303,64 @@ export default function StayDetail() {
         }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Construct email subject
+    const subject = `Query for ${stay.name}`;
+    
+    // Construct email body with all form data
+    const body = `
+Dear Shanti Himalayas Team,
 
-        try {
-            setIsSubmitted(true);
+I'm interested in booking the following stay:
 
-            setTimeout(() => {
-                setIsSubmitted(false);
-                setFormData({
-                    checkInDate: "",
-                    checkOutDate: "",
-                    adults: "2",
-                    children: "0",
-                    contactNumber: "",
-                    email: "",
-                    remarks: ""
-                });
-            }, 3000);
+Stay Details:
+- Stay Name: ${stay.name}
+- Location: ${stay.location}
+- Duration: ${stay.duration || "Not specified"}
+- Badge: ${stay.badge}
 
-        } catch (error) {
-            console.error("Error submitting form:", error);
-        }
-    };
+My Requirements:
+- Check-in Date: ${formData.checkInDate}
+- Check-out Date: ${formData.checkOutDate}
+- Number of Adults: ${formData.adults}
+- Number of Children: ${formData.children}
+- Contact Number: ${formData.contactNumber}
+- Email: ${formData.email}
+
+Additional Remarks:
+${formData.remarks || "No additional remarks"}
+
+Looking forward to your response.
+
+Best regards,
+${formData.contactNumber} | ${formData.email}
+    `.trim();
+
+    // Create mailto link
+    const mailtoLink = `mailto:shantihimalayas@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+    
+    // Optional: Reset form after submission
+    setFormData({
+        checkInDate: "",
+        checkOutDate: "",
+        adults: "2",
+        children: "0",
+        contactNumber: "",
+        email: "",
+        remarks: ""
+    });
+    
+    // Show success message
+    toast({
+        title: "Email Client Opened",
+        description: "Please send the email to complete your query submission.",
+    });
+};
 
     useEffect(() => {
         return () => {

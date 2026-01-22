@@ -210,7 +210,7 @@ const Index = () => {
                         const categories = parseJSON(stay.categories, [])
                         
                         const featuredImage = imagesData?.find(img => img.is_featured)?.image_url ||
-                            imagesData?.[0]?.image_url || "/placeholder.svg"
+                            imagesData?.[0]?.image_url 
 
                         return {
                             ...stay,
@@ -382,9 +382,7 @@ const Index = () => {
                             src={getImagePath("HERO", heroImages[heroCurrentImage])}
                             alt="Shanti Himalaya - Himalayan Adventure"
                             className="w-full h-full object-cover transition-opacity duration-1000"
-                            onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/placeholder.svg";
-                            }}
+                           
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
 

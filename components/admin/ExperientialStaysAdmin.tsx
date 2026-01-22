@@ -300,35 +300,57 @@ export default function ExperientialStaysAdmin() {
         setIsCreatingAccommodation(false)
     }
 
-  const handleEditAccommodation = (index: number) => {
+ const handleEditAccommodation = (index: number) => {
     const accommodation = accommodations[index]
     setEditingAccommodation(index)
     setIsCreatingAccommodation(false)
+
+    // Handle features parsing - check if it's already an array or a JSON string
+    let featuresForTextarea = "";
     
-    // Parse features back to textarea format
-    let featuresText = "";
-    try {
-        const parsedFeatures = parseJSON(accommodation.features, []);
-        if (Array.isArray(parsedFeatures)) {
-            featuresText = parsedFeatures.join("\n");
-        } else if (typeof parsedFeatures === 'string') {
-            // Try to parse again if it's a string
-            const doubleParsed = JSON.parse(parsedFeatures);
-            featuresText = Array.isArray(doubleParsed) ? 
-                doubleParsed.join("\n") : 
-                parsedFeatures;
+    if (Array.isArray(accommodation.features)) {
+        // If features is already an array (like from your example)
+        featuresForTextarea = accommodation.features.join("\n");
+    } else if (typeof accommodation.features === 'string') {
+        try {
+            // Try to parse as JSON array
+            const parsedFeatures = JSON.parse(accommodation.features);
+            if (Array.isArray(parsedFeatures)) {
+                featuresForTextarea = parsedFeatures.join("\n");
+            } else {
+                // If it's a regular string (like "King/Twin Bed")
+                featuresForTextarea = accommodation.features;
+            }
+        } catch (error) {
+            // If JSON.parse fails, it's a plain string
+            featuresForTextarea = accommodation.features;
         }
-    } catch (e) {
-        console.error("Error parsing features for edit:", e);
-        featuresText = "";
     }
-    
+
     setAccommodationFormData({
         name: accommodation.name,
-        image_url: accommodation.image_url || "", // Ensure image_url is included
+        image_url: accommodation.image_url || "",
         capacity: accommodation.capacity,
-        features: featuresText,
+        features: featuresForTextarea,
     })
+}
+
+// Assuming you have or need a parseFeaturesForDisplay function:
+const parseFeaturesForDisplay = (features: any): string[] => {
+    if (Array.isArray(features)) {
+        return features;
+    }
+    
+    if (typeof features === 'string') {
+        try {
+            const parsed = JSON.parse(features);
+            return Array.isArray(parsed) ? parsed : [features];
+        } catch {
+            return [features];
+        }
+    }
+    
+    return [];
 }
 
     const handleSaveAccommodation = () => {
@@ -413,118 +435,122 @@ export default function ExperientialStaysAdmin() {
         setAccommodations(reorderedWithSortOrder)
     }
 
+ 
     const handleSave = async () => {
-        if (!formData.basic.name.trim()) {
-            toast({
-                title: "Error",
-                description: "Name is required",
-                variant: "destructive",
-            })
-            return
-        }
-
-        setSaving(true);
-        try {
-            // Prepare all data from all tabs for database
-            const stayData = {
-                // BASIC INFO
-                name: formData.basic.name,
-                badge: formData.basic.badge,
-                duration: formData.basic.duration,
-                description: formData.basic.description,
-                overview: formData.basic.overview,
-                categories: selectedCategories,
-
-                // DETAILS
-                location: formData.details.location,
-                address: formData.details.address,
-                connectivity: {
-                    airport: formData.details.connectivity_airport,
-                    railway: formData.details.connectivity_railway,
-                    city: formData.details.connectivity_city
-                },
-
-                // RESTAURANT
-                restaurant_description: formData.restaurant.restaurant_description,
-
-                updated_at: new Date().toISOString()
-            }
-
-            let savedStayId;
-
-            if (editingStay) {
-                // Update existing stay
-                const { data, error } = await supabase
-                    .from("experiential_stays")
-                    .update(stayData)
-                    .eq("id", editingStay)
-                    .select()
-                    .single()
-
-                if (error) throw error
-
-                savedStayId = data.id;
-                setSelectedStay(data);
-
-                // Save accommodations AFTER stay is updated - PASS THE stayId
-                await saveAccommodationsToDatabase(savedStayId); // ← FIXED: Pass the stayId
-
-                toast({
-                    title: "Success",
-                    description: "Stay updated successfully with accommodations",
-                })
-            } else {
-                // Create new stay
-                const { data, error } = await supabase
-                    .from("experiential_stays")
-                    .insert([stayData])
-                    .select()
-                    .single()
-
-                if (error) throw error
-
-                savedStayId = data.id;
-                setSelectedStay(data);
-                setEditingStay(data.id); // Set editingStay to new ID
-
-                // IMPORTANT: Update accommodations with the new stay_id
-                // We need to ensure accommodations have the right stay_id
-                const accommodationsWithStayId = accommodations.map(acc => ({
-                    ...acc,
-                    stay_id: savedStayId
-                }));
-                setAccommodations(accommodationsWithStayId);
-
-                // Now save accommodations with the new stay_id - PASS THE stayId
-                await saveAccommodationsToDatabase(savedStayId); // ← FIXED: Pass the stayId
-
-                toast({
-                    title: "Success",
-                    description: "Stay created successfully with accommodations",
-                })
-            }
-
-            // Refresh the stays list
-            fetchStays();
-
-            // Show success with details
-            toast({
-                title: "Stay Saved Successfully",
-                description: `${formData.basic.name} has been saved with ${accommodations.length} accommodation options.`,
-                duration: 3000,
-            });
-
-        } catch (error: any) {
-            console.error("Error saving stay:", error)
-            toast({
-                title: "Error",
-                description: error.message || "Failed to save stay",
-                variant: "destructive",
-            })
-        } finally {
-            setSaving(false);
-        }
+    if (!formData.basic.name.trim()) {
+        toast({
+            title: "Error",
+            description: "Name is required",
+            variant: "destructive",
+        })
+        return
     }
+
+    setSaving(true);
+    try {
+        // Prepare all data from all tabs for database
+        const stayData = {
+            // BASIC INFO
+            name: formData.basic.name,
+            badge: formData.basic.badge,
+            duration: formData.basic.duration,
+            description: formData.basic.description,
+            overview: formData.basic.overview,
+            categories: selectedCategories,
+
+            // DETAILS
+            location: formData.details.location,
+            address: formData.details.address,
+            connectivity: {
+                airport: formData.details.connectivity_airport,
+                railway: formData.details.connectivity_railway,
+                city: formData.details.connectivity_city
+            },
+
+            // RESTAURANT
+            restaurant_description: formData.restaurant.restaurant_description,
+
+            updated_at: new Date().toISOString()
+        }
+
+        let savedStayId;
+
+        if (editingStay) {
+            // Update existing stay
+            const { data, error } = await supabase
+                .from("experiential_stays")
+                .update(stayData)
+                .eq("id", editingStay)
+                .select()
+                .single()
+
+            if (error) throw error
+
+            savedStayId = data.id;
+            setSelectedStay(data);
+
+            // Save accommodations AFTER stay is updated - PASS THE stayId
+            await saveAccommodationsToDatabase(savedStayId); // ← FIXED: Pass the stayId
+
+            toast({
+                title: "Success",
+                description: "Stay updated successfully with accommodations",
+            })
+        } else {
+            // Create new stay
+            const { data, error } = await supabase
+                .from("experiential_stays")
+                .insert([stayData])
+                .select()
+                .single()
+
+            if (error) throw error
+
+            savedStayId = data.id;
+            setSelectedStay(data);
+            setEditingStay(data.id); // Set editingStay to new ID
+
+            // IMPORTANT: Update accommodations with the new stay_id
+            // We need to ensure accommodations have the right stay_id
+            const accommodationsWithStayId = accommodations.map(acc => ({
+                ...acc,
+                stay_id: savedStayId
+            }));
+            setAccommodations(accommodationsWithStayId);
+
+            // Now save accommodations with the new stay_id - PASS THE stayId
+            await saveAccommodationsToDatabase(savedStayId); // ← FIXED: Pass the stayId
+
+            toast({
+                title: "Success",
+                description: "Stay created successfully with accommodations",
+            })
+            
+            // ✅ FIX: Close the form and return to existing screen
+            handleCancelEdit(); // This will reset everything
+        }
+
+        // Refresh the stays list
+        fetchStays();
+
+        // Show success with details
+        toast({
+            title: "Stay Saved Successfully",
+            description: `${formData.basic.name} has been saved with ${accommodations.length} accommodation options.`,
+            duration: 3000,
+        });
+
+    } catch (error: any) {
+        console.error("Error saving stay:", error)
+        toast({
+            title: "Error",
+            description: error.message || "Failed to save stay",
+            variant: "destructive",
+        })
+    } finally {
+        setSaving(false);
+    }
+}
     const saveAccommodationsToDatabase = async (stayId: string) => {
         if (!stayId) {
             console.error("No stay ID provided for saving accommodations");

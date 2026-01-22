@@ -18,6 +18,7 @@ import {
 import Link from "next/link";;
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
+import Image from "next/image";
 
 const Journeys = () => {
         const [selectedCategory, setSelectedCategory] = React.useState("All");
@@ -84,23 +85,38 @@ const Journeys = () => {
                         <Header />
 
                         {/* Hero Section */}
-                        <section className="pt-32 pb-16 hero-gradient text-white">
-                                <div className="container mx-auto px-4">
+                        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+                                <div className="absolute inset-0">
+                                        {/* Hero Background Image */}
+                                        <div className="relative h-full w-full">
+                                                <Image
+                                                        src="/hero/journeys.jpg"
+                                                        alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+                                                        fill
+                                                        priority
+                                                        className="object-cover"
+                                                        sizes="100vw"
+                                                />
+                                        </div>
+                                        <div className="absolute inset-0 hero-gradient opacity-50" />
+                                </div>
+                                <div className="container mx-auto px-4 relative z-10">
                                         <div className="max-w-4xl mx-auto text-center">
-                                                <Badge className="mb-6 bg-white/20 text-white border-white/30">
+                                                <Badge className="mb-6 bg-white/20 text-white border-white/30 text-lg px-6 py-2">
                                                         Discover Your Adventure
                                                 </Badge>
-                                                <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+                                                <h1 className="text-5xl text-white md:text-7xl font-display font-bold mb-6">
                                                         Epic
                                                         <span className="block text-luxury">Journeys</span>
                                                 </h1>
-                                                <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
+                                                <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto">
                                                         From thrilling adventures to peaceful retreats, discover curated experiences
                                                         that showcase the best of Nepal's natural beauty and rich culture.
                                                 </p>
                                         </div>
                                 </div>
                         </section>
+                      
 
                         {/* Featured Journeys */}
                         <section className="py-20 bg-background">
@@ -283,10 +299,9 @@ const Journeys = () => {
                                                 </p>
                                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                                         <Button size="lg" className="hero-gradient hover-glow">
-                                                                Plan My Journey
-                                                        </Button>
-                                                        <Button size="lg" variant="outline">
-                                                                Speak to an Expert
+                                                               <a href="tel:919910775073">
+                      Speak to an Expert
+                    </a>
                                                         </Button>
                                                 </div>
                                         </div>

@@ -32,10 +32,10 @@ function getCroppedImg(
 
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
-    
+
     canvas.width = crop.width
     canvas.height = crop.height
-    
+
     ctx.drawImage(
       image,
       crop.x * scaleX,
@@ -69,7 +69,7 @@ function dataUrlToBlob(dataUrl: string) {
     if (!dataUrl.startsWith('data:')) {
       throw new Error('Invalid data URL format')
     }
-    
+
     const arr = dataUrl.split(",")
     const mime = arr[0].match(/:(.*?);/)?.[1] || "image/jpeg"
     const bstr = atob(arr[1])
@@ -94,9 +94,9 @@ async function tryUploadToR2(blob: Blob): Promise<string | null> {
   }
 }
 
-export const ImageUploader: React.FC<Props> = ({ 
-  label = "Image", 
-  value, 
+export const ImageUploader: React.FC<Props> = ({
+  label = "Image",
+  value,
   onChange
 }) => {
   const fileRef = useRef<HTMLInputElement | null>(null)
@@ -107,7 +107,7 @@ export const ImageUploader: React.FC<Props> = ({
   const [crop, setCrop] = useState<Crop>()
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [uploading, setUploading] = useState(false)
-  const [originalImageSize, setOriginalImageSize] = useState<{width: number, height: number} | null>(null)
+  const [originalImageSize, setOriginalImageSize] = useState<{ width: number, height: number } | null>(null)
 
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -116,18 +116,18 @@ export const ImageUploader: React.FC<Props> = ({
     setSelectedFile(file)
     const url = URL.createObjectURL(file)
     setLocalUrl(url)
-    
+
     setDialogOpen(true)
   }
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget
     setOriginalImageSize({ width, height })
-    
+
     // Set initial crop - 50% of image size by default
     const cropWidth = width * 0.5
     const cropHeight = height * 0.5
-    
+
     // For free ratio, don't use makeAspectCrop with NaN
     // Instead create a simple crop object
     const crop: Crop = {
@@ -137,20 +137,20 @@ export const ImageUploader: React.FC<Props> = ({
       width: cropWidth,
       height: cropHeight,
     }
-    
+
     setCrop(crop)
   }, [])
 
   const handleApplyCrop = useCallback(async () => {
     if (!completedCrop || !imgRef.current || !selectedFile) return
-    
+
     // Validate crop values
-    if (isNaN(completedCrop.width) || isNaN(completedCrop.height) || 
-        completedCrop.width <= 0 || completedCrop.height <= 0) {
+    if (isNaN(completedCrop.width) || isNaN(completedCrop.height) ||
+      completedCrop.width <= 0 || completedCrop.height <= 0) {
       console.error("Invalid crop dimensions:", completedCrop)
       return
     }
-    
+
     setUploading(true)
     try {
       const croppedFile = await getCroppedImg(
@@ -158,10 +158,10 @@ export const ImageUploader: React.FC<Props> = ({
         completedCrop,
         `cropped-${selectedFile.name}`
       )
-      
+
       // Create blob directly from the cropped file
       const blob = await croppedFile.arrayBuffer().then(buffer => new Blob([buffer], { type: 'image/jpeg' }))
-      
+
       const r2Url = await tryUploadToR2(blob)
 
       if (r2Url) {
@@ -228,7 +228,7 @@ export const ImageUploader: React.FC<Props> = ({
       <div className="flex items-center justify-between">
         <Label>{label}</Label>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <Input
           value={value || ""}
@@ -263,12 +263,12 @@ export const ImageUploader: React.FC<Props> = ({
           <DialogHeader className="px-6 pt-6">
             <DialogTitle>Crop Image</DialogTitle>
           </DialogHeader>
-          
+
           <div className="px-6">
             <div className="text-sm text-muted-foreground mb-4">
               Drag edges or corners to resize • Drag inside to move
             </div>
-            
+
             {/* Crop Area */}
             <div className="relative bg-gray-100 rounded-lg border border-gray-300 overflow-hidden">
               {localUrl ? (
@@ -309,18 +309,18 @@ export const ImageUploader: React.FC<Props> = ({
                   Loading image...
                 </div>
               )}
-              
+
               {/* Info overlays */}
               <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                 Free Ratio
               </div>
-              
+
               {originalImageSize && (
                 <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                   {originalImageSize.width} × {originalImageSize.height}
                 </div>
               )}
-              
+
               {completedCrop && (
                 <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                   Crop: {Math.round(completedCrop.width)} × {Math.round(completedCrop.height)} px

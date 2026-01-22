@@ -247,7 +247,7 @@ const ResponsiveTourismPage = () => {
               <Button
                 size="lg"
                 className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-white text-primary hover:bg-white/90"
-                onClick={() => window.location.href = "mailto:shantihimalaya@gmail.com"}
+                onClick={() => window.location.href = "mailto:shantihimalayas@gmail.com"}
               >
                 <Mail className="w-5 h-5 mr-2" />
                 Contact Us
@@ -677,19 +677,12 @@ const ResponsiveTourismPage = () => {
                     <Button
                       size="lg"
                       className="bg-white text-primary hover:bg-white/90"
-                      onClick={() => window.location.href = "mailto:shantihimalaya@gmail.com"}
+                      onClick={() => window.location.href = "mailto:shantihimalayas@gmail.com"}
                     >
                       <Mail className="w-5 h-5 mr-2" />
-                      Write to us: shantihimalaya@gmail.com
+                      Write to us: shantihimalayas@gmail.com
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="border-white text-white hover:bg-white/10"
-                    >
-                      Learn More About Volunteering
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
+                   
                   </div>
                 </div>
               </div>
@@ -719,8 +712,8 @@ const ResponsiveTourismPage = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white/10 text-lg px-8 py-4"
-                  onClick={() => window.location.href = "mailto:shantihimalaya@gmail.com"}
+                  className="border-white bg-transparent text-white hover:bg-white/10 text-lg px-8 py-4"
+                  onClick={() => window.location.href = "mailto:shantihimalayas@gmail.com"}
                 >
                   Contact Us
                   <Mail className="w-5 h-5 ml-2" />

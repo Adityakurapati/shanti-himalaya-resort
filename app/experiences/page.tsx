@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
+import Image from "next/image";
 
 const Experiences = () => {
         const [selectedCategory, setSelectedCategory] = React.useState("All");
@@ -125,24 +126,38 @@ const Experiences = () => {
                         <Header />
 
                         {/* Hero Section */}
-                        <section className="pt-32 pb-20 hero-gradient text-white relative overflow-hidden">
-                                <div className="absolute inset-0 bg-black/30"></div>
+                        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+                                <div className="absolute inset-0">
+                                        {/* Hero Background Image */}
+                                        <div className="relative h-full w-full">
+                                                <Image
+                                                        src="/hero/experiences.jpg"
+                                                        alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+                                                        fill
+                                                        className="object-cover"
+                                                        sizes="100vw"
+                                                />
+                                        </div>
+                                        <div className="absolute inset-0 hero-gradient opacity-60" />
+                                </div>
                                 <div className="container mx-auto px-4 relative z-10">
                                         <div className="max-w-4xl mx-auto text-center">
-                                                <Badge className="mb-6 bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                                                <Badge className="mb-6 text-xl bg-white/20 text-white border-white/30 backdrop-blur-sm">
                                                         Curated Memories
                                                 </Badge>
-                                                <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+                                                <h1 className="text-5xl text-white md:text-7xl font-display font-bold mb-6">
                                                         Beyond Accommodation
                                                         <span className="block text-luxury">Extraordinary Experiences</span>
                                                 </h1>
-                                                <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
+                                                <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto">
                                                         From starlit dinners to wellness journeys and local adventures –
                                                         craft unforgettable moments with our carefully curated experiences in the heart of Nepal.
                                                 </p>
                                         </div>
                                 </div>
                         </section>
+
+
 
                         {/* Featured Experiences */}
                         {featuredExperiences.length > 0 && (
@@ -339,10 +354,9 @@ const Experiences = () => {
                                                 </p>
                                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                                         <Button size="lg" className="bg-white text-primary hover:bg-white/90 hover-glow">
-                                                                Design My Experience
-                                                        </Button>
-                                                        <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
-                                                                Speak to a Specialist
+                                                                <a href="tel:919910775073">
+Speak to a Specialist
+                                                                </a>  
                                                         </Button>
                                                 </div>
                                         </div>

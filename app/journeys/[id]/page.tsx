@@ -419,7 +419,7 @@ const JourneyDetail = () => {
 
         const handleEnquireNow = () => {
                 if (journey) {
-                        window.location.href = `mailto:shantihimalaya@gmail.com?subject=Enquiry about ${encodeURIComponent(
+                        window.location.href = `mailto:shantihimalayas@gmail.com?subject=Enquiry about ${encodeURIComponent(
                                 journey.title
                         )}&body=Hi, I would like to know more about ${encodeURIComponent(journey.title)}.`;
                 }

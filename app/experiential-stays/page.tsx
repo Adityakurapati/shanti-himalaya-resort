@@ -302,7 +302,7 @@ Curated Himalayan Retreats                        </Badge>
                                 </a>
                             </Button>
                             <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white px-8">
-                                <a href="mailto:shantihimalaya@gmail.com" className="flex items-center gap-2">
+                                <a href="mailto:shantihimalayas@gmail.com" className="flex items-center gap-2">
                                     <Mail className="w-5 h-5" />
                                     Send Inquiry
                                 </a>

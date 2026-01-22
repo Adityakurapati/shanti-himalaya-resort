@@ -38,6 +38,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Image from "next/image"
 
 const AccommodationsPage = () => {
   const [accommodationImages, setAccommodationImages] = useState<{ id: string; image_url: string; title: string; description: string }[]>([])
@@ -45,7 +46,7 @@ const AccommodationsPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
-  
+
   // Booking Modal State
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<{
@@ -53,7 +54,7 @@ const AccommodationsPage = () => {
     price: string;
     description: string;
   } | null>(null)
-  
+
   // Form State
   const [bookingForm, setBookingForm] = useState({
     name: "",
@@ -98,13 +99,13 @@ const AccommodationsPage = () => {
   }
 
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => 
+    setCurrentImageIndex((prevIndex) =>
       prevIndex === accommodationImages.length - 1 ? 0 : prevIndex + 1
     )
   }
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => 
+    setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? accommodationImages.length - 1 : prevIndex - 1
     )
   }
@@ -123,17 +124,17 @@ const AccommodationsPage = () => {
   const openBookingModal = (plan: { name: string; price: string; description: string }) => {
     setSelectedPlan(plan)
     setShowBookingModal(true)
-    
+
     // Set default check-in to tomorrow
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const defaultCheckIn = tomorrow.toISOString().split('T')[0]
-    
+
     // Set default check-out to 2 days from now
     const dayAfterTomorrow = new Date()
     dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2)
     const defaultCheckOut = dayAfterTomorrow.toISOString().split('T')[0]
-    
+
     setBookingForm(prev => ({
       ...prev,
       checkInDate: defaultCheckIn,
@@ -173,7 +174,7 @@ const AccommodationsPage = () => {
     if (!selectedPlan) return "#"
 
     const subject = `Booking Inquiry for ${selectedPlan.name} - Shanti Himalaya`
-    
+
     const body = `Dear Shanti Himalaya Team,
 
 I would like to book the ${selectedPlan.name} accommodation.
@@ -198,13 +199,13 @@ Please confirm availability and provide the booking procedure.
 Thank you,
 ${bookingForm.name}`
 
-    return `mailto:shantihimalaya@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    return `mailto:shantihimalayas@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
   // Handle form submission
   const handleSubmitBooking = () => {
-    if (!bookingForm.name || !bookingForm.phone || !bookingForm.email || 
-        !bookingForm.checkInDate || !bookingForm.checkOutDate) {
+    if (!bookingForm.name || !bookingForm.phone || !bookingForm.email ||
+      !bookingForm.checkInDate || !bookingForm.checkOutDate) {
       alert("Please fill in all required fields")
       return
     }
@@ -293,20 +294,33 @@ ${bookingForm.name}`
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 hero-gradient text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          {/* Hero Background Image */}
+          <div className="relative h-full w-full">
+            <Image
+              src="/hero/accommodation.jpg"
+              alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+          </div>
+          <div className="absolute inset-0 hero-gradient opacity-50" />
+        </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-white/20 text-white border-white/30 text-lg px-6 py-2">
               <Bed className="w-5 h-5 mr-2" />
               Premium Accommodation
             </Badge>
-            <h1 className="text-6xl md:text-7xl font-display font-bold mb-6">
+            <h1 className="text-6xl text-white md:text-7xl font-display font-bold mb-6">
               Premium Glamps at
               <span className="block text-luxury">Shanti Himalaya</span>
             </h1>
             <p className="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto mb-8">
-              Discover the charm of our Premium Glamps with valley view, set amidst the Himalayan serenity. 
+              Discover the charm of our Premium Glamps with valley view, set amidst the Himalayan serenity.
               Unwind in our Premium Glamps, offering a perfect blend of comfort and adventure.
             </p>
           </div>
@@ -324,8 +338,8 @@ ${bookingForm.name}`
                   Wilderness Glamping Experience
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  Each Glamp room is well appointed with a Large Bed having plush bedding while the room 
-                  space is enough to accommodate 2~3 adults. Each Glamp room is furnished with an open 
+                  Each Glamp room is well appointed with a Large Bed having plush bedding while the room
+                  space is enough to accommodate 2~3 adults. Each Glamp room is furnished with an open
                   almirah, Coffee table with chairs and opens into a courtyard overlooking the mountains.
                 </p>
               </div>
@@ -398,7 +412,7 @@ ${bookingForm.name}`
                               className="w-full h-full object-cover transition-transform duration-500"
                               onClick={() => openFullscreen(currentImageIndex)}
                             />
-                            
+
                             {/* Navigation Arrows */}
                             {accommodationImages.length > 1 && (
                               <>
@@ -420,7 +434,7 @@ ${bookingForm.name}`
                                 </Button>
                               </>
                             )}
-                            
+
                             {/* Image Info Overlay */}
                             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-white">
                               <h3 className="font-semibold text-lg">
@@ -455,11 +469,10 @@ ${bookingForm.name}`
                             {accommodationImages.map((image, index) => (
                               <button
                                 key={image.id}
-                                className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                                  index === currentImageIndex 
-                                    ? 'border-primary ring-2 ring-primary/30' 
+                                className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === currentImageIndex
+                                    ? 'border-primary ring-2 ring-primary/30'
                                     : 'border-transparent opacity-70 hover:opacity-100'
-                                }`}
+                                  }`}
                                 onClick={() => setCurrentImageIndex(index)}
                               >
                                 <img
@@ -504,7 +517,7 @@ ${bookingForm.name}`
 
                     <div className="bg-luxury/10 p-4 rounded-lg border border-luxury/20">
                       <p className="text-sm italic text-center">
-                        "Book your stay to embrace tranquillity, adventure, and the luxury of personal attention under the stars. 
+                        "Book your stay to embrace tranquillity, adventure, and the luxury of personal attention under the stars.
                         Nature's embrace awaits your arrival!"
                       </p>
                     </div>
@@ -544,8 +557,8 @@ ${bookingForm.name}`
                       </li>
                     ))}
                   </ul>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={() => openBookingModal(plan)}
                   >
@@ -576,7 +589,7 @@ ${bookingForm.name}`
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-display font-bold mb-10 text-center">Terms & Conditions</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
               {terms.map((term, index) => (
                 <Card key={index} className="shadow-sm">
@@ -730,8 +743,8 @@ ${bookingForm.name}`
                   size="icon"
                   className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-12 h-12"
                   onClick={() => {
-                    const newIndex = selectedImageIndex === 0 
-                      ? accommodationImages.length - 1 
+                    const newIndex = selectedImageIndex === 0
+                      ? accommodationImages.length - 1
                       : selectedImageIndex - 1
                     setSelectedImageIndex(newIndex)
                   }}
@@ -743,8 +756,8 @@ ${bookingForm.name}`
                   size="icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-12 h-12"
                   onClick={() => {
-                    const newIndex = selectedImageIndex === accommodationImages.length - 1 
-                      ? 0 
+                    const newIndex = selectedImageIndex === accommodationImages.length - 1
+                      ? 0
                       : selectedImageIndex + 1
                     setSelectedImageIndex(newIndex)
                   }}
@@ -761,7 +774,7 @@ ${bookingForm.name}`
                 alt={accommodationImages[selectedImageIndex]?.title}
                 className="max-w-full max-h-[80vh] object-contain"
               />
-              
+
               {/* Image info in fullscreen */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6 text-white">
                 <h3 className="text-xl font-semibold">
@@ -783,9 +796,9 @@ ${bookingForm.name}`
                       className="bg-white/20 border-white/30 text-white hover:bg-white/30"
                       asChild
                     >
-                      <a 
-                        href={accommodationImages[selectedImageIndex]?.image_url} 
-                        target="_blank" 
+                      <a
+                        href={accommodationImages[selectedImageIndex]?.image_url}
+                        target="_blank"
                         rel="noopener noreferrer"
                         download
                       >
@@ -803,11 +816,10 @@ ${bookingForm.name}`
                 {accommodationImages.map((image, index) => (
                   <button
                     key={image.id}
-                    className={`flex-shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-all ${
-                      index === selectedImageIndex 
-                        ? 'border-white ring-2 ring-white/50' 
+                    className={`flex-shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-all ${index === selectedImageIndex
+                        ? 'border-white ring-2 ring-white/50'
                         : 'border-transparent opacity-60 hover:opacity-100'
-                    }`}
+                      }`}
                     onClick={() => setSelectedImageIndex(index)}
                   >
                     <img
@@ -934,8 +946,8 @@ ${bookingForm.name}`
                   <Label htmlFor="adults" className="text-sm font-medium">
                     Number of Adults
                   </Label>
-                  <Select 
-                    value={bookingForm.adults} 
+                  <Select
+                    value={bookingForm.adults}
                     onValueChange={(value) => handleSelectChange("adults", value)}
                   >
                     <SelectTrigger>
@@ -955,8 +967,8 @@ ${bookingForm.name}`
                   <Label htmlFor="children" className="text-sm font-medium">
                     Number of Children
                   </Label>
-                  <Select 
-                    value={bookingForm.children} 
+                  <Select
+                    value={bookingForm.children}
                     onValueChange={(value) => handleSelectChange("children", value)}
                   >
                     <SelectTrigger>
@@ -994,8 +1006,8 @@ ${bookingForm.name}`
             <Button
               className="flex-1"
               onClick={handleSubmitBooking}
-              disabled={!bookingForm.name || !bookingForm.phone || !bookingForm.email || 
-                        !bookingForm.checkInDate || !bookingForm.checkOutDate}
+              disabled={!bookingForm.name || !bookingForm.phone || !bookingForm.email ||
+                !bookingForm.checkInDate || !bookingForm.checkOutDate}
             >
               <Mail className="w-4 h-4 mr-2" />
               Send Booking Inquiry
@@ -1023,22 +1035,22 @@ ${bookingForm.name}`
               Ready to Experience Luxury Glamping?
             </h2>
             <p className="text-white/90 mb-8 leading-relaxed">
-              Contact us now to book your stay in our Premium Glamps. Experience the perfect 
+              Contact us now to book your stay in our Premium Glamps. Experience the perfect
               blend of adventure and comfort in the Himalayas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-primary hover:bg-white/90"
                 onClick={() => window.open('tel:+919910775073', '_blank')}
               >
                 <Phone className="w-5 h-5 mr-2" />
                 Call Now: +91 99107 75073
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white/10"
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white bg-transparent text-white hover:bg-white/10"
                 onClick={() => openBookingModal({
                   name: "Premium Glamp",
                   price: "Various Plans",

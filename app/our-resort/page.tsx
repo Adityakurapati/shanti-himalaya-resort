@@ -680,7 +680,7 @@ const OurResort = () => {
                                                         <div className="h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center relative group">
                                                                 {galleryImages.length > 0 ? (
                                                                         <img
-                                                                                src={galleryImages[currentImageIndex] || "/placeholder.svg"}
+                                                                                src={galleryImages[currentImageIndex] }
                                                                                 alt={gallery[currentImageIndex]?.title || "Gallery image"}
                                                                                 className="w-full h-full object-cover"
                                                                         />
@@ -736,7 +736,7 @@ const OurResort = () => {
                                                                         className={`relative h-16 rounded-lg overflow-hidden transition-all group ${selectedThumbnail === index ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"}`}
                                                                 >
                                                                         <img
-                                                                                src={g.image_url || "/placeholder.svg"}
+                                                                                src={g.image_url }
                                                                                 alt={g.title || `Gallery ${index + 1}`}
                                                                                 className="w-full h-full object-cover"
                                                                         />

@@ -21,7 +21,9 @@ import {
   Facebook,
   Twitter,
   Youtube,
-  MessageCircle
+  MessageCircle,
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
 
@@ -35,6 +37,12 @@ const ContactPage = () => {
     tripInterest: "",
     travelDates: ""
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
 
   const contactInfo = [
     {
@@ -74,10 +82,74 @@ const ContactPage = () => {
     { icon: Youtube, name: "YouTube", url: "https://youtube.com/@shantihimalaya", color: "bg-red-600" }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Please fill in all required fields.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Please enter a valid email address.'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: 'Thank you! Your message has been sent successfully. We will get back to you within 24 hours. Check your email for confirmation.'
+        });
+        
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+          tripInterest: "",
+          travelDates: ""
+        });
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Failed to send message. Please try again.'
+        });
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Network error. Please check your connection and try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -167,7 +239,8 @@ const ContactPage = () => {
                           required
                           value={formData.name}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                          disabled={isSubmitting}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="Your name"
                         />
                       </div>
@@ -179,7 +252,8 @@ const ContactPage = () => {
                           required
                           value={formData.email}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                          disabled={isSubmitting}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="you@example.com"
                         />
                       </div>
@@ -193,7 +267,8 @@ const ContactPage = () => {
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                          disabled={isSubmitting}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="+91 9876543210"
                         />
                       </div>
@@ -205,7 +280,8 @@ const ContactPage = () => {
                           required
                           value={formData.subject}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                          disabled={isSubmitting}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="How can we help?"
                         />
                       </div>
@@ -218,7 +294,8 @@ const ContactPage = () => {
                           name="tripInterest"
                           value={formData.tripInterest}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                          disabled={isSubmitting}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <option value="">Select trip type</option>
                           <option value="trekking">Trekking</option>
@@ -236,7 +313,8 @@ const ContactPage = () => {
                           name="travelDates"
                           value={formData.travelDates}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                          disabled={isSubmitting}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="e.g., March 2026"
                         />
                       </div>
@@ -249,15 +327,46 @@ const ContactPage = () => {
                         required
                         value={formData.message}
                         onChange={handleChange}
+                        disabled={isSubmitting}
                         rows={4}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         placeholder="Tell us about your adventure plans..."
                       />
                     </div>
 
-                    <Button type="submit" className="w-full hero-gradient hover-glow py-6">
-                      <Send className="w-5 h-5 mr-2" />
-                      Send Message
+                    {submitStatus.type && (
+                      <div className={`p-4 rounded-lg ${
+                        submitStatus.type === 'success' 
+                          ? 'bg-green-50 text-green-800 border border-green-200' 
+                          : 'bg-red-50 text-red-800 border border-red-200'
+                      }`}>
+                        <div className="flex items-center">
+                          {submitStatus.type === 'success' ? (
+                            <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                          ) : (
+                            <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                          )}
+                          <p className="text-sm">{submitStatus.message}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <Button 
+                      type="submit" 
+                      className="w-full hero-gradient hover-glow py-6"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5 mr-2" />
+                          Send Message
+                        </>
+                      )}
                     </Button>
                   </form>
                 </CardContent>
@@ -312,43 +421,43 @@ const ContactPage = () => {
                 </CardContent>
               </Card>
 
-             {/* Social Media */}
-<Card className="shadow-card border-0">
-  <CardHeader>
-    <CardTitle className="text-2xl font-display font-bold text-foreground">
-      Follow Our Journey
-    </CardTitle>
-    <p className="text-muted-foreground">
-      Join our community of adventure seekers and stay updated.
-    </p>
-  </CardHeader>
-  <CardContent>
-    <div className="flex justify-center space-x-4">
-      {socialMedia.map((social, index) => (
-        <a
-          key={index}
-          href={social.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group"
-        >
-          <div className={`
-            ${social.color} 
-            w-12 h-12 
-            rounded-full 
-            flex items-center justify-center
-            text-white 
-            transition-all 
-            group-hover:scale-110 
-            group-hover:shadow-lg
-          `}>
-            <social.icon className="w-5 h-5" />
-          </div>
-        </a>
-      ))}
-    </div>
-  </CardContent>
-</Card>
+              {/* Social Media */}
+              <Card className="shadow-card border-0">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-display font-bold text-foreground">
+                    Follow Our Journey
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    Join our community of adventure seekers and stay updated.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-center space-x-4">
+                    {socialMedia.map((social, index) => (
+                      <a
+                        key={index}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group"
+                      >
+                        <div className={`
+                          ${social.color} 
+                          w-12 h-12 
+                          rounded-full 
+                          flex items-center justify-center
+                          text-white 
+                          transition-all 
+                          group-hover:scale-110 
+                          group-hover:shadow-lg
+                        `}>
+                          <social.icon className="w-5 h-5" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
@@ -407,11 +516,6 @@ const ContactPage = () => {
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
-              View All FAQs
-            </Button>
-          </div>
         </div>
       </section>
 

@@ -33,34 +33,34 @@ import { Json } from "@/types"
 
 const Index = () => {
     const [currentHeroImage, setCurrentHeroImage] = useState(0)
-    
+
     const [experientialStays, setExperientialStays] = useState<{
-    id: string;
-    name: string;
-    duration: string | null;
-    description: string | null;
-    badge: string | null;
-    location: string | null;
-    categories: string[] | null; // Change from Json | null to string[] | null
-    address: string | null;
-    overview: string | null;
-    connectivity: Json | null;
-    restaurant_description: string | null;
-    is_active: boolean | null;
-    created_at: string | null;
-    updated_at: string | null;
-    featuredImage?: string;
-    imageCount?: number;
-    images: {
-        image_url: string;
-        is_featured: boolean | null;
-        caption?: string | null;
-        id?: string;
-        image_order?: number | null;
-        stay_id?: string;
-        created_at?: string | null;
-    }[];
-}[]>([]);
+        id: string;
+        name: string;
+        duration: string | null;
+        description: string | null;
+        badge: string | null;
+        location: string | null;
+        categories: string[] | null; // Change from Json | null to string[] | null
+        address: string | null;
+        overview: string | null;
+        connectivity: Json | null;
+        restaurant_description: string | null;
+        is_active: boolean | null;
+        created_at: string | null;
+        updated_at: string | null;
+        featuredImage?: string;
+        imageCount?: number;
+        images: {
+            image_url: string;
+            is_featured: boolean | null;
+            caption?: string | null;
+            id?: string;
+            image_order?: number | null;
+            stay_id?: string;
+            created_at?: string | null;
+        }[];
+    }[]>([]);
     const [currentStayIndex, setCurrentStayIndex] = useState(0)
 
     // State for resort images carousel
@@ -795,7 +795,7 @@ const Index = () => {
                 </div>
             </section>
 
-            {/* Experiential Stays Carousel Section */}
+            {/* Experiential Stays Carousel Section - FIXED */}
             <section className="py-20 bg-background">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
@@ -806,17 +806,40 @@ const Index = () => {
                     </div>
 
                     {experientialStays.length > 0 ? (
-                        <div className="relative">
+                        <div className="relative px-8">
+                            {/* Navigation Arrows - Show if we have more than 1 stay */}
+                            {experientialStays.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={prevStay}
+                                        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white text-primary p-3 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all z-10"
+                                        aria-label="Previous stay"
+                                    >
+                                        <ChevronLeft className="w-6 h-6" />
+                                    </button>
+
+                                    <button
+                                        onClick={nextStay}
+                                        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white text-primary p-3 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all z-10"
+                                        aria-label="Next stay"
+                                    >
+                                        <ChevronRight className="w-6 h-6" />
+                                    </button>
+                                </>
+                            )}
+
                             {/* Carousel Container */}
                             <div className="overflow-hidden">
                                 <div
-                                    className="flex transition-transform duration-500 ease-in-out gap-6"
-                                    style={{ transform: `translateX(-${currentStayIndex * (100 / 3)}%)` }}
+                                    className="flex gap-8 transition-transform duration-500 ease-in-out"
+                                    style={{
+                                        transform: `translateX(-${currentStayIndex * (100 / Math.min(3, experientialStays.length))}%)`
+                                    }}
                                 >
-                                    {experientialStays.slice(0, 5).map((stay) => (
+                                    {experientialStays.map((stay) => (
                                         <Card
                                             key={stay.id}
-                                            className="min-w-full md:min-w-[calc(33.333%-16px)] lg:min-w-[calc(33.333%-16px)] shadow-card hover-lift overflow-hidden flex-shrink-0"
+                                            className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-2"
                                         >
                                             <div className="h-56 relative overflow-hidden">
                                                 <img
@@ -871,30 +894,9 @@ const Index = () => {
                                 </div>
                             </div>
 
-                            {/* Navigation Arrows - Only show if we have more than 3 stays */}
-                            {experientialStays.length > 3 && (
-                                <>
-                                    <button
-                                        onClick={prevStay}
-                                        className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white text-primary p-3 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all z-10"
-                                        aria-label="Previous stay"
-                                    >
-                                        <ChevronLeft className="w-6 h-6" />
-                                    </button>
-
-                                    <button
-                                        onClick={nextStay}
-                                        className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white text-primary p-3 rounded-full shadow-lg hover:bg-primary hover:text-white transition-all z-10"
-                                        aria-label="Next stay"
-                                    >
-                                        <ChevronRight className="w-6 h-6" />
-                                    </button>
-                                </>
-                            )}
-
                             {/* Carousel Indicators */}
                             <div className="flex justify-center items-center gap-2 mt-8">
-                                {Array.from({ length: Math.ceil(Math.min(experientialStays.length, 5) / 3) }).map((_, index) => (
+                                {Array.from({ length: Math.ceil(experientialStays.length / Math.min(3, experientialStays.length)) }).map((_, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setCurrentStayIndex(index)}

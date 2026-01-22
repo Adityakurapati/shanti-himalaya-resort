@@ -116,7 +116,7 @@ const Journeys = () => {
                                         </div>
                                 </div>
                         </section>
-                      
+
 
                         {/* Featured Journeys */}
                         <section className="py-20 bg-background">
@@ -299,9 +299,9 @@ const Journeys = () => {
                                                 </p>
                                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                                         <Button size="lg" className="hero-gradient hover-glow">
-                                                               <a href="tel:919910775073">
-                      Speak to an Expert
-                    </a>
+                                                                <a href="tel:919910775073">
+                                                                        Speak to an Expert
+                                                                </a>
                                                         </Button>
                                                 </div>
                                         </div>

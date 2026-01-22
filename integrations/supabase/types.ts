@@ -241,6 +241,45 @@ export type Database = {
         }
         Relationships: []
       }
+      experiential_stays: {
+        Row: {
+          amenities: string | null
+          badge: string | null
+          created_at: string
+          description: string | null
+          duration: string | null
+          highlights: string | null
+          id: string
+          name: string
+          price: string | null
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string | null
+          badge?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          highlights?: string | null
+          id?: string
+          name: string
+          price?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string | null
+          badge?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          highlights?: string | null
+          id?: string
+          name?: string
+          price?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       journey_days: {
         Row: {
           accommodation: string | null
@@ -587,6 +626,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      stay_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_order: number | null
+          image_url: string
+          is_featured: boolean | null
+          stay_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_order?: number | null
+          image_url: string
+          is_featured?: boolean | null
+          stay_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_order?: number | null
+          image_url?: string
+          is_featured?: boolean | null
+          stay_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stay_images_stay_id_fkey"
+            columns: ["stay_id"]
+            isOneToOne: false
+            referencedRelation: "experiential_stays"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

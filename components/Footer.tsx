@@ -1,3 +1,5 @@
+'use client'
+
 import { Phone, Mail, MapPin, Facebook, Instagram, Globe, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

@@ -14,25 +14,25 @@ import { ReactNode } from "react";
 const queryClient = new QueryClient();
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en">
-      <body>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            {children}
-            
-            {/* Floating Buttons Container */}
-            <div className="fixed bottom-6 right-6 flex flex-col items-center gap-4 z-50">
-              <WhatsAppButton />
-              <ChatBot />
-            </div>
-            
-            <CookieConsent />
-          </TooltipProvider>
-        </QueryClientProvider>
-      </body>
-    </html>
-  );
+        return (
+                <html lang="en">
+                        <body>
+                                <QueryClientProvider client={queryClient}>
+                                        <TooltipProvider>
+                                                <Toaster />
+                                                <Sonner />
+                                                {children}
+
+                                                {/* Floating Buttons Container */}
+                                                <div className="fixed bottom-6 right-6 flex flex-col items-center gap-4 z-50">
+                                                        <WhatsAppButton />
+                                                        <ChatBot />
+                                                </div>
+
+                                                <CookieConsent />
+                                        </TooltipProvider>
+                                </QueryClientProvider>
+                        </body>
+                </html>
+        );
 }

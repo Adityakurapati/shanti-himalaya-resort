@@ -1,0 +1,1388 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Pencil, Trash2, Plus, Save, X, Loader2, Image as ImageIcon, Eye, MapPin, Home, Utensils, Star, Check, Users } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
+import StayImagesManager from "./StayImagesManager"
+import { AIButton } from "./AIButton"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd"
+import ImageUploader from "./ImageUploader"
+const CATEGORIES = ["Luxury", "Boutique", "Jungle Lodge", "Homestay", "Experience", "Peace & Relaxation", "Family Holiday", "Experiential", "Nature"] as const;
+
+// Helper function to parse JSON data
+const parseJSON = (data: any, defaultValue: any = null) => {
+    if (!data) return defaultValue;
+    try {
+        if (typeof data === 'string') {
+            return JSON.parse(data);
+        }
+        return data;
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return defaultValue;
+    }
+};
+
+// Helper function to stringify features
+const stringifyFeatures = (features: string[]): string => {
+    return JSON.stringify(features);
+};
+
+interface AccommodationFormData {
+    id?: string;
+    name: string;
+    image_url: string;
+    capacity: string;
+    features: string; // This will be stored as JSON string
+    sort_order: number;
+}
+
+interface FormTabsData {
+    basic: {
+        name: string;
+        badge: string;
+        duration: string;
+        description: string;
+        overview: string;
+    };
+    details: {
+        location: string;
+        address: string;
+        connectivity_airport: string;
+        connectivity_railway: string;
+        connectivity_city: string;
+    };
+    restaurant: {
+        restaurant_description: string;
+    };
+}
+
+export default function ExperientialStaysAdmin() {
+    const [stays, setStays] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [editingStay, setEditingStay] = useState<string | null>(null)
+    const [isCreating, setIsCreating] = useState(false)
+    const [imagesDialogOpen, setImagesDialogOpen] = useState(false)
+    const [selectedStay, setSelectedStay] = useState<any>(null)
+    const [activeTab, setActiveTab] = useState("basic")
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+    const [saving, setSaving] = useState(false)
+    const [aiLoading, setAiLoading] = useState(false)
+    const [accommodations, setAccommodations] = useState<AccommodationFormData[]>([])
+    const [editingAccommodation, setEditingAccommodation] = useState<number | null>(null)
+    const [isCreatingAccommodation, setIsCreatingAccommodation] = useState(false)
+    const [accommodationFormData, setAccommodationFormData] = useState({
+        name: "",
+        image_url: "",
+        capacity: "",
+        features: "",
+    })
+    const [selectedCaption, setSelectedCaption] = useState("")
+
+
+    const [formData, setFormData] = useState<FormTabsData>({
+        basic: {
+            name: "",
+            badge: "Popular",
+            duration: "",
+            description: "",
+            overview: "",
+        },
+        details: {
+            location: "",
+            address: "",
+            connectivity_airport: "",
+            connectivity_railway: "",
+            connectivity_city: "",
+        },
+        restaurant: {
+            restaurant_description: "",
+        }
+    })
+
+    const { toast } = useToast()
+
+    useEffect(() => {
+        fetchStays()
+    }, [])
+
+    // Fetch accommodations when editing a stay
+    useEffect(() => {
+        if (editingStay) {
+            fetchAccommodations()
+        }
+    }, [editingStay])
+
+    const fetchStays = async () => {
+        try {
+            const { data, error } = await supabase
+                .from("experiential_stays")
+                .select("*")
+                .order("created_at", { ascending: false })
+
+            if (error) throw error
+            setStays(data || [])
+        } catch (error) {
+            console.error("Error fetching stays:", error)
+            toast({
+                title: "Error",
+                description: "Failed to load experiential stays",
+                variant: "destructive",
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const fetchAccommodations = async () => {
+        if (!editingStay) return;
+
+        try {
+            const { data, error } = await supabase
+                .from("accommodation_options")
+                .select("*")
+                .eq("stay_id", editingStay)
+                .order("sort_order", { ascending: true })
+
+            if (error) throw error
+
+            // Parse features from JSON string to textarea format
+            const accommodationsWithParsedFeatures = (data || []).map(acc => {
+                try {
+                    const featuresArray = parseJSON(acc.features, []);
+                    // If it's already an array (what we want), join with newlines
+                    if (Array.isArray(featuresArray)) {
+                        return {
+                            ...acc,
+                            features: featuresArray.join("\n")
+                        }
+                    }
+                    // If it's a string (incorrectly stored), try to parse it
+                    return {
+                        ...acc,
+                        features: typeof featuresArray === 'string' ?
+                            JSON.parse(featuresArray).join("\n") :
+                            ""
+                    }
+                } catch (e) {
+                    console.error("Error parsing features:", e);
+                    return {
+                        ...acc,
+                        features: ""
+                    }
+                }
+            })
+
+            setAccommodations(accommodationsWithParsedFeatures)
+        } catch (error) {
+            console.error("Error fetching accommodations:", error)
+            toast({
+                title: "Error",
+                description: "Failed to load accommodation options",
+                variant: "destructive",
+            })
+        }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, tab: keyof FormTabsData) => {
+        const { name, value } = e.target
+        setFormData(prev => ({
+            ...prev,
+            [tab]: {
+                ...prev[tab],
+                [name]: value
+            }
+        }))
+    }
+
+    const handleAccommodationInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target
+        setAccommodationFormData(prev => ({ ...prev, [name]: value }))
+    }
+
+    const handleEdit = (stay: any) => {
+        setEditingStay(stay.id)
+        setIsCreating(false)
+        setSelectedStay(stay)
+
+        const categories = parseJSON(stay.categories, []);
+        setSelectedCategories(categories);
+
+        const connectivity = parseJSON(stay.connectivity, {});
+
+        setFormData({
+            basic: {
+                name: stay.name || "",
+                badge: stay.badge || "Popular",
+                duration: stay.duration || "",
+                description: stay.description || "",
+                overview: stay.overview || "",
+            },
+            details: {
+                location: stay.location || "",
+                address: stay.address || "",
+                connectivity_airport: connectivity.airport || "",
+                connectivity_railway: connectivity.railway || "",
+                connectivity_city: connectivity.city || "",
+            },
+            restaurant: {
+                restaurant_description: stay.restaurant_description || "",
+            }
+        })
+    }
+
+    const handleCategoryToggle = (category: string) => {
+        const newCategories = selectedCategories.includes(category)
+            ? selectedCategories.filter(c => c !== category)
+            : [...selectedCategories, category];
+
+        setSelectedCategories(newCategories);
+    }
+
+    const handleManageImages = (stay: any) => {
+        setSelectedStay(stay)
+        setImagesDialogOpen(true)
+    }
+
+    const handleCancelEdit = () => {
+        setEditingStay(null)
+        setIsCreating(false)
+        setSelectedCategories([])
+        setActiveTab("basic")
+        setSelectedStay(null)
+        setAccommodations([])
+        resetForm()
+        resetAccommodationForm()
+    }
+
+    const resetForm = () => {
+        setFormData({
+            basic: {
+                name: "",
+                badge: "Popular",
+                duration: "",
+                description: "",
+                overview: "",
+            },
+            details: {
+                location: "",
+                address: "",
+                connectivity_airport: "",
+                connectivity_railway: "",
+                connectivity_city: "",
+            },
+            restaurant: {
+                restaurant_description: "",
+            }
+        })
+    }
+
+    const resetAccommodationForm = () => {
+        setAccommodationFormData({
+            name: "",
+            image_url: "",
+            capacity: "",
+            features: "",
+        })
+        setEditingAccommodation(null)
+        setIsCreatingAccommodation(false)
+    }
+
+  const handleEditAccommodation = (index: number) => {
+    const accommodation = accommodations[index]
+    setEditingAccommodation(index)
+    setIsCreatingAccommodation(false)
+    
+    // Parse features back to textarea format
+    let featuresText = "";
+    try {
+        const parsedFeatures = parseJSON(accommodation.features, []);
+        if (Array.isArray(parsedFeatures)) {
+            featuresText = parsedFeatures.join("\n");
+        } else if (typeof parsedFeatures === 'string') {
+            // Try to parse again if it's a string
+            const doubleParsed = JSON.parse(parsedFeatures);
+            featuresText = Array.isArray(doubleParsed) ? 
+                doubleParsed.join("\n") : 
+                parsedFeatures;
+        }
+    } catch (e) {
+        console.error("Error parsing features for edit:", e);
+        featuresText = "";
+    }
+    
+    setAccommodationFormData({
+        name: accommodation.name,
+        image_url: accommodation.image_url || "", // Ensure image_url is included
+        capacity: accommodation.capacity,
+        features: featuresText,
+    })
+}
+
+    const handleSaveAccommodation = () => {
+        if (!accommodationFormData.name.trim()) {
+            toast({
+                title: "Error",
+                description: "Accommodation name is required",
+                variant: "destructive",
+            })
+            return
+        }
+
+        // Convert features from textarea to array, then to JSON string
+        const featuresArray = accommodationFormData.features
+            .split("\n")
+            .filter(f => f.trim())
+            .map(f => f.trim());
+
+        // Store as a simple array, not double-stringified
+        const featuresJson = JSON.stringify(featuresArray);
+
+        if (editingAccommodation !== null) {
+            // Update existing accommodation
+            const updatedAccommodations = [...accommodations]
+            updatedAccommodations[editingAccommodation] = {
+                ...updatedAccommodations[editingAccommodation],
+                name: accommodationFormData.name,
+                image_url: accommodationFormData.image_url,
+                capacity: accommodationFormData.capacity,
+                features: featuresJson, // Store as proper JSON string
+            }
+            setAccommodations(updatedAccommodations)
+        } else {
+            // Add new accommodation
+            const newAccommodation: AccommodationFormData = {
+                name: accommodationFormData.name,
+                image_url: accommodationFormData.image_url,
+                capacity: accommodationFormData.capacity,
+                features: featuresJson, // Store as proper JSON string
+                sort_order: accommodations.length
+            }
+            setAccommodations([...accommodations, newAccommodation])
+        }
+
+        resetAccommodationForm()
+        toast({
+            title: "Success",
+            description: "Accommodation saved",
+        })
+    }
+
+    const handleDeleteAccommodation = (index: number) => {
+        if (!confirm("Are you sure you want to delete this accommodation?")) return
+
+        const updatedAccommodations = accommodations.filter((_, i) => i !== index)
+        // Update sort orders
+        const reorderedAccommodations = updatedAccommodations.map((acc, idx) => ({
+            ...acc,
+            sort_order: idx
+        }))
+        setAccommodations(reorderedAccommodations)
+
+        toast({
+            title: "Success",
+            description: "Accommodation deleted",
+        })
+    }
+
+    const handleOnDragEnd = (result: DropResult) => {
+        if (!result.destination) return
+
+        const items = Array.from(accommodations)
+        const [reorderedItem] = items.splice(result.source.index, 1)
+        items.splice(result.destination.index, 0, reorderedItem)
+
+        // Update sort orders
+        const reorderedWithSortOrder = items.map((item, index) => ({
+            ...item,
+            sort_order: index
+        }))
+
+        setAccommodations(reorderedWithSortOrder)
+    }
+
+    const handleSave = async () => {
+        if (!formData.basic.name.trim()) {
+            toast({
+                title: "Error",
+                description: "Name is required",
+                variant: "destructive",
+            })
+            return
+        }
+
+        setSaving(true);
+        try {
+            // Prepare all data from all tabs for database
+            const stayData = {
+                // BASIC INFO
+                name: formData.basic.name,
+                badge: formData.basic.badge,
+                duration: formData.basic.duration,
+                description: formData.basic.description,
+                overview: formData.basic.overview,
+                categories: selectedCategories,
+
+                // DETAILS
+                location: formData.details.location,
+                address: formData.details.address,
+                connectivity: {
+                    airport: formData.details.connectivity_airport,
+                    railway: formData.details.connectivity_railway,
+                    city: formData.details.connectivity_city
+                },
+
+                // RESTAURANT
+                restaurant_description: formData.restaurant.restaurant_description,
+
+                updated_at: new Date().toISOString()
+            }
+
+            let savedStayId;
+
+            if (editingStay) {
+                // Update existing stay
+                const { data, error } = await supabase
+                    .from("experiential_stays")
+                    .update(stayData)
+                    .eq("id", editingStay)
+                    .select()
+                    .single()
+
+                if (error) throw error
+
+                savedStayId = data.id;
+                setSelectedStay(data);
+
+                // Save accommodations AFTER stay is updated - PASS THE stayId
+                await saveAccommodationsToDatabase(savedStayId); // ← FIXED: Pass the stayId
+
+                toast({
+                    title: "Success",
+                    description: "Stay updated successfully with accommodations",
+                })
+            } else {
+                // Create new stay
+                const { data, error } = await supabase
+                    .from("experiential_stays")
+                    .insert([stayData])
+                    .select()
+                    .single()
+
+                if (error) throw error
+
+                savedStayId = data.id;
+                setSelectedStay(data);
+                setEditingStay(data.id); // Set editingStay to new ID
+
+                // IMPORTANT: Update accommodations with the new stay_id
+                // We need to ensure accommodations have the right stay_id
+                const accommodationsWithStayId = accommodations.map(acc => ({
+                    ...acc,
+                    stay_id: savedStayId
+                }));
+                setAccommodations(accommodationsWithStayId);
+
+                // Now save accommodations with the new stay_id - PASS THE stayId
+                await saveAccommodationsToDatabase(savedStayId); // ← FIXED: Pass the stayId
+
+                toast({
+                    title: "Success",
+                    description: "Stay created successfully with accommodations",
+                })
+            }
+
+            // Refresh the stays list
+            fetchStays();
+
+            // Show success with details
+            toast({
+                title: "Stay Saved Successfully",
+                description: `${formData.basic.name} has been saved with ${accommodations.length} accommodation options.`,
+                duration: 3000,
+            });
+
+        } catch (error: any) {
+            console.error("Error saving stay:", error)
+            toast({
+                title: "Error",
+                description: error.message || "Failed to save stay",
+                variant: "destructive",
+            })
+        } finally {
+            setSaving(false);
+        }
+    }
+    const saveAccommodationsToDatabase = async (stayId: string) => {
+        if (!stayId) {
+            console.error("No stay ID provided for saving accommodations");
+            toast({
+                title: "Error",
+                description: "No stay ID found. Please save basic info first.",
+                variant: "destructive",
+            });
+            return false;
+        }
+
+        if (accommodations.length === 0) {
+            console.log("No accommodations to save");
+            return true;
+        }
+
+        try {
+            console.log(`Saving ${accommodations.length} accommodations for stay: ${stayId}`);
+
+            // Prepare accommodations data
+            const accommodationsToSave = accommodations.map((acc, index) => {
+                let featuresJson;
+
+                // Check if features is already a JSON string
+                if (typeof acc.features === 'string') {
+                    try {
+                        // Try to parse it to see if it's valid JSON
+                        JSON.parse(acc.features);
+                        // If it's valid JSON, use it as is
+                        featuresJson = acc.features;
+                    } catch {
+                        // If it's not valid JSON, treat it as newline-separated text
+                        const featuresArray = acc.features.split("\n").filter(f => f.trim());
+                        featuresJson = stringifyFeatures(featuresArray);
+                    }
+                } else {
+                    // If features is already an array (from AI), stringify it
+                    featuresJson = stringifyFeatures(acc.features);
+                }
+
+                return {
+                    stay_id: stayId,
+                    name: acc.name,
+                    image_url: acc.image_url || "",
+                    capacity: acc.capacity || "",
+                    features: featuresJson,
+                    sort_order: acc.sort_order !== undefined ? acc.sort_order : index
+                };
+            });
+
+            console.log("Prepared accommodations data:", accommodationsToSave);
+
+            // First, delete existing accommodations for this stay
+            const { error: deleteError } = await supabase
+                .from("accommodation_options")
+                .delete()
+                .eq("stay_id", stayId);
+
+            if (deleteError && deleteError.code !== 'PGRST116') {
+                console.error("Error deleting accommodations:", deleteError);
+                throw deleteError;
+            }
+
+            // Then insert new accommodations
+            const { error: insertError } = await supabase
+                .from("accommodation_options")
+                .insert(accommodationsToSave);
+
+            if (insertError) {
+                console.error("Error inserting accommodations:", insertError);
+                throw insertError;
+            }
+
+            console.log("Successfully saved accommodations");
+            return true;
+
+        } catch (error: any) {
+            console.error("Error saving accommodations to database:", error);
+            toast({
+                title: "Error",
+                description: `Failed to save accommodations: ${error.message}`,
+                variant: "destructive",
+            });
+            throw error;
+        }
+    };
+
+    // Also update the handleAIContentGenerated function to ensure accommodations are properly formatted
+    const handleAIContentGenerated = async (content: Record<string, any>) => {
+        console.log("AI Generated Content:", content);
+        setAiLoading(true);
+
+        try {
+            // Check if content is in the expected structure
+            if (content.basic) {
+                // Direct mapping from AI response
+                setFormData(prev => ({
+                    basic: {
+                        ...prev.basic,
+                        badge: content.basic.badge || prev.basic.badge,
+                        duration: content.basic.duration || prev.basic.duration,
+                        overview: content.basic.overview || prev.basic.overview,
+                        description: content.basic.description || prev.basic.description,
+                    },
+                    details: {
+                        ...prev.details,
+                        location: content.details?.location || prev.details.location,
+                        address: content.details?.address || prev.details.address,
+                        connectivity_airport: content.details?.connectivity_airport || prev.details.connectivity_airport,
+                        connectivity_railway: content.details?.connectivity_railway || prev.details.connectivity_railway,
+                        connectivity_city: content.details?.connectivity_city || prev.details.connectivity_city,
+                    },
+                    restaurant: {
+                        restaurant_description: content.restaurant?.restaurant_description || prev.restaurant.restaurant_description,
+                    }
+                }));
+
+                // Set categories from AI
+                if (content.basic.categories && Array.isArray(content.basic.categories)) {
+                    setSelectedCategories(content.basic.categories);
+                }
+
+                // Handle accommodations from AI
+                if (content.accommodations && Array.isArray(content.accommodations)) {
+                    const formattedAccommodations = content.accommodations.map((acc: any, index: number) => {
+                        // Ensure features are properly formatted as JSON string
+                        const features = Array.isArray(acc.features) ? acc.features :
+                            (typeof acc.features === 'string' ? [acc.features] : []);
+
+                        return {
+                            name: acc.name || `Accommodation ${index + 1}`,
+                            image_url: acc.image_url || "",
+                            capacity: acc.capacity || "2 Adults",
+                            features: stringifyFeatures(features),
+                            sort_order: index
+                        }
+                    });
+
+                    setAccommodations(formattedAccommodations);
+
+                    toast({
+                        title: "Accommodations Generated",
+                        description: `${content.accommodations.length} accommodation options added`,
+                    });
+                }
+
+                toast({
+                    title: "AI Content Loaded",
+                    description: "All fields have been populated with AI-generated content",
+                });
+            } else {
+                // Fallback logic...
+                // ... (keep the existing fallback logic)
+            }
+        } catch (error) {
+            console.error("Error processing AI content:", error);
+            toast({
+                title: "Error",
+                description: "Failed to process AI-generated content",
+                variant: "destructive",
+            });
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this stay? This will also delete all associated images and accommodation options.")) return
+
+        try {
+            const { error } = await supabase
+                .from("experiential_stays")
+                .delete()
+                .eq("id", id)
+
+            if (error) throw error
+
+            toast({
+                title: "Success",
+                description: "Stay deleted successfully",
+            })
+            fetchStays()
+            if (editingStay === id) {
+                handleCancelEdit();
+            }
+        } catch (error) {
+            console.error("Error deleting stay:", error)
+            toast({
+                title: "Error",
+                description: "Failed to delete stay",
+                variant: "destructive",
+            })
+        }
+    }
+
+
+    const badgeColors: Record<string, string> = {
+        Popular: "bg-blue-100 text-blue-800",
+        Featured: "bg-purple-100 text-purple-800",
+        New: "bg-green-100 text-green-800",
+        Luxury: "bg-amber-100 text-amber-800",
+        Premium: "bg-pink-100 text-pink-800",
+    }
+
+    // Calculate completion percentage
+    const calculateCompletion = () => {
+        let totalFields = 0;
+        let completedFields = 0;
+
+        // Basic tab fields
+        const basicFields = Object.values(formData.basic);
+        totalFields += basicFields.length;
+        completedFields += basicFields.filter(field => field && field.toString().trim() !== "").length;
+
+        // Details tab fields
+        const detailsFields = Object.values(formData.details);
+        totalFields += detailsFields.length;
+        completedFields += detailsFields.filter(field => field && field.toString().trim() !== "").length;
+
+        // Restaurant tab field
+        if (formData.restaurant.restaurant_description.trim() !== "") completedFields++;
+        totalFields++;
+
+        // Categories
+        if (selectedCategories.length > 0) completedFields++;
+        totalFields++;
+
+        // Accommodations (count as one field for completion)
+        if (accommodations.length > 0) completedFields++;
+        totalFields++;
+
+        return Math.round((completedFields / totalFields) * 100);
+    };
+
+    const completionPercentage = calculateCompletion();
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-2xl font-bold">Experiential Stays</h2>
+                    <p className="text-muted-foreground">Manage your experiential stays and packages</p>
+                </div>
+                <Button onClick={() => setIsCreating(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add New Stay
+                </Button>
+            </div>
+
+            {/* Create/Edit Form */}
+            {(isCreating || editingStay) && (
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>
+                                    {editingStay ? `Edit Stay: ${formData.basic.name}` : "Create New Stay"}
+                                </CardTitle>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className="w-32 bg-secondary rounded-full h-2 overflow-hidden">
+                                        <div
+                                            className="bg-primary h-full transition-all duration-300"
+                                            style={{ width: `${completionPercentage}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-sm text-muted-foreground">
+                                        {completionPercentage}% complete
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <AIButton
+                                    title={formData.basic.name}
+                                    contentType="experientialStay"
+                                    onContentGenerated={handleAIContentGenerated}
+                                    disabled={!formData.basic.name.trim() || aiLoading}
+                                />
+                                {aiLoading && (
+                                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                )}
+                                <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                            <TabsList className="grid grid-cols-4 mb-6">
+                                <TabsTrigger value="basic" className="flex items-center gap-2">
+                                    <Star className="h-4 w-4" />
+                                    Basic
+                                </TabsTrigger>
+                                <TabsTrigger value="details" className="flex items-center gap-2">
+                                    <MapPin className="h-4 w-4" />
+                                    Details
+                                </TabsTrigger>
+                                <TabsTrigger value="accommodation" className="flex items-center gap-2">
+                                    <Home className="h-4 w-4" />
+                                    Accommodation
+                                </TabsTrigger>
+                                <TabsTrigger value="restaurant" className="flex items-center gap-2">
+                                    <Utensils className="h-4 w-4" />
+                                    Restaurant
+                                </TabsTrigger>
+                            </TabsList>
+
+                            {/* BASIC TAB */}
+                            <TabsContent value="basic" className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Name *</Label>
+                                        <Input
+                                            id="name"
+                                            name="name"
+                                            value={formData.basic.name}
+                                            onChange={(e) => handleInputChange(e, 'basic')}
+                                            placeholder="Jahaanuma Boutique"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="badge">Badge</Label>
+                                        <select
+                                            id="badge"
+                                            name="badge"
+                                            value={formData.basic.badge}
+                                            onChange={(e) => handleInputChange(e, 'basic')}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <option value="Popular">Popular</option>
+                                            <option value="Featured">Featured</option>
+                                            <option value="New">New</option>
+                                            <option value="Luxury">Luxury</option>
+                                            <option value="Premium">Premium</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Categories</Label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {CATEGORIES.map((category) => (
+                                            <Button
+                                                key={category}
+                                                type="button"
+                                                variant={selectedCategories.includes(category) ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => handleCategoryToggle(category)}
+                                                className={cn(
+                                                    "transition-all",
+                                                    selectedCategories.includes(category) && "bg-primary text-primary-foreground"
+                                                )}
+                                            >
+                                                {selectedCategories.includes(category) && (
+                                                    <Star className="mr-2 h-3 w-3" />
+                                                )}
+                                                {category}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                        Selected: {selectedCategories.join(", ") || "None"}
+                                    </p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="duration">Duration</Label>
+                                    <Input
+                                        id="duration"
+                                        name="duration"
+                                        value={formData.basic.duration}
+                                        onChange={(e) => handleInputChange(e, 'basic')}
+                                        placeholder="3 Days, 2 Nights"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="overview">Overview</Label>
+                                    <Textarea
+                                        id="overview"
+                                        name="overview"
+                                        value={formData.basic.overview}
+                                        onChange={(e) => handleInputChange(e, 'basic')}
+                                        placeholder="Nestled in the serene landscapes of Srinagar..."
+                                        rows={3}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="description">Detailed Description</Label>
+                                    <Textarea
+                                        id="description"
+                                        name="description"
+                                        value={formData.basic.description}
+                                        onChange={(e) => handleInputChange(e, 'basic')}
+                                        placeholder="Detailed description of the stay..."
+                                        rows={4}
+                                    />
+                                </div>
+                            </TabsContent>
+
+                            {/* DETAILS TAB */}
+                            <TabsContent value="details" className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="location">Location</Label>
+                                    <Input
+                                        id="location"
+                                        name="location"
+                                        value={formData.details.location}
+                                        onChange={(e) => handleInputChange(e, 'details')}
+                                        placeholder="Srinagar, Jammu Kashmir"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="address">Address</Label>
+                                    <Textarea
+                                        id="address"
+                                        name="address"
+                                        value={formData.details.address}
+                                        onChange={(e) => handleInputChange(e, 'details')}
+                                        placeholder="Full property address with landmark"
+                                        rows={3}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="connectivity_airport">Nearest Airport</Label>
+                                        <Input
+                                            id="connectivity_airport"
+                                            name="connectivity_airport"
+                                            value={formData.details.connectivity_airport}
+                                            onChange={(e) => handleInputChange(e, 'details')}
+                                            placeholder="Sheikh ul-Alam International Airport, Srinagar"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="connectivity_railway">Nearest Railhead</Label>
+                                        <Input
+                                            id="connectivity_railway"
+                                            name="connectivity_railway"
+                                            value={formData.details.connectivity_railway}
+                                            onChange={(e) => handleInputChange(e, 'details')}
+                                            placeholder="Jammu Tawi Railway Station"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="connectivity_city">Nearest City</Label>
+                                        <Input
+                                            id="connectivity_city"
+                                            name="connectivity_city"
+                                            value={formData.details.connectivity_city}
+                                            onChange={(e) => handleInputChange(e, 'details')}
+                                            placeholder="Srinagar City Center"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Stay Images Manager Section */}
+                                <div className="space-y-4 pt-4 border-t">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h4 className="font-semibold">Images Gallery</h4>
+                                            <p className="text-sm text-muted-foreground">
+                                                Manage property images (main image, room views, etc.)
+                                            </p>
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                const currentStay = stays.find(s => s.id === editingStay);
+                                                if (currentStay) {
+                                                    handleManageImages(currentStay);
+                                                }
+                                            }}
+                                        >
+                                            <ImageIcon className="mr-2 h-4 w-4" />
+                                            Open Images Manager
+                                        </Button>
+                                    </div>
+
+                                    {editingStay && selectedStay && (
+                                        <div className="border rounded-lg p-4">
+                                            <StayImagesManager
+                                                stayId={editingStay}
+                                                stayName={selectedStay.name}
+                                                onUpdate={fetchStays}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </TabsContent>
+
+                            {/* ACCOMMODATION TAB */}
+                            <TabsContent value="accommodation" className="space-y-6">
+                                <div className="space-y-2">
+                                    <h4 className="font-semibold">Accommodation Options</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Manage room categories (Deluxe, Luxury, Suite, Family Cottage).
+                                        These will be saved together with the stay.
+                                    </p>
+                                </div>
+
+                                {/* Accommodation Form */}
+                                {(isCreatingAccommodation || editingAccommodation !== null) && (
+                                    <Card className="mb-6">
+                                        <CardContent className="pt-6">
+                                            <h4 className="font-semibold mb-4">
+                                                {editingAccommodation !== null ? "Edit Accommodation" : "Add New Accommodation"}
+                                            </h4>
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="acc-name">Name *</Label>
+                                                    <Input
+                                                        id="acc-name"
+                                                        name="name"
+                                                        value={accommodationFormData.name}
+                                                        onChange={handleAccommodationInputChange}
+                                                        placeholder="Deluxe Room"
+                                                    />
+                                                </div>
+
+                                                {/* Replace the Input field with ImageUploader */}
+                                                <div className="space-y-2">
+                                                    <Label>Accommodation Image</Label>
+                                                    <ImageUploader
+                                                        label="Upload accommodation image"
+                                                        value={accommodationFormData.image_url}
+                                                        onChange={(url) => {
+                                                            setAccommodationFormData(prev => ({
+                                                                ...prev,
+                                                                image_url: url
+                                                            }))
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="acc-capacity">Capacity</Label>
+                                                    <Input
+                                                        id="acc-capacity"
+                                                        name="capacity"
+                                                        value={accommodationFormData.capacity}
+                                                        onChange={handleAccommodationInputChange}
+                                                        placeholder="2 Adults + 1 Child"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="acc-features">Features (one per line)</Label>
+                                                    <Textarea
+                                                        id="acc-features"
+                                                        name="features"
+                                                        value={accommodationFormData.features}
+                                                        onChange={handleAccommodationInputChange}
+                                                        placeholder="Queen/King bed\nEnsuite bathroom\nMountain views\nTraditional decor\nModern amenities"
+                                                        rows={5}
+                                                    />
+                                                </div>
+
+                                                <div className="flex justify-end space-x-2 pt-2">
+                                                    <Button variant="outline" onClick={resetAccommodationForm}>
+                                                        <X className="mr-2 h-4 w-4" />
+                                                        Cancel
+                                                    </Button>
+                                                    <Button onClick={handleSaveAccommodation}>
+                                                        <Save className="mr-2 h-4 w-4" />
+                                                        {editingAccommodation !== null ? "Update" : "Add"}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                                {/* Accommodations List */}
+                                <div className="border rounded-lg">
+                                    <div className="flex justify-between items-center p-4 border-b">
+                                        <div>
+                                            <h5 className="font-medium">Accommodations ({accommodations.length})</h5>
+                                            <p className="text-sm text-muted-foreground">
+                                                Drag to reorder • Click edit to modify
+                                            </p>
+                                        </div>
+                                        <Button
+                                            onClick={() => setIsCreatingAccommodation(true)}
+                                            size="sm"
+                                            disabled={isCreatingAccommodation || editingAccommodation !== null}
+                                        >
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add Accommodation
+                                        </Button>
+                                    </div>
+
+                                    <DragDropContext onDragEnd={handleOnDragEnd}>
+                                        <Droppable droppableId="accommodations">
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.droppableProps}
+                                                    className="divide-y"
+                                                >
+                                                    {accommodations.length === 0 ? (
+                                                        <div className="text-center py-8 text-muted-foreground">
+                                                            <Home className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                                            <p>No accommodation options added yet</p>
+                                                            <p className="text-sm mt-2">Click "Add Accommodation" or use AI to generate options</p>
+                                                        </div>
+                                                    ) : (
+                                                        accommodations.map((acc, index) => {
+                                                            const features = parseJSON(acc.features, []);
+                                                            return (
+
+                                                                <Draggable key={index} draggableId={index.toString()} index={index}>
+                                                                    {(provided) => (
+                                                                        <div
+                                                                            ref={provided.innerRef}
+                                                                            {...provided.draggableProps}
+                                                                            className="p-4 hover:bg-muted/50 transition-colors"
+                                                                        >
+                                                                            <div className="flex items-start justify-between">
+                                                                                <div className="flex items-start gap-4 flex-1">
+                                                                                    <div {...provided.dragHandleProps} className="pt-1">
+                                                                                        <div className="h-4 w-4 text-muted-foreground cursor-move">⋮⋮</div>
+                                                                                    </div>
+
+                                                                                    {/* Add image preview */}
+                                                                                    {acc.image_url && (
+                                                                                        <div className="flex-shrink-0">
+                                                                                            <div className="h-16 w-24 rounded-md overflow-hidden border">
+                                                                                                <img
+                                                                                                    src={acc.image_url}
+                                                                                                    alt={acc.name}
+                                                                                                    className="w-full h-full object-cover"
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    )}
+
+                                                                                    <div className="flex-1">
+                                                                                        <div className="flex items-center gap-2 mb-2">
+                                                                                            <h6 className="font-medium">{acc.name}</h6>
+                                                                                            <span className="text-xs text-muted-foreground">#{index + 1}</span>
+                                                                                        </div>
+                                                                                        <div className="flex items-center text-sm text-muted-foreground mb-2">
+                                                                                            <Users className="h-3 w-3 mr-1" />
+                                                                                            {acc.capacity || "Capacity not set"}
+                                                                                        </div>
+                                                                                        {features.length > 0 && (
+                                                                                            <div className="text-sm text-muted-foreground">
+                                                                                                <div className="flex flex-wrap gap-1">
+                                                                                                    {features.slice(0, 3).map((feature, idx) => (
+                                                                                                        <Badge key={idx} variant="outline" className="text-xs">
+                                                                                                            {feature}
+                                                                                                        </Badge>
+                                                                                                    ))}
+                                                                                                    {features.length > 3 && (
+                                                                                                        <Badge variant="secondary" className="text-xs">
+                                                                                                            +{features.length - 3} more
+                                                                                                        </Badge>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        variant="outline"
+                                                                                        onClick={() => handleEditAccommodation(index)}
+                                                                                    >
+                                                                                        <Pencil className="h-4 w-4" />
+                                                                                    </Button>
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        variant="destructive"
+                                                                                        onClick={() => handleDeleteAccommodation(index)}
+                                                                                    >
+                                                                                        <Trash2 className="h-4 w-4" />
+                                                                                    </Button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </Draggable>
+                                                            )
+                                                        })
+                                                    )}
+                                                    {provided.placeholder}
+                                                </div>
+                                            )}
+                                        </Droppable>
+                                    </DragDropContext>
+                                </div>
+                            </TabsContent>
+
+                            {/* RESTAURANT TAB */}
+                            <TabsContent value="restaurant" className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="restaurant_description">Restaurant Description</Label>
+                                    <Textarea
+                                        id="restaurant_description"
+                                        name="restaurant_description"
+                                        value={formData.restaurant.restaurant_description}
+                                        onChange={(e) => handleInputChange(e, 'restaurant')}
+                                        placeholder="Describe the dining experience, cuisine, ambiance..."
+                                        rows={8}
+                                    />
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+
+                        {/* Single Save Button - Fixed at bottom */}
+                        <div className="flex justify-between items-center pt-6 border-t mt-8">
+                            <div className="flex space-x-2">
+                                <Button variant="outline" onClick={handleCancelEdit} disabled={saving || aiLoading}>
+                                    <X className="mr-2 h-4 w-4" />
+                                    Cancel
+                                </Button>
+                                <Button onClick={handleSave} disabled={saving || aiLoading}>
+                                    {saving ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="mr-2 h-4 w-4" />
+                                            Save Stay
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Stays List - Only show when not editing/creating */}
+            {!(isCreating || editingStay) && (
+                <Card>
+                    <CardContent className="pt-6">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Location</TableHead>
+                                    <TableHead>Duration</TableHead>
+                                    <TableHead>Badge</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {stays.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                                            No experiential stays found. Create your first one!
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    stays.map((stay) => {
+                                        const categories = parseJSON(stay.categories, []);
+
+                                        return (
+                                            <TableRow key={stay.id} className="hover:bg-muted/50">
+                                                <TableCell>
+                                                    <div className="font-medium">{stay.name}</div>
+                                                    {categories.length > 0 && (
+                                                        <div className="flex flex-wrap gap-1 mt-1">
+                                                            {categories.slice(0, 2).map((cat: string) => (
+                                                                <Badge key={cat} variant="outline" className="text-xs">
+                                                                    {cat}
+                                                                </Badge>
+                                                            ))}
+                                                            {categories.length > 2 && (
+                                                                <Badge variant="secondary" className="text-xs">
+                                                                    +{categories.length - 2} more
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center text-sm text-muted-foreground">
+                                                        <MapPin className="h-3 w-3 mr-1" />
+                                                        {stay.location || "Not set"}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{stay.duration || "-"}</TableCell>
+                                                <TableCell>
+                                                    <Badge className={badgeColors[stay.badge] || "bg-gray-100 text-gray-800"}>
+                                                        {stay.badge}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex justify-end space-x-2">
+                                                        <Link href={`/experiential-stays/${stay.id}`} target="_blank">
+                                                            <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                title="View Live"
+                                                            >
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                        </Link>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => handleEdit(stay)}
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="destructive"
+                                                            onClick={() => handleDelete(stay.id)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
+            {/* Images Management Dialog */}
+            <Dialog open={imagesDialogOpen} onOpenChange={setImagesDialogOpen}>
+                <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Manage Stay Images</DialogTitle>
+                        <DialogDescription>
+                            Upload and manage images for {selectedStay?.name}
+                        </DialogDescription>
+                    </DialogHeader>
+                    {selectedStay && (
+                        <StayImagesManager
+                            stayId={selectedStay.id}
+                            stayName={selectedStay.name}
+                            onUpdate={fetchStays}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
+        </div>
+    )
+}

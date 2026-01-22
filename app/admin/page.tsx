@@ -18,6 +18,8 @@ import ResortGalleryAdmin from "@/components/admin/ResortGalleryAdmin"
 import SitemapAdmin from "@/components/admin/SitemapAdmin"
 import ManageAdmins from "@/components/admin/ManageAdmins"
 import EnquiriesAdmin from "@/components/admin/EnquiriesAdmin"
+import { Bed } from "lucide-react"
+import ExperientialStaysAdmin from "@/components/admin/ExperientialStaysAdmin"
 
 const AdminPanel = () => {
         const [loading, setLoading] = useState(true)
@@ -178,7 +180,12 @@ const AdminPanel = () => {
                                                         <Package className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Blogs</span>
                                                 </TabsTrigger>
-                                              
+
+                                                <TabsTrigger value="stays" className="flex items-center gap-2">
+                                                        <Bed className="h-4 w-4" />
+                                                        <span className="hidden sm:inline">Stays</span>
+                                                </TabsTrigger>
+
                                                 <TabsTrigger value="packages" className="flex items-center gap-2">
                                                         <Calendar className="h-4 w-4" />
                                                         <span className="hidden sm:inline">Packages</span>
@@ -223,6 +230,10 @@ const AdminPanel = () => {
 
                                         <TabsContent value="experiences">
                                                 <ExperiencesAdmin />
+                                        </TabsContent>
+
+                                        <TabsContent value="stays">
+                                                <ExperientialStaysAdmin />
                                         </TabsContent>
 
                                         <TabsContent value="blogs">

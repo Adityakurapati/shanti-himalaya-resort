@@ -1042,25 +1042,6 @@ const DestinationDetail = () => {
                                                                 </Button>
                                                         </motion.div>
 
-                                                        <motion.div
-                                                                className="mt-8 flex flex-wrap justify-center gap-6 text-white/80"
-                                                                initial={{ opacity: 0 }}
-                                                                whileInView={{ opacity: 1 }}
-                                                                transition={{ duration: 0.6, delay: 0.6 }}
-                                                        >
-                                                                <div className="flex items-center space-x-2">
-                                                                        <Shield className="w-5 h-5" />
-                                                                        <span>100% Safe & Secure</span>
-                                                                </div>
-                                                                <div className="flex items-center space-x-2">
-                                                                        <Users className="w-5 h-5" />
-                                                                        <span>Expert Guides</span>
-                                                                </div>
-                                                                <div className="flex items-center space-x-2">
-                                                                        <Star className="w-5 h-5" />
-                                                                        <span>5-Star Rated</span>
-                                                                </div>
-                                                        </motion.div>
                                                 </div>
                                         </div>
                                 </section>

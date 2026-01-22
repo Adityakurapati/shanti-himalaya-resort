@@ -163,19 +163,27 @@ export const ResortGalleryAdmin = () => {
   }
 
   const handleEdit = (item: GalleryItem) => {
-    const section = getSectionFromImageUrl(item.image_url);
-    const cleanImageUrl = getCleanImageUrl(item.image_url);
+  const section = getSectionFromImageUrl(item.image_url);
+  const cleanImageUrl = getCleanImageUrl(item.image_url);
+  
+  console.log("Editing item:", item);
+  console.log("Original image_url:", item.image_url);
+  console.log("Section:", section.id);
+  console.log("Clean image_url:", cleanImageUrl);
+  console.log("Full constructed URL:", 
+    section.prefix ? `${section.prefix}${cleanImageUrl}` : cleanImageUrl
+  );
 
-    setEditing(item)
-    setFormData({
-      image_url: cleanImageUrl,
-      title: item.title || "",
-      description: item.description || "",
-      display_order: item.display_order || 0,
-      section: section.id,
-    })
-    setIsDialogOpen(true)
-  }
+  setEditing(item)
+  setFormData({
+    image_url: cleanImageUrl,
+    title: item.title || "",
+    description: item.description || "",
+    display_order: item.display_order || 0,
+    section: section.id,
+  })
+  setIsDialogOpen(true)
+}
 
   const handleDelete = async (id: string) => {
     if (confirm("Delete this gallery item?")) {

@@ -180,13 +180,15 @@ export const ImageUploader: React.FC<Props> = ({
         }
         reader.onerror = () => {
           console.error("Failed to read file as base64")
-          setUploading(false)
+          setUploading(false) // Reset uploading state on error
         }
         reader.readAsDataURL(croppedFile)
       }
     } catch (error) {
       console.error("Error applying crop:", error)
-      setUploading(false)
+      setUploading(false) // Reset uploading state on error
+    } finally {
+      setUploading(false) // Always reset uploading state
     }
   }, [completedCrop, selectedFile, onChange])
 
@@ -200,9 +202,9 @@ export const ImageUploader: React.FC<Props> = ({
       resetState()
     } catch (error) {
       console.error("Direct upload failed:", error)
-      setUploading(false)
+      setUploading(false) // Reset uploading state on error
     } finally {
-      setUploading(false)
+      setUploading(false) // Always reset uploading state
     }
   }
 
@@ -215,6 +217,7 @@ export const ImageUploader: React.FC<Props> = ({
     setCrop(undefined)
     setCompletedCrop(undefined)
     setOriginalImageSize(null)
+    setUploading(false) // Add this line
     if (fileRef.current) {
       fileRef.current.value = ""
     }
@@ -379,7 +382,6 @@ export const ImageUploader: React.FC<Props> = ({
               src={value || "/placeholder.svg"}
               alt="Preview"
               className="w-full h-full object-contain"
-              crossOrigin="anonymous"
             />
           </div>
         </div>

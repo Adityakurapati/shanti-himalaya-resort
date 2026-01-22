@@ -19,7 +19,8 @@ export interface AIRequestPayload {
     | "season"
     | "accommodation"
     | "travelTips"
-    | "destinationAll";
+    | "destinationAll"
+    | "experientialStay";
   existingData?: Record<string, any>;
   context?: Record<string, any>;
 }
@@ -35,7 +36,7 @@ export class AIContentService {
 
   constructor() {
     this.isClient = typeof window !== "undefined";
-    
+
     // Only initialize on server-side
     if (!this.isClient) {
       const apiKey = process.env.GEMINI_API_KEY;
@@ -58,7 +59,7 @@ export class AIContentService {
       // Server-side: use the initialized AI instance
       if (!this.ai) {
         throw new Error(
-          "API key is not configured. Please set GEMINI_API_KEY in your environment."
+          "API key is not configured. Please set GEMINI_API_KEY in your environment.",
         );
       }
 
@@ -81,12 +82,14 @@ export class AIContentService {
     }
   }
 
-  private async generateContentViaAPI(payload: AIRequestPayload): Promise<AIResponse> {
+  private async generateContentViaAPI(
+    payload: AIRequestPayload,
+  ): Promise<AIResponse> {
     try {
-      const response = await fetch('/api/ai/generate', {
-        method: 'POST',
+      const response = await fetch("/api/ai/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
@@ -99,10 +102,11 @@ export class AIContentService {
       return data;
     } catch (error) {
       console.error("API Generation Error:", error);
-      throw new Error("Failed to generate content via API. Please check if the API endpoint is running.");
+      throw new Error(
+        "Failed to generate content via API. Please check if the API endpoint is running.",
+      );
     }
   }
-
 
   private buildPrompt(payload: AIRequestPayload): string {
     const { title, contentType, existingData, context } = payload;
@@ -485,6 +489,82 @@ Format as SINGLE JSON object:
     }
   ]
 }`,
+
+       experientialStay: `Generate COMPLETE content for an experiential stay titled "${title}" including ALL fields.
+
+PROPERTY TYPE: Luxury boutique stay in Himalayan region (India/Nepal/Bhutan)
+
+GENERATE ALL THESE FIELDS:
+
+1. BASIC INFO:
+   - badge: "Featured" or "Luxury" or "Popular"
+   - categories: 4-5 categories from: Luxury, Boutique, Jungle Lodge, Homestay, Experience, Peace & Relaxation, Family Holiday, Experiential, Nature
+   - duration: e.g., "4 Days, 3 Nights"
+   - overview: 3-4 sentences about the property's unique selling points
+   - description: 5-6 paragraph detailed description covering architecture, ambiance, experiences
+
+2. DETAILS:
+   - location: Specific location in Himalayan region
+   - address: Detailed address with landmark
+   - connectivity_airport: e.g., "Sheikh ul-Alam International Airport, Srinagar (25 km)"
+   - connectivity_railway: e.g., "Jammu Tawi Railway Station (300 km)"
+   - connectivity_city: e.g., "Srinagar City Center (15 km)"
+
+3. RESTAURANT:
+   - restaurant_description: 4-5 paragraphs about culinary experience, local cuisine, dining settings
+
+4. ACCOMMODATION OPTIONS (4 types):
+   - Room 1: Deluxe Room (2 Adults + 1 Child) with luxury features
+   - Room 2: Luxury Room (3 Adults + 2 Children) with premium features  
+   - Room 3: Suite (4 Adults + 2 Children) with suite features
+   - Room 4: Family Cottage (4 Adults + 2 Children) with family features
+
+Format as JSON:
+{
+  "basic": {
+    "badge": "string",
+    "categories": ["string", "string"],
+    "duration": "string",
+    "overview": "string",
+    "description": "string"
+  },
+  "details": {
+    "location": "string",
+    "address": "string",
+    "connectivity_airport": "string",
+    "connectivity_railway": "string",
+    "connectivity_city": "string"
+  },
+  "restaurant": {
+    "restaurant_description": "string"
+  },
+  "accommodations": [
+    {
+      "name": "Deluxe Room",
+      "image_url": "",
+      "capacity": "2 Adults + 1 Child",
+      "features": ["Queen/King bed", "Ensuite bathroom", "Mountain views", "Traditional decor", "Modern amenities", "Wi-Fi", "Tea/coffee maker"]
+    },
+    {
+      "name": "Luxury Room",
+      "image_url": "",
+      "capacity": "3 Adults + 2 Children",
+      "features": ["Two beds", "Premium furnishings", "Living space", "Balcony", "Enhanced amenities", "Minibar"]
+    },
+    {
+      "name": "Suite",
+      "image_url": "",
+      "capacity": "4 Adults + 2 Children",
+      "features": ["Separate bedroom", "Living area", "Premium bathroom", "Private balcony", "Premium views", "Butler service"]
+    },
+    {
+      "name": "Family Cottage",
+      "image_url": "",
+      "capacity": "4 Adults + 2 Children",
+      "features": ["Independent cottage", "Multiple bedrooms", "Private sit-out", "Kitchenette", "Family-friendly", "Enhanced privacy"]
+    }
+  ]
+}`
     };
 
     // Type assertion to ensure we're accessing a valid key

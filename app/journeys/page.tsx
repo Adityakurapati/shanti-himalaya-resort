@@ -90,7 +90,7 @@ const Journeys = () => {
                                         {/* Hero Background Image */}
                                         <div className="relative h-full w-full">
                                                 <Image
-                                                        src="/hero/journeys.jpg"
+                                                        src={`${process.env.NEXT_PUBLIC_IMAGE_PATH}/hero_section/journeys.jpg`}
                                                         alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
                                                         fill
                                                         priority

@@ -232,7 +232,7 @@ const OurResort = () => {
                                         {/* Hero Background Image */}
                                         <div className="relative h-full w-full">
                                                 <Image
-                                                        src="/hero/home_hero.jpg"
+                                                        src={`${process.env.NEXT_PUBLIC_IMAGE_PATH}/hero_section/home_hero.jpg`}
                                                         alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
                                                         fill
                                                         priority
@@ -362,7 +362,7 @@ const OurResort = () => {
                                                                 <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
                                                                         {/* Background Image */}
                                                                         <Image
-                                                                                src="/hero/home_hero3.jpg"
+                                                                                src={`${process.env.NEXT_PUBLIC_IMAGE_PATH}/hero_section/home_hero3.jpg`}
                                                                                 alt="Shanti Himalaya Resort - Nature's Embrace"
                                                                                 fill
                                                                                 className="object-cover"

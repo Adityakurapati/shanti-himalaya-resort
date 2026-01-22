@@ -131,7 +131,7 @@ const Experiences = () => {
                                         {/* Hero Background Image */}
                                         <div className="relative h-full w-full">
                                                 <Image
-                                                        src="/hero/experiences.jpg"
+                                                        src={`${process.env.NEXT_PUBLIC_IMAGE_PATH}/hero_section/experiences.jpg`}
                                                         alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
                                                         fill
                                                         className="object-cover"

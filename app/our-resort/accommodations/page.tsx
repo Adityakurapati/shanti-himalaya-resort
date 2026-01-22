@@ -299,7 +299,7 @@ ${bookingForm.name}`
           {/* Hero Background Image */}
           <div className="relative h-full w-full">
             <Image
-              src="/hero/accommodation.jpg"
+              src={`${process.env.NEXT_PUBLIC_IMAGE_PATH}/hero_section/accommodation.jpg`}
               alt="Shanti Himalaya Resort - Luxury Himalayan Retreat"
               fill
               priority

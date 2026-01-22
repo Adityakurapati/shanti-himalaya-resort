@@ -1,12 +1,20 @@
 /** @type {import('next').NextConfig} */
-const nextConfig={
-        reactStrictMode: true,
-        images: {
-                domains: [ "localhost", "example.com" ], // add your actual domains here
-        },
-        experimental: {
-                typedRoutes: false,
-        },
+const nextConfig = {
+  reactStrictMode: true,
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+        pathname: "/gh/**",
+      },
+    ],
+  },
+
+  experimental: {
+    typedRoutes: false,
+  },
 };
 
 export default nextConfig;

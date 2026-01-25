@@ -1,4 +1,3 @@
-// app/cookies/page.tsx
 export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-16">

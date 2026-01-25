@@ -1,6 +1,8 @@
 "use client";
 
+import { Metadata } from "next";
 import type { Tables } from "@/integrations/supabase/types";
+import { generateExperienceSEO, generateSEOMetadata } from "@/lib/seo-utils";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -26,22 +28,24 @@ import React from "react";
 
 const ExperienceDetail = () => {
         const params = useParams();
-        const id = Array.isArray(params.id) ? params.id[0] : params.id;
+        const slug = Array.isArray(params.id) ? params.id[0] : params.id;
         const [experience, setExperience] = React.useState<Tables<"experiences"> | null>(null);
         const [loading, setLoading] = React.useState(true);
 
         React.useEffect(() => {
-                if (id) {
+                if (slug) {
                         fetchExperience();
                 }
-        }, [id]);
+        }, [slug]);
 
         const fetchExperience = async () => {
                 try {
+                        // Search by title using slug
+                        const decodedSlug = decodeURIComponent(slug as string).replace(/-/g, " ");
                         const { data, error } = await supabase
                                 .from('experiences')
                                 .select('*')
-                                .eq("id", id as string)
+                                .ilike("title", `%${decodedSlug}%`)
                                 .maybeSingle();
 
                         if (error) throw error;

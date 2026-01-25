@@ -137,7 +137,7 @@ const Journeys = () => {
                                                                 <div className="relative h-48 overflow-hidden">
                                                                         {journey.image_url ? (
                                                                                 <img
-                                                                                        src={journey.image_url}
+                                                                                        src={journey.image_url || "/placeholder.svg"}
                                                                                         alt={journey.title}
                                                                                         className="w-full h-full object-cover"
                                                                                 />
@@ -179,9 +179,9 @@ const Journeys = () => {
                                                                                 )}
                                                                         </div>
 
-                                                                        <Link href={`/journeys/${journey.id}`}>
-                                                                                <Button className="w-full mt-4 hero-gradient hover-glow">
-                                                                                        Explore Journey
+<Link href={`/journeys/${journey.slug}`}>
+  <Button className="w-full mt-4 hero-gradient hover-glow">
+  Explore Journey
                                                                                         <ArrowRight className="w-4 h-4 ml-2" />
                                                                                 </Button>
                                                                         </Link>
@@ -227,7 +227,7 @@ const Journeys = () => {
                                                                 <div className="relative h-48 overflow-hidden">
                                                                         {journey.image_url ? (
                                                                                 <img
-                                                                                        src={journey.image_url}
+                                                                                        src={journey.image_url || "/placeholder.svg"}
                                                                                         alt={journey.title}
                                                                                         className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                                                                                 />
@@ -273,9 +273,9 @@ const Journeys = () => {
                                                                                 )}
                                                                         </div>
 
-                                                                        <Link href={`/journeys/${journey.id}`}>
-                                                                                <Button variant="outline" className="w-full hover:bg-primary hover:text-white transition-colors">
-                                                                                        View Details
+<Link href={`/journeys/${journey.slug}`}>
+  <Button variant="outline" className="w-full hover:bg-primary hover:text-white transition-colors bg-transparent">
+  View Details
                                                                                 </Button>
                                                                         </Link>
                                                                 </CardContent>

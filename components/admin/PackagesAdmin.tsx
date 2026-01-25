@@ -38,6 +38,7 @@ const PackagesAdmin = () => {
                 tags: "",
                 featured: false,
                 read_time: "5 min read",
+                slug:"",
         })
 
         useEffect(() => {
@@ -73,57 +74,93 @@ const PackagesAdmin = () => {
         }
 
         const handleSubmit = async (e: React.FormEvent) => {
-                e.preventDefault()
+  e.preventDefault()
 
-                const packageData = {
-                        ...formData,
-                        tags: formData.tags
-                                .split(",")
-                                .map((t: any) => t.trim())
-                                .filter(Boolean),
-                }
+  // Generate a slug from the title if not already provided
+  const slugValue = formData.slug || generateSlug(formData.title)
 
-                try {
-                        if (editingPackage) {
-                                const { error } = await supabase.from("packages").update(packageData).eq("id", editingPackage.id)
+  const packageData = {
+    ...formData,
+    slug: slugValue,
+    tags: formData.tags
+      .split(",")
+      .map((t: any) => t.trim())
+      .filter(Boolean),
+  }
 
-                                if (error) throw error
-                                toast({ title: "Package updated successfully" })
-                        } else {
-                                const { error } = await supabase.from("packages").insert([packageData])
+  try {
+    if (editingPackage) {
+      const { error } = await supabase
+        .from("packages")
+        .update(packageData)
+        .eq("id", editingPackage.id)
 
-                                if (error) throw error
-                                toast({ title: "Package created successfully" })
-                        }
+      if (error) throw error
+      toast({ title: "Package updated successfully" })
+    } else {
+      const { error } = await supabase.from("packages").insert([packageData])
 
-                        resetForm()
-                        setIsDialogOpen(false)
-                } catch (error: any) {
-                        toast({
-                                title: "Error saving package",
-                                description: error.message,
-                                variant: "destructive",
-                        })
-                }
-        }
+      if (error) throw error
+      toast({ title: "Package created successfully" })
+    }
 
-        const handleEdit = (pkg: Package) => {
-                setEditingPackage(pkg)
-                setFormData({
-                        title: pkg.title,
-                        excerpt: pkg.excerpt,
-                        content: pkg.content,
-                        category: pkg.category,
-                        author: pkg.author,
-                        author_bio: pkg.author_bio || "",
-                        author_avatar: pkg.author_avatar || "",
-                        image_url: pkg.image_url || "",
-                        tags: pkg.tags.join(", "),
-                        featured: pkg.featured ?? false,
-                        read_time: pkg.read_time || "5 min read",
-                })
-                setIsDialogOpen(true)
-        }
+    resetForm()
+    setIsDialogOpen(false)
+  } catch (error: any) {
+    toast({
+      title: "Error saving package",
+      description: error.message,
+      variant: "destructive",
+    })
+  }
+}
+
+// Add a function to generate slug
+const generateSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+// Update resetForm to include slug
+const resetForm = () => {
+  setFormData({
+    title: "",
+    excerpt: "",
+    content: "",
+    category: "",
+    author: "",
+    author_bio: "",
+    author_avatar: "",
+    image_url: "",
+    tags: "",
+    featured: false,
+    read_time: "5 min read",
+    slug: "", // Add this
+  })
+  setEditingPackage(null)
+}
+
+// Update handleEdit to populate slug
+const handleEdit = (pkg: Package) => {
+  setEditingPackage(pkg)
+  setFormData({
+    title: pkg.title,
+    excerpt: pkg.excerpt,
+    content: pkg.content,
+    category: pkg.category,
+    author: pkg.author,
+    author_bio: pkg.author_bio || "",
+    author_avatar: pkg.author_avatar || "",
+    image_url: pkg.image_url || "",
+    tags: pkg.tags.join(", "),
+    featured: pkg.featured ?? false,
+    read_time: pkg.read_time || "5 min read",
+    slug: pkg.slug, // Add this
+  })
+  setIsDialogOpen(true)
+}
 
         const handleDelete = async (id: string) => {
                 if (!confirm("Are you sure you want to delete this package?")) return
@@ -142,22 +179,6 @@ const PackagesAdmin = () => {
                 }
         }
 
-        const resetForm = () => {
-                setFormData({
-                        title: "",
-                        excerpt: "",
-                        content: "",
-                        category: "",
-                        author: "",
-                        author_bio: "",
-                        author_avatar: "",
-                        image_url: "",
-                        tags: "",
-                        featured: false,
-                        read_time: "5 min read",
-                })
-                setEditingPackage(null)
-        }
 
         if (loading) {
                 return (

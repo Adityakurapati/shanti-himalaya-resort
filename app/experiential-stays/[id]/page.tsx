@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react"
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -268,7 +270,7 @@ const RestaurantImageCarousel = ({
               >
                 <div className="absolute inset-0">
                   <img
-                    src={image.image_url}
+                    src={image.image_url || "/placeholder.svg"}
                     alt={image.caption || `Restaurant image ${image.originalIndex + 1}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
@@ -472,13 +474,13 @@ export default function StayDetail() {
 
   const fetchStayDetails = async () => {
     try {
-      // Fetch stay
+      // Fetch stay by slug
       const { data: stayData, error: stayError } = await supabase
         .from("experiential_stays")
         .select("*")
-        .eq("id", id)
+        .eq("slug", id)
         .eq("is_active", true)
-        .single();
+        .maybeSingle();
 
       if (stayError) throw stayError;
 
@@ -492,21 +494,21 @@ export default function StayDetail() {
       const { data: propertyImagesData } = await supabase
         .from("stay_images")
         .select("*")
-        .eq("stay_id", id)
+        .eq("stay_id", stayData.id)
         .order("image_order", { ascending: true });
 
       // Fetch restaurant images
       const { data: restaurantImagesData } = await supabase
         .from("restaurant_images")
         .select("*")
-        .eq("stay_id", id)
+        .eq("stay_id", stayData.id)
         .order("image_order", { ascending: true });
 
       // Fetch accommodations
       const { data: accommodationsData } = await supabase
         .from("accommodation_options")
         .select("*")
-        .eq("stay_id", id)
+        .eq("stay_id", stayData.id)
         .order("sort_order", { ascending: true });
 
       // Parse stay data
@@ -841,7 +843,7 @@ ${formData.contactNumber} | ${formData.email}
                         onClick={() => handleImageSelect((currentImageIndex + 1) % currentImages.length)}
                       >
                         <img
-                          src={getRightImage(1).image_url}
+                          src={getRightImage(1).image_url || "/placeholder.svg"}
                           alt={`${stay.name} - ${getThumbnailCaption(1)}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -860,7 +862,7 @@ ${formData.contactNumber} | ${formData.email}
                         onClick={() => handleImageSelect((currentImageIndex + 2) % currentImages.length)}
                       >
                         <img
-                          src={getRightImage(2).image_url}
+                          src={getRightImage(2).image_url || "/placeholder.svg"}
                           alt={`${stay.name} - ${getThumbnailCaption(2)}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -879,7 +881,7 @@ ${formData.contactNumber} | ${formData.email}
                         onClick={() => handleImageSelect((currentImageIndex + 3) % currentImages.length)}
                       >
                         <img
-                          src={getRightImage(3).image_url}
+                          src={getRightImage(3).image_url || "/placeholder.svg"}
                           alt={`${stay.name} - ${getThumbnailCaption(3)}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -992,7 +994,7 @@ ${formData.contactNumber} | ${formData.email}
                   </Button>
 
                   <img
-                    src={currentImage.image_url}
+                    src={currentImage.image_url || "/placeholder.svg"}
                     alt={getImageCaption(currentImage, currentImageIndex)}
                     className="w-full h-full object-contain max-h-[80vh] rounded-lg"
                     onError={(e) => {

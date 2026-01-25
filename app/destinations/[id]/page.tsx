@@ -1,7 +1,9 @@
 "use client"
 
+import { Metadata } from "next";
 import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
+import { generateDestinationSEO, generateSEOMetadata } from "@/lib/seo-utils";
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -38,50 +40,34 @@ import { useInView } from "react-intersection-observer"
 
 const DestinationDetail = () => {
         const params = useParams();
-        const id = Array.isArray(params.id) ? params.id[0] : params.id;
+        const slug = Array.isArray(params.id) ? params.id[0] : params.id;
         const [destination, setDestination] = React.useState<Tables<"destinations"> | null>(null)
         const [loading, setLoading] = React.useState(true)
         const [activeTab, setActiveTab] = React.useState("overview")
 
-        console.log("URL ID:", id)
-        console.log("Loading state:", loading)
-        console.log("Destination data:", destination)
-
         React.useEffect(() => {
-                console.log("useEffect triggered with id:", id)
-                if (id) {
+                if (slug) {
                         fetchDestination()
                 } else {
-                        console.log("No ID found in URL")
                         setLoading(false)
                 }
-        }, [id])
+        }, [slug])
 
 
         const fetchDestination = async () => {
                 try {
-                        console.log("Fetching destination with ID:", id)
-
-                        const { data, error, status } = await supabase
+                        const { data, error } = await supabase
                                 .from("destinations")
                                 .select("*")
-                                .eq("id", id as string)
-                                .single() // Use single() instead of maybeSingle()
-
-                        console.log("Supabase response:", { data, error, status })
+                                .eq("slug", slug as string)
+                                .maybeSingle()
 
                         if (error) {
                                 console.error("Supabase error:", error)
                                 throw error
                         }
 
-                        if (data) {
-                                console.log("Destination found:", data)
-                                setDestination(data)
-                        } else {
-                                console.log("No destination found with ID:", id)
-                                setDestination(null)
-                        }
+                        setDestination(data);
                 } catch (error) {
                         console.error("Error fetching destination:", error)
                         setDestination(null)
@@ -257,7 +243,7 @@ const DestinationDetail = () => {
   {destination.image_url ? (
     <div className="absolute inset-0">
       <img 
-        src={destination.image_url} 
+        src={destination.image_url || "/placeholder.svg"} 
         alt={destination.name}
         className="w-full h-full object-cover"
       />
@@ -426,7 +412,7 @@ const DestinationDetail = () => {
                                                                                         {destination.overview_image_url && (
                                                                                                 <div className="rounded-2xl overflow-hidden shadow-lg">
                                                                                                         <img
-                                                                                                                src={destination.overview_image_url}
+                                                                                                                src={destination.overview_image_url || "/placeholder.svg"}
                                                                                                                 alt={`${destination.name} Overview`}
                                                                                                                 className="w-full h-64 object-cover"
                                                                                                         />
@@ -521,7 +507,7 @@ const DestinationDetail = () => {
                                                                         <FadeInSection>
                                                                                 <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
                                                                                         <img
-                                                                                                src={destination.places_image_url}
+                                                                                                src={destination.places_image_url || "/placeholder.svg"}
                                                                                                 alt={`${destination.name} Places to Visit`}
                                                                                                 className="w-full h-64 object-cover"
                                                                                         />
@@ -549,7 +535,7 @@ const DestinationDetail = () => {
                                                                                                                         {place.image_url && (
                                                                                                                                 <div className="mb-4 rounded-lg overflow-hidden">
                                                                                                                                         <img
-                                                                                                                                                src={place.image_url}
+                                                                                                                                                src={place.image_url || "/placeholder.svg"}
                                                                                                                                                 alt={place.name}
                                                                                                                                                 className="w-full h-40 object-cover"
                                                                                                                                         />
@@ -589,7 +575,7 @@ const DestinationDetail = () => {
                                                                         <FadeInSection>
                                                                                 <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
                                                                                         <img
-                                                                                                src={destination.activities_image_url}
+                                                                                                src={destination.activities_image_url || "/placeholder.svg"}
                                                                                                 alt={`${destination.name} Things to Do`}
                                                                                                 className="w-full h-64 object-cover"
                                                                                         />
@@ -617,7 +603,7 @@ const DestinationDetail = () => {
                                                                                                                                 {activity.image_url && (
                                                                                                                                         <div className="mb-4 rounded-lg overflow-hidden flex-shrink-0">
                                                                                                                                                 <img
-                                                                                                                                                        src={activity.image_url}
+                                                                                                                                                        src={activity.image_url || "/placeholder.svg"}
                                                                                                                                                         alt={activity.title}
                                                                                                                                                         className="w-full h-40 object-cover"
                                                                                                                                                 />
@@ -746,7 +732,7 @@ const DestinationDetail = () => {
                                         {/* Main Image */}
                                         <div className="h-full min-h-[400px] lg:min-h-full relative group">
                                             <img
-                                                src={day.image_url}
+                                                src={day.image_url || "/placeholder.svg"}
                                                 alt={`Day ${day.day} - ${day.title}`}
                                                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                                             />
@@ -769,7 +755,7 @@ const DestinationDetail = () => {
                                                             }}
                                                         >
                                                             <img
-                                                                src={img}
+                                                                src={img || "/placeholder.svg"}
                                                                 alt={`View ${idx + 1}`}
                                                                 className="w-full h-full object-cover"
                                                             />

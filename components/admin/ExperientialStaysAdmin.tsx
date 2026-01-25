@@ -422,8 +422,17 @@ export default function ExperientialStaysAdmin() {
 
     setSaving(true);
     try {
+      // Generate slug from name
+      const slug = formData.basic.name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+
       const stayData = {
         name: formData.basic.name,
+        slug: slug,
         badge: formData.basic.badge,
         duration: formData.basic.duration,
         description: formData.basic.description,
@@ -463,9 +472,9 @@ export default function ExperientialStaysAdmin() {
       } else {
         const { data, error } = await supabase
           .from("experiential_stays")
-          .insert([stayData])
+          .insert([stayData])  
           .select()
-          .single()
+          .single();
 
         if (error) throw error
 

@@ -182,124 +182,134 @@ const AdminDestinationNew = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+  e.preventDefault();
+  setSaving(true);
 
-    try {
-      if (
-        !formData.name ||
-        !formData.description ||
-        !formData.duration ||
-        !formData.difficulty ||
-        !formData.best_time ||
-        !formData.category
-      ) {
-        toast({
-          title: "Missing required fields",
-          description: "Please fill in all required fields marked with *",
-          variant: "destructive",
-        });
-        setSaving(false);
-        return;
-      }
-
-      let finalSlug = formData.slug;
-      if (!finalSlug) {
-        finalSlug = generateSlug(formData.name);
-      }
-
-      const slugExists = await checkSlugExists(finalSlug);
-      if (slugExists) {
-        toast({
-          title: "Slug already exists",
-          description: "Please choose a different slug",
-          variant: "destructive",
-        });
-        setSaving(false);
-        return;
-      }
-
-      const destinationData = {
-        name: formData.name,
-        description: formData.description,
-        highlights: formData.highlights
-          .split(",")
-          .map((h: any) => h.trim())
-          .filter(Boolean),
-        duration: formData.duration,
-        difficulty: formData.difficulty,
-        best_time: formData.best_time,
-        altitude: formData.altitude || null,
-        featured: formData.featured,
-        category: formData.category,
-        image_url: formData.image_url || null,
-        slug: finalSlug || null,
-        overview: formData.overview || "",
-        overview_image_url: formData.overview_image_url || null,
-        places_image_url: formData.places_image_url || null,
-        activities_image_url: formData.activities_image_url || null,
-        itinerary_image_url: formData.itinerary_image_url || null,
-        places_to_visit: formData.places_to_visit,
-        things_to_do: formData.things_to_do,
-        how_to_reach: formData.how_to_reach,
-        best_time_details: formData.best_time_details,
-        where_to_stay: formData.where_to_stay,
-        itinerary: formData.itinerary,
-        travel_tips: formData.travel_tips,
-        faqs: formData.faqs,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      console.log("💾 Creating new destination:", {
-        ...destinationData,
-        places_to_visit_count: Object.keys(destinationData.places_to_visit)
-          .length,
-        things_to_do_count: Object.keys(destinationData.things_to_do).length,
-        itinerary_count: Object.keys(destinationData.itinerary).length,
-        faqs_count: Object.keys(destinationData.faqs).length,
-      });
-
-      const { data, error } = await supabase
-        .from("destinations")
-        .insert(destinationData)
-        .select();
-
-      if (error) {
-        console.error("❌ Supabase insert error:", error);
-        if (error.code === "23505") {
-          toast({
-            title: "Slug already exists",
-            description: "Please choose a different slug for this destination",
-            variant: "destructive",
-          });
-        } else {
-          throw error;
-        }
-      } else {
-        console.log("✅ Creation successful, returned data:", data);
-        toast({
-          title: "Destination created successfully",
-          description: "New destination has been added to the database.",
-        });
-
-        if (data && data[0]) {
-          setTimeout(() => {
-            router.push("/admin/destination/edit/" + data[0].id);
-          }, 1000);
-        }
-      }
-    } catch (error: any) {
-      console.error("❌ Error creating destination:", error);
+  try {
+    if (
+      !formData.name ||
+      !formData.description ||
+      !formData.duration ||
+      !formData.difficulty ||
+      !formData.best_time ||
+      !formData.category
+    ) {
       toast({
-        title: "Error creating destination",
-        description: error.message,
+        title: "Missing required fields",
+        description: "Please fill in all required fields marked with *",
         variant: "destructive",
       });
-    } finally {
       setSaving(false);
+      return;
     }
-  };
+
+    // Generate or validate slug - ensure it's NEVER null
+    let finalSlug = formData.slug?.trim();
+    if (!finalSlug || finalSlug === '') {
+      finalSlug = generateSlug(formData.name);
+    }
+
+    // Final fallback - generate a unique slug
+    if (!finalSlug || finalSlug.trim() === '') {
+      finalSlug = `destination-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    // Check if slug already exists
+    const slugExists = await checkSlugExists(finalSlug);
+    if (slugExists) {
+      toast({
+        title: "Slug already exists",
+        description: "Please choose a different slug",
+        variant: "destructive",
+      });
+      setSaving(false);
+      return;
+    }
+
+    // Prepare data with proper TypeScript typing
+    const destinationData = {
+      name: formData.name,
+      description: formData.description,
+      highlights: formData.highlights
+        .split(",")
+        .map((h: any) => h.trim())
+        .filter(Boolean),
+      duration: formData.duration,
+      difficulty: formData.difficulty,
+      best_time: formData.best_time,
+      altitude: formData.altitude || null,
+      featured: formData.featured,
+      category: formData.category,
+      image_url: formData.image_url || null,
+      slug: finalSlug, // ✅ This MUST be a string, not null
+      overview: formData.overview || null,
+      overview_image_url: formData.overview_image_url || null,
+      places_image_url: formData.places_image_url || null,
+      activities_image_url: formData.activities_image_url || null,
+      itinerary_image_url: formData.itinerary_image_url || null,
+      places_to_visit: formData.places_to_visit,
+      things_to_do: formData.things_to_do,
+      how_to_reach: formData.how_to_reach,
+      best_time_details: formData.best_time_details,
+      where_to_stay: formData.where_to_stay,
+      itinerary: formData.itinerary,
+      travel_tips: formData.travel_tips,
+      faqs: formData.faqs,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log("💾 Creating new destination:", {
+      ...destinationData,
+      slug: finalSlug,
+      highlights_count: destinationData.highlights?.length || 0,
+      travel_tips_count: destinationData.travel_tips?.length || 0,
+    });
+
+    const { data, error } = await supabase
+      .from("destinations")
+      .insert(destinationData)
+      .select();
+
+    if (error) {
+      console.error("❌ Supabase insert error:", error);
+      if (error.code === "23505") {
+        // Duplicate slug error
+        toast({
+          title: "Slug already exists",
+          description: "Please choose a different slug for this destination",
+          variant: "destructive",
+        });
+        // Suggest a new slug
+        const newSlug = `${finalSlug}-${Date.now().toString().slice(-4)}`;
+        setFormData(prev => ({ ...prev, slug: newSlug }));
+      } else {
+        throw error;
+      }
+    } else {
+      console.log("✅ Creation successful, returned data:", data);
+      toast({
+        title: "Destination created successfully",
+        description: "New destination has been added to the database.",
+      });
+
+      if (data && data[0]) {
+        setTimeout(() => {
+          router.push("/admin/destination/edit/" + data[0].id);
+        }, 1000);
+      }
+    }
+  } catch (error: any) {
+    console.error("❌ Error creating destination:", error);
+    toast({
+      title: "Error creating destination",
+      description: error.message || "An unknown error occurred",
+      variant: "destructive",
+    });
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleGenerateAllContent = async () => {
     if (!formData.name.trim()) {

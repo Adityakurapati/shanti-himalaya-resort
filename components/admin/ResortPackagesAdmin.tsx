@@ -35,6 +35,7 @@ export const ResortPackagesAdmin = () => {
                 features: "",
                 badge: "",
                 image_url: "",
+                slug:"",
         })
 
         useEffect(() => {
@@ -65,75 +66,112 @@ export const ResortPackagesAdmin = () => {
                 }
         }
 
-        const handleSubmit = async (e: React.FormEvent) => {
-                e.preventDefault()
 
-                const packageData = {
-                        name: formData.name,
-                        duration: formData.duration,
-                        price: formData.price,
-                        original_price: formData.original_price,
-                        description: formData.description,
-                        includes: formData.includes.split("\n").filter((item: any) => item.trim()),
-                        features: formData.features.split("\n").filter((item: any) => item.trim()),
-                        badge: formData.badge,
-                        image_url: formData.image_url || null,
-                }
+// Update handleSubmit to include slug generation
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-                try {
-                        if (editingPackage) {
-                                const { error } = await supabase.from("resort_packages").update(packageData).eq("id", editingPackage.id)
+  // Generate a slug from the name if not already provided
+  const slugValue = formData.slug || generateSlug(formData.name)
 
-                                if (error) {
-                                        toast({
-                                                title: "Error updating package",
-                                                description: error.message,
-                                                variant: "destructive",
-                                        })
-                                } else {
-                                        toast({ title: "Package updated successfully!" })
-                                        fetchPackages()
-                                        resetForm()
-                                }
-                        } else {
-                                const { error } = await supabase.from("resort_packages").insert([packageData])
+  const packageData = {
+    name: formData.name,
+    duration: formData.duration,
+    price: formData.price,
+    original_price: formData.original_price,
+    description: formData.description,
+    includes: formData.includes.split("\n").filter((item: any) => item.trim()),
+    features: formData.features.split("\n").filter((item: any) => item.trim()),
+    badge: formData.badge,
+    image_url: formData.image_url || null,
+    slug: slugValue, // Add slug here
+  }
 
-                                if (error) {
-                                        toast({
-                                                title: "Error creating package",
-                                                description: error.message,
-                                                variant: "destructive",
-                                        })
-                                } else {
-                                        toast({ title: "Package created successfully!" })
-                                        fetchPackages()
-                                        resetForm()
-                                }
-                        }
-                } catch (error: any) {
-                        toast({
-                                title: "Error saving package",
-                                description: error.message,
-                                variant: "destructive",
-                        })
-                }
-        }
+  try {
+    if (editingPackage) {
+      const { error } = await supabase
+        .from("resort_packages")
+        .update(packageData)
+        .eq("id", editingPackage.id)
 
-        const handleEdit = (pkg: ResortPackage) => {
-                setEditingPackage(pkg)
-                setFormData({
-                        name: pkg.name,
-                        duration: pkg.duration,
-                        price: pkg.price,
-                        original_price: pkg.original_price,
-                        description: pkg.description,
-                        includes: pkg.includes.join("\n"),
-                        features: pkg.features.join("\n"),
-                        badge: pkg.badge,
-                        image_url: pkg.image_url || "",
-                })
-                setIsDialogOpen(true)
-        }
+      if (error) {
+        toast({
+          title: "Error updating package",
+          description: error.message,
+          variant: "destructive",
+        })
+      } else {
+        toast({ title: "Package updated successfully!" })
+        fetchPackages()
+        resetForm()
+      }
+    } else {
+      const { error } = await supabase.from("resort_packages").insert([packageData])
+
+      if (error) {
+        toast({
+          title: "Error creating package",
+          description: error.message,
+          variant: "destructive",
+        })
+      } else {
+        toast({ title: "Package created successfully!" })
+        fetchPackages()
+        resetForm()
+      }
+    }
+  } catch (error: any) {
+    toast({
+      title: "Error saving package",
+      description: error.message,
+      variant: "destructive",
+    })
+  }
+}
+
+// Add a function to generate slug
+const generateSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+// Update resetForm to include slug
+const resetForm = () => {
+  setFormData({
+    name: "",
+    duration: "",
+    price: "",
+    original_price: "",
+    description: "",
+    includes: "",
+    features: "",
+    badge: "",
+    image_url: "",
+    slug: "", // Add this
+  })
+  setEditingPackage(null)
+  setIsDialogOpen(false)
+}
+
+// Update handleEdit to populate slug
+const handleEdit = (pkg: ResortPackage) => {
+  setEditingPackage(pkg)
+  setFormData({
+    name: pkg.name,
+    duration: pkg.duration,
+    price: pkg.price,
+    original_price: pkg.original_price,
+    description: pkg.description,
+    includes: pkg.includes.join("\n"),
+    features: pkg.features.join("\n"),
+    badge: pkg.badge,
+    image_url: pkg.image_url || "",
+    slug: pkg.slug, // Add this
+  })
+  setIsDialogOpen(true)
+}
 
         const handleDelete = async (id: string) => {
                 if (confirm("Are you sure you want to delete this package?")) {
@@ -160,21 +198,7 @@ export const ResortPackagesAdmin = () => {
                 }
         }
 
-        const resetForm = () => {
-                setFormData({
-                        name: "",
-                        duration: "",
-                        price: "",
-                        original_price: "",
-                        description: "",
-                        includes: "",
-                        features: "",
-                        badge: "",
-                        image_url: "",
-                })
-                setEditingPackage(null)
-                setIsDialogOpen(false)
-        }
+       
 
         if (loading) {
                 return (

@@ -97,7 +97,7 @@ export type Database = {
           overview_image_url: string | null
           places_image_url: string | null
           places_to_visit: Json | null
-          slug: string | null
+          slug: string
           things_to_do: Json | null
           travel_tips: string[] | null
           updated_at: string | null
@@ -126,7 +126,7 @@ export type Database = {
           overview_image_url?: string | null
           places_image_url?: string | null
           places_to_visit?: Json | null
-          slug?: string | null
+          slug: string
           things_to_do?: Json | null
           travel_tips?: string[] | null
           updated_at?: string | null
@@ -155,7 +155,7 @@ export type Database = {
           overview_image_url?: string | null
           places_image_url?: string | null
           places_to_visit?: Json | null
-          slug?: string | null
+          slug?: string
           things_to_do?: Json | null
           travel_tips?: string[] | null
           updated_at?: string | null
@@ -249,6 +249,7 @@ export type Database = {
           id: string
           image_url: string | null
           price: string
+          slug: string
           title: string
           updated_at: string | null
         }
@@ -263,6 +264,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           price: string
+          slug: string
           title: string
           updated_at?: string | null
         }
@@ -277,6 +279,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           price?: string
+          slug?: string
           title?: string
           updated_at?: string | null
         }
@@ -297,6 +300,7 @@ export type Database = {
           name: string
           overview: string | null
           restaurant_description: string | null
+          slug: string
           updated_at: string | null
         }
         Insert: {
@@ -313,6 +317,7 @@ export type Database = {
           name: string
           overview?: string | null
           restaurant_description?: string | null
+          slug: string
           updated_at?: string | null
         }
         Update: {
@@ -329,6 +334,7 @@ export type Database = {
           name?: string
           overview?: string | null
           restaurant_description?: string | null
+          slug?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -394,6 +400,7 @@ export type Database = {
           featured: boolean | null
           id: string
           image_url: string | null
+          slug: string
           title: string
           updated_at: string | null
         }
@@ -407,6 +414,7 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image_url?: string | null
+          slug: string
           title: string
           updated_at?: string | null
         }
@@ -420,6 +428,7 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image_url?: string | null
+          slug?: string
           title?: string
           updated_at?: string | null
         }
@@ -525,6 +534,7 @@ export type Database = {
           likes: number | null
           published_date: string | null
           read_time: string | null
+          slug: string
           tags: string[]
           title: string
           updated_at: string | null
@@ -545,6 +555,7 @@ export type Database = {
           likes?: number | null
           published_date?: string | null
           read_time?: string | null
+          slug: string
           tags?: string[]
           title: string
           updated_at?: string | null
@@ -565,6 +576,7 @@ export type Database = {
           likes?: number | null
           published_date?: string | null
           read_time?: string | null
+          slug?: string
           tags?: string[]
           title?: string
           updated_at?: string | null
@@ -580,6 +592,7 @@ export type Database = {
           icon: string
           id: string
           image_url: string | null
+          slug: string
           title: string
           updated_at: string
         }
@@ -590,6 +603,7 @@ export type Database = {
           icon?: string
           id?: string
           image_url?: string | null
+          slug: string
           title: string
           updated_at?: string
         }
@@ -600,6 +614,7 @@ export type Database = {
           icon?: string
           id?: string
           image_url?: string | null
+          slug?: string
           title?: string
           updated_at?: string
         }
@@ -648,6 +663,7 @@ export type Database = {
           name: string
           original_price: string
           price: string
+          slug: string
           updated_at: string
         }
         Insert: {
@@ -662,6 +678,7 @@ export type Database = {
           name: string
           original_price: string
           price: string
+          slug: string
           updated_at?: string
         }
         Update: {
@@ -676,6 +693,7 @@ export type Database = {
           name?: string
           original_price?: string
           price?: string
+          slug?: string
           updated_at?: string
         }
         Relationships: []
@@ -788,7 +806,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_slug: { Args: { name_text: string }; Returns: string }
+      generate_slug: { Args: { text_input: string }; Returns: string }
+      generate_unique_slug: {
+        Args: { base_text: string; exclude_id?: string; table_name: string }
+        Returns: string
+      }
       get_admin_users_with_emails: {
         Args: never
         Returns: {

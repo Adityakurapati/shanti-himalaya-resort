@@ -26,7 +26,7 @@ async function getActivityById(id: string) {
     .from("resort_activities")
     .select("*")
     .eq("id", id)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     return null
@@ -47,13 +47,18 @@ async function getOtherActivities(currentId: string) {
   return data
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const activity = await getActivityById(params.id)
-  
-  return {
-    title: activity ? `${activity.title} - Shanti Himalaya Resort` : 'Activity Not Found',
-    description: activity?.description || 'Discover exciting activities at our resort',
+async function getActivityBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from("resort_activities")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle()
+
+  if (error || !data) {
+    return null
   }
+
+  return data
 }
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -64,9 +69,18 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Camera,
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const activity = await getActivityBySlug(params.id)
+  
+  return {
+    title: activity ? `${activity.title} - Shanti Himalaya Resort` : 'Activity Not Found',
+    description: activity?.description || 'Discover exciting activities at our resort',
+  }
+}
+
 export default async function ActivityDetailPage({ params }: { params: { id: string } }) {
-  const activity = await getActivityById(params.id)
-  const otherActivities = await getOtherActivities(params.id)
+  const activity = await getActivityBySlug(params.id)
+  const otherActivities = await getOtherActivities(activity?.id || params.id)
 
   if (!activity) {
     notFound()
@@ -86,7 +100,7 @@ export default async function ActivityDetailPage({ params }: { params: { id: str
               {/* Hero Image */}
               <div className="absolute inset-0">
                 <img 
-                  src={activity.image_url} 
+                  src={activity.image_url || "/placeholder.svg"} 
                   alt={activity.title}
                   className="w-full h-full object-cover"
                 />
@@ -226,7 +240,7 @@ export default async function ActivityDetailPage({ params }: { params: { id: str
                     <div className="h-40 relative">
                       {otherActivity.image_url ? (
                         <img 
-                          src={otherActivity.image_url} 
+                          src={otherActivity.image_url || "/placeholder.svg"} 
                           alt={otherActivity.title}
                           className="w-full h-full object-cover"
                         />
@@ -249,7 +263,7 @@ export default async function ActivityDetailPage({ params }: { params: { id: str
                       <h3 className="text-lg font-semibold mb-2">{otherActivity.title}</h3>
                       <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{otherActivity.description}</p>
                       <Link href={`/our-resort/activities/${otherActivity.id}`}>
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="w-full bg-transparent">
                           View Details
                         </Button>
                       </Link>

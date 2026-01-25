@@ -255,13 +255,13 @@ const AdminDestinationEdit = () => {
 
   const fetchDestination = async () => {
     try {
-      console.log("🔄 Fetching destination with ID:", id);
+      console.log("🔄 Fetching destination with slug:", id);
 
       const { data, error } = await supabase
         .from("destinations")
         .select("*")
-        .eq("id", id)
-        .single();
+        .eq("slug", id)
+        .maybeSingle();
 
       if (error) {
         console.error("❌ Supabase fetch error:", error);
@@ -696,8 +696,13 @@ const AdminDestinationEdit = () => {
       }
 
       let finalSlug = formData.slug;
-      if (!finalSlug) {
+      if (!finalSlug || finalSlug.trim() === '') {
         finalSlug = generateSlug(formData.name);
+      }
+
+      // Ensure slug is never null or empty
+      if (!finalSlug || finalSlug.trim() === '') {
+        finalSlug = `destination-${Date.now()}`;
       }
 
       if (id) {
@@ -727,7 +732,8 @@ const AdminDestinationEdit = () => {
         featured: formData.featured,
         category: formData.category,
         image_url: formData.image_url || null,
-        slug: finalSlug || null,
+        // FIX: Ensure slug is always a string, never null
+        slug: finalSlug,
         overview: formData.overview || "",
         overview_image_url: formData.overview_image_url || null,
         places_image_url: formData.places_image_url || null,
@@ -746,6 +752,7 @@ const AdminDestinationEdit = () => {
 
       console.log("💾 Saving data to database:", {
         ...destinationData,
+        slug: finalSlug,
         places_to_visit_count: Object.keys(destinationData.places_to_visit)
           .length,
         things_to_do_count: Object.keys(destinationData.things_to_do).length,
@@ -792,6 +799,7 @@ const AdminDestinationEdit = () => {
       setSaving(false);
     }
   };
+
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -1039,11 +1047,10 @@ const AdminDestinationEdit = () => {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-2 font-medium text-sm transition-colors ${
-                activeTab === tab.id
+              className={`px-3 py-2 font-medium text-sm transition-colors ${activeTab === tab.id
                   ? "border-b-2 border-primary text-primary"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -1174,11 +1181,10 @@ const AdminDestinationEdit = () => {
                   {categories.map((category: any) => (
                     <div
                       key={category}
-                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-                        formData.category === category
+                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${formData.category === category
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-border hover:border-primary/50"
-                      }`}
+                        }`}
                       onClick={() => setFormData({ ...formData, category })}
                     >
                       <span className="text-sm font-medium">{category}</span>
@@ -1355,7 +1361,7 @@ const AdminDestinationEdit = () => {
                             {place.image_url ? (
                               <div className="h-32 rounded-lg overflow-hidden">
                                 <img
-                                  src={place.image_url}
+                                  src={place.image_url || "/placeholder.svg"}
                                   alt={place.name}
                                   className="w-full h-full object-cover"
                                 />
@@ -1538,7 +1544,7 @@ const AdminDestinationEdit = () => {
                             {activity.image_url && (
                               <div className="h-24 rounded-lg overflow-hidden flex-shrink-0">
                                 <img
-                                  src={activity.image_url}
+                                  src={activity.image_url || "/placeholder.svg"}
                                   alt={activity.title}
                                   className="w-full h-full object-cover"
                                 />
@@ -1632,7 +1638,7 @@ const AdminDestinationEdit = () => {
                           ...formData.how_to_reach,
                           [method]: {
                             ...formData.how_to_reach[
-                              method as keyof typeof formData.how_to_reach
+                            method as keyof typeof formData.how_to_reach
                             ],
                             details,
                           },
@@ -1684,7 +1690,7 @@ const AdminDestinationEdit = () => {
                             ...formData.best_time_details,
                             [season]: {
                               ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
+                              season as keyof typeof formData.best_time_details
                               ],
                               season: e.target.value,
                             },
@@ -1706,7 +1712,7 @@ const AdminDestinationEdit = () => {
                             ...formData.best_time_details,
                             [season]: {
                               ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
+                              season as keyof typeof formData.best_time_details
                               ],
                               weather: e.target.value,
                             },
@@ -1729,7 +1735,7 @@ const AdminDestinationEdit = () => {
                             ...formData.best_time_details,
                             [season]: {
                               ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
+                              season as keyof typeof formData.best_time_details
                               ],
                               why_visit: e.target.value,
                             },
@@ -1752,7 +1758,7 @@ const AdminDestinationEdit = () => {
                             ...formData.best_time_details,
                             [season]: {
                               ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
+                              season as keyof typeof formData.best_time_details
                               ],
                               events: e.target.value,
                             },
@@ -1775,7 +1781,7 @@ const AdminDestinationEdit = () => {
                             ...formData.best_time_details,
                             [season]: {
                               ...formData.best_time_details[
-                                season as keyof typeof formData.best_time_details
+                              season as keyof typeof formData.best_time_details
                               ],
                               challenges: e.target.value,
                             },
@@ -1826,7 +1832,7 @@ const AdminDestinationEdit = () => {
                           ...formData.where_to_stay,
                           [category]: {
                             ...formData.where_to_stay[
-                              category as keyof typeof formData.where_to_stay
+                            category as keyof typeof formData.where_to_stay
                             ],
                             description: e.target.value,
                           },
@@ -1852,7 +1858,7 @@ const AdminDestinationEdit = () => {
                           ...formData.where_to_stay,
                           [category]: {
                             ...formData.where_to_stay[
-                              category as keyof typeof formData.where_to_stay
+                            category as keyof typeof formData.where_to_stay
                             ],
                             options,
                           },
@@ -1979,7 +1985,7 @@ const AdminDestinationEdit = () => {
                         {day.image_url ? (
                           <div className="h-32 rounded-lg overflow-hidden">
                             <img
-                              src={day.image_url}
+                              src={day.image_url || "/placeholder.svg"}
                               alt={`Day ${day.day}`}
                               className="w-full h-full object-cover"
                             />
@@ -2074,7 +2080,7 @@ const AdminDestinationEdit = () => {
               </div>
             </form>
 
-            
+
           </div>
         )}
 

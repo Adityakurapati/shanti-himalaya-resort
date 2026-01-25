@@ -100,39 +100,70 @@ const ExperiencesAdmin = () => {
         }
 
         const handleSubmit = async (e: React.FormEvent) => {
-                e.preventDefault()
+                e.preventDefault();
 
-                const experienceData = {
-                        ...formData,
-                        highlights: formData.highlights
-                                .split(",")
-                                .map((h: any) => h.trim())
-                                .filter(Boolean),
-                }
-
-                try {
-                        if (editingExperience) {
-                                const { error } = await supabase.from("experiences").update(experienceData).eq("id", editingExperience.id)
-
-                                if (error) throw error
-                                toast({ title: "Experience updated successfully" })
-                        } else {
-                                const { error } = await supabase.from("experiences").insert([experienceData])
-
-                                if (error) throw error
-                                toast({ title: "Experience created successfully" })
+                // Generate slug from title
+                const generateSlug = (text: string) => {
+                        if (!text || text.trim() === '') {
+                                return `experience-${Date.now()}`;
                         }
 
-                        resetForm()
-                        setIsDialogOpen(false)
+                        return text
+                                .toLowerCase()
+                                .replace(/[^a-z0-9\s]/g, "")
+                                .replace(/\s+/g, "-")
+                                .replace(/-+/g, "-")
+                                .trim() || `experience-${Date.now()}`;
+                };
+
+                const slug = generateSlug(formData.title);
+
+                const experienceData = {
+                        title: formData.title,
+                        slug: slug,
+                        description: formData.description,
+                        category: formData.category,
+                        duration: formData.duration,
+                        group_size: formData.group_size,
+                        highlights: formData.highlights.split(",").map((h: string) => h.trim()),
+                        price: formData.price,
+                        featured: formData.featured,
+                        image_url: formData.image_url,
+                };
+
+                try {
+                        let result;
+                        if (editingExperience) {
+                                const { data, error } = await supabase
+                                        .from("experiences")
+                                        .update(experienceData)
+                                        .eq("id", editingExperience.id)
+                                        .select()
+                                        .single();
+                                if (error) throw error;
+                                result = data;
+                        } else {
+                                const { data, error } = await supabase
+                                        .from("experiences")
+                                        .insert([experienceData])
+                                        .select()
+                                        .single();
+                                if (error) throw error;
+                                result = data;
+                        }
+
+                        toast({ title: editingExperience ? "Experience updated successfully" : "Experience created successfully" });
+                        resetForm();
+                        setIsDialogOpen(false);
                 } catch (error: any) {
+                        console.error("Error saving experience:", error);
                         toast({
                                 title: "Error saving experience",
                                 description: error.message,
                                 variant: "destructive",
-                        })
+                        });
                 }
-        }
+        };
 
         const handleEdit = (experience: Experience) => {
                 setEditingExperience(experience)

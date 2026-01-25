@@ -1,7 +1,9 @@
 "use client";
 
+import { Metadata } from "next";
 import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
+import { generateJourneySEO, generateSEOMetadata } from "@/lib/seo-utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -154,7 +156,7 @@ const DayCard = ({
                         >
                           <div className="h-fit">
                             <img
-                              src={day.image_url}
+                              src={day.image_url || "/placeholder.svg"}
                               alt={`Day ${day.day_number}`}
                               className="w-full h-fit object-cover transition-transform duration-500 hover:scale-105"
                             />
@@ -355,7 +357,7 @@ const EnquiryModal = ({
 
 const JourneyDetail = () => {
         const params = useParams();
-        const id = Array.isArray(params.id) ? params.id[0] : params.id;
+        const slug = Array.isArray(params.id) ? params.id[0] : params.id;
         const [journey, setJourney] = React.useState<Tables<"journeys"> | null>(null);
         const [days, setDays] = React.useState<DaySchedule[]>([]);
         const [loading, setLoading] = React.useState(true);
@@ -373,18 +375,23 @@ const JourneyDetail = () => {
         );
 
         React.useEffect(() => {
-                if (id) {
+                if (slug) {
                         fetchJourney();
+                }
+        }, [slug]);
+
+        React.useEffect(() => {
+                if (journey?.id) {
                         fetchDays();
                 }
-        }, [id]);
+        }, [journey?.id]);
 
         const fetchJourney = async () => {
                 try {
                         const { data, error } = await supabase
                                 .from("journeys")
                                 .select("*")
-                                .eq("id", id as string)
+                                .eq("slug", slug as string)
                                 .maybeSingle();
 
                         if (error) throw error;
@@ -397,11 +404,12 @@ const JourneyDetail = () => {
         };
 
         const fetchDays = async () => {
+                if (!journey?.id) return;
                 try {
                         const { data, error } = await supabase
                                 .from("journey_days")
                                 .select("*")
-                                .eq("journey_id", id)
+                                .eq("journey_id", journey.id)
                                 .order("day_number", { ascending: true });
 
                         if (error) throw error;
@@ -461,7 +469,7 @@ const JourneyDetail = () => {
                                 {/* Conditional rendering for banner image or gradient */}
                                 {journey.image_url ? (
                                         <div className="absolute inset-0">
-                                                <img src={journey.image_url} alt={journey.title} className="w-full h-full object-cover" />
+                                                <img src={journey.image_url || "/placeholder.svg"} alt={journey.title} className="w-full h-full object-cover" />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/10"></div>
                                                 <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
                                         </div>
@@ -624,7 +632,7 @@ const JourneyDetail = () => {
                                                                                                                 <Button
                                                                                                                         size="icon"
                                                                                                                         variant="outline"
-                                                                                                                        className="h-8 w-8"
+                                                                                                                        className="h-8 w-8 bg-transparent"
                                                                                                                         onClick={() => {
                                                                                                                                 const prevIndex = highlightIndex - 1;
                                                                                                                                 setHighlightIndex(
@@ -637,7 +645,7 @@ const JourneyDetail = () => {
                                                                                                                 <Button
                                                                                                                         size="icon"
                                                                                                                         variant="outline"
-                                                                                                                        className="h-8 w-8"
+                                                                                                                        className="h-8 w-8 bg-transparent"
                                                                                                                         onClick={() => {
                                                                                                                                 const nextIndex = highlightIndex + 1;
                                                                                                                                 const totalPages = Math.ceil(days.length / HIGHLIGHTS_PER_PAGE);

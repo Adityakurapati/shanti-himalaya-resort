@@ -80,7 +80,7 @@ const BlogPost = () => {
       const { data, error } = await supabase
         .from('packages')
         .select('*')
-        .eq("id", id as string)
+        .eq("slug", id as string)
         .maybeSingle();
 
       if (error) throw error;
@@ -95,6 +95,7 @@ const BlogPost = () => {
 
   const fetchRelatedPosts = async () => {
     try {
+      if (!blogPost?.id) return;
       const { data, error } = await supabase
         .from('packages')
         .select('*')
@@ -272,7 +273,7 @@ const BlogPost = () => {
                   <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center overflow-hidden border-2 border-background shadow-lg">
                     {blogPost.author_avatar ? (
                       <img
-                        src={blogPost.author_avatar}
+                        src={blogPost.author_avatar || "/placeholder.svg"}
                         alt={blogPost.author}
                         className="w-full h-full object-cover"
                       />
@@ -325,7 +326,7 @@ const BlogPost = () => {
             className="relative rounded-xl overflow-hidden shadow-lg"
           >
             <img
-              src={blogPost.image_url}
+              src={blogPost.image_url || "/placeholder.svg"}
               alt={blogPost.title}
               className="w-full h-[400px] md:h-[450px] object-cover"
             />
@@ -391,7 +392,7 @@ const BlogPost = () => {
                           <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center overflow-hidden border-3 border-background">
                             {blogPost.author_avatar ? (
                               <img
-                                src={blogPost.author_avatar}
+                                src={blogPost.author_avatar || "/placeholder.svg"}
                                 alt={blogPost.author}
                                 className="w-full h-full object-cover"
                               />
@@ -441,7 +442,7 @@ const BlogPost = () => {
                                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                                   {post.image_url ? (
                                     <img
-                                      src={post.image_url}
+                                      src={post.image_url || "/placeholder.svg"}
                                       alt={post.title}
                                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                     />

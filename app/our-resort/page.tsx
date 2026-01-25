@@ -44,6 +44,8 @@ const OurResort = () => {
         const [expandedActivity, setExpandedActivity] = useState<number | null>(null)
         const [currentPackageIndex, setCurrentPackageIndex] = useState(0)
         const [currentActivityIndex, setCurrentActivityIndex] = useState(0)
+        const [currentLocationSlide, setCurrentLocationSlide] = useState(0)
+        const locationIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
         const [gallery, setGallery] = React.useState<
                 Array<{ id: string; image_url: string; title: string | null; description: string | null }>
@@ -195,6 +197,51 @@ const OurResort = () => {
                 }
                 return visible
         }
+
+        // Helper function to get image path
+        const getLocationImagePath = (filename: string) => {
+                const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || '';
+                return `${basePath}/Views/${filename}`;
+        };
+
+        // Start interval function
+        const startLocationInterval = () => {
+                if (locationIntervalRef.current) {
+                        clearInterval(locationIntervalRef.current);
+                }
+
+                locationIntervalRef.current = setInterval(() => {
+                        setCurrentLocationSlide((prev) => (prev + 1) % locationImages.length);
+                }, 4000);
+        };
+
+        // Navigation handler
+        const handleLocationNavigation = (action: 'next' | 'prev') => {
+                if (locationIntervalRef.current) {
+                        clearInterval(locationIntervalRef.current);
+                }
+
+                if (action === 'next') {
+                        setCurrentLocationSlide((prev) => (prev + 1) % locationImages.length);
+                } else {
+                        setCurrentLocationSlide((prev) => (prev - 1 + locationImages.length) % locationImages.length);
+                }
+
+                setTimeout(() => {
+                        startLocationInterval();
+                }, 5000);
+        };
+
+        // Initialize interval for location carousel
+        useEffect(() => {
+                startLocationInterval();
+
+                return () => {
+                        if (locationIntervalRef.current) {
+                                clearInterval(locationIntervalRef.current);
+                        }
+                };
+        }, [locationImages.length]);
 
         return (
                 <div className="min-h-screen bg-background">
@@ -349,7 +396,7 @@ const OurResort = () => {
                                                         </Card>
 
                                                         {/* Tariff Button - Left Column */}
-                                                        <Button size="lg" variant="outline" className="w-full" asChild>
+                                                        <Button size="lg" variant="outline" className="w-full bg-transparent" asChild>
                                                                 <Link href="/our-resort/accommodations">
                                                                         View Complete Tariff & Terms
                                                                         <ChevronRight className="w-4 h-4 ml-2" />
@@ -591,7 +638,7 @@ const OurResort = () => {
                                                                                 {/* Show package image if available */}
                                                                                 {pkg.image_url ? (
                                                                                         <img
-                                                                                                src={pkg.image_url}
+                                                                                                src={pkg.image_url || "/placeholder.svg"}
                                                                                                 alt={pkg.name}
                                                                                                 className="w-full h-full object-cover"
                                                                                         />
@@ -637,9 +684,9 @@ const OurResort = () => {
                                                                                 </div>
 
                                                                                 <div className="mt-auto space-y-3">
-                                                                                        <Link href={`/our-resort/packages/${pkg.id}`} className="block">
-                                                                                                <Button variant="outline" size="sm" className="w-full">
-                                                                                                        View Details
+<Link href={`/our-resort/packages/${pkg.slug}`} className="block">
+                                                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                                View Details
                                                                                                 </Button>
                                                                                         </Link>
                                                                                 </div>
@@ -682,7 +729,7 @@ const OurResort = () => {
                                                         <div className="h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center relative group">
                                                                 {galleryImages.length > 0 ? (
                                                                         <img
-                                                                                src={galleryImages[currentImageIndex] }
+                                                                                src={galleryImages[currentImageIndex]  || "/placeholder.svg"}
                                                                                 alt={gallery[currentImageIndex]?.title || "Gallery image"}
                                                                                 className="w-full h-full object-cover"
                                                                         />
@@ -738,7 +785,7 @@ const OurResort = () => {
                                                                         className={`relative h-16 rounded-lg overflow-hidden transition-all group ${selectedThumbnail === index ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"}`}
                                                                 >
                                                                         <img
-                                                                                src={g.image_url }
+                                                                                src={g.image_url  || "/placeholder.svg"}
                                                                                 alt={g.title || `Gallery ${index + 1}`}
                                                                                 className="w-full h-full object-cover"
                                                                         />
@@ -784,13 +831,13 @@ const OurResort = () => {
                                                         {getVisibleActivities().map((activity: any) => {
                                                                 const Icon = iconMap[activity.icon] || Mountain
                                                                 return (
-                                                                        <Link key={activity.id} href={`/our-resort/activities/${activity.id}`}>
+                                                                        <Link key={activity.id} href={`/our-resort/activities/${activity.slug}`}>
                                                                                 <Card className="shadow-card hover-lift bg-white overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
                                                                                         <div className="h-48 relative">
                                                                                                 {/* Show activity image if available */}
                                                                                                 {activity.image_url ? (
                                                                                                         <img
-                                                                                                                src={activity.image_url}
+                                                                                                                src={activity.image_url || "/placeholder.svg"}
                                                                                                                 alt={activity.title}
                                                                                                                 className="w-full h-full object-cover"
                                                                                                         />
@@ -842,104 +889,49 @@ const OurResort = () => {
                         <section id="location" className="py-20 mountain-gradient">
                                 <div className="container mx-auto px-4">
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                                                {/* ROW 1 — LEFT : Image Carousel */}
+                                {/* ROW 1 — LEFT : Image Carousel */}
                                                 <div className="relative">
-                                                        {/* Location Images Array */}
-                                                        {(() => {
+                                                        <div className="relative h-80 rounded-2xl overflow-hidden shadow-card group">
+                                                                {/* Current Image */}
+                                                                <img
+                                                                        src={getLocationImagePath(locationImages[currentLocationSlide]) || "/placeholder.svg"}
+                                                                        alt={`Location view ${currentLocationSlide + 1}`}
+                                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                       
+                                                                />
 
-                                                                // State for the carousel
-                                                                const [currentLocationSlide, setCurrentLocationSlide] = useState(0);
-                                                                const locationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+                                                                {/* Overlay */}
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
 
-                                                                // Helper function to get image path
-                                                                const getLocationImagePath = (filename: string) => {
-                                                                        const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || '';
-                                                                        return `${basePath}/Views/${filename}`;
-                                                                };
+                                                                {/* Navigation Buttons */}
+                                                                <button
+                                                                        onClick={() => handleLocationNavigation('prev')}
+                                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                                                                        aria-label="Previous image"
+                                                                >
+                                                                        <ChevronLeft className="w-5 h-5" />
+                                                                </button>
 
-                                                                // Start interval function
-                                                                const startLocationInterval = () => {
-                                                                        if (locationIntervalRef.current) {
-                                                                                clearInterval(locationIntervalRef.current);
-                                                                        }
+                                                                <button
+                                                                        onClick={() => handleLocationNavigation('next')}
+                                                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                                                                        aria-label="Next image"
+                                                                >
+                                                                        <ChevronRight className="w-5 h-5" />
+                                                                </button>
 
-                                                                        locationIntervalRef.current = setInterval(() => {
-                                                                                setCurrentLocationSlide((prev) => (prev + 1) % locationImages.length);
-                                                                        }, 4000);
-                                                                };
+                                                                {/* Image Counter */}
+                                                                <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                                                                        <span className="font-semibold">{currentLocationSlide + 1}</span> / <span className="text-white/80">{locationImages.length}</span>
+                                                                </div>
 
-                                                                // Initialize interval
-                                                                useEffect(() => {
-                                                                        startLocationInterval();
-
-                                                                        return () => {
-                                                                                if (locationIntervalRef.current) {
-                                                                                        clearInterval(locationIntervalRef.current);
-                                                                                }
-                                                                        };
-                                                                }, [locationImages.length]);
-
-                                                                // Navigation handler
-                                                                const handleLocationNavigation = (action: 'next' | 'prev') => {
-                                                                        if (locationIntervalRef.current) {
-                                                                                clearInterval(locationIntervalRef.current);
-                                                                        }
-
-                                                                        if (action === 'next') {
-                                                                                setCurrentLocationSlide((prev) => (prev + 1) % locationImages.length);
-                                                                        } else {
-                                                                                setCurrentLocationSlide((prev) => (prev - 1 + locationImages.length) % locationImages.length);
-                                                                        }
-
-                                                                        setTimeout(() => {
-                                                                                startLocationInterval();
-                                                                        }, 5000);
-                                                                };
-
-                                                                return (
-                                                                        <div className="relative h-80 rounded-2xl overflow-hidden shadow-card group">
-                                                                                {/* Current Image */}
-                                                                                <img
-                                                                                        src={getLocationImagePath(locationImages[currentLocationSlide])}
-                                                                                        alt={`Location view ${currentLocationSlide + 1}`}
-                                                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                                                       
-                                                                                />
-
-                                                                                {/* Overlay */}
-                                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-
-                                                                                {/* Navigation Buttons */}
-                                                                                <button
-                                                                                        onClick={() => handleLocationNavigation('prev')}
-                                                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
-                                                                                        aria-label="Previous image"
-                                                                                >
-                                                                                        <ChevronLeft className="w-5 h-5" />
-                                                                                </button>
-
-                                                                                <button
-                                                                                        onClick={() => handleLocationNavigation('next')}
-                                                                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
-                                                                                        aria-label="Next image"
-                                                                                >
-                                                                                        <ChevronRight className="w-5 h-5" />
-                                                                                </button>
-
-                                                                                {/* Image Counter */}
-                                                                                <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
-                                                                                        <span className="font-semibold">{currentLocationSlide + 1}</span> / <span className="text-white/80">{locationImages.length}</span>
-                                                                                </div>
-
-                                                                                {/* Image Title Overlay */}
-                                                                                <div className="absolute bottom-4 left-4">
-                                                                                        <Badge className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
-                                                                                                Location Gallery
-                                                                                        </Badge>
-                                                                                </div>
-                                                                        </div>
-                                                                );
-                                                        })()}
+                                                                {/* Image Title Overlay */}
+                                                                <div className="absolute bottom-4 left-4">
+                                                                        <Badge className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
+                                                                                Location Gallery
+                                                                        </Badge>
+                                                                </div>
+                                                        </div>
                                                 </div>
 
                                                 {/* ROW 1 — RIGHT : Location Content */}
@@ -995,7 +987,7 @@ const OurResort = () => {
                                                         <Link href="/our-resort/how-to-reach">
                                                                 <Button
                                                                         variant="outline"
-                                                                        className="w-full lg:w-auto px-8 py-6 text-base"
+                                                                        className="w-full lg:w-auto px-8 py-6 text-base bg-transparent"
                                                                 >
                                                                         View Detailed Directions
                                                                 </Button>

@@ -161,7 +161,7 @@ const Destinations = () => {
                                                                         <div className="relative h-64 overflow-hidden">
                                                                                 {destination.image_url ? (
                                                                                         <img
-                                                                                                src={destination.image_url}
+                                                                                                src={destination.image_url || "/placeholder.svg"}
                                                                                                 alt={destination.name}
                                                                                                 className="w-full h-full object-cover"
                                                                                         />
@@ -225,7 +225,7 @@ const Destinations = () => {
                                                                                         </div>
                                                                                 </div>
 
-                                                                                <Link href={`/destinations/${destination.id}`}>
+                                                                                <Link href={`/destinations/${destination.slug}`}>
                                                                                         <Button className="w-full hero-gradient hover-glow">
                                                                                                 Explore Destination
                                                                                                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -279,7 +279,7 @@ const Destinations = () => {
                                                                         {destination.image_url && (
                                                                                 <div className="relative h-48 overflow-hidden">
                                                                                         <img
-                                                                                                src={destination.image_url}
+                                                                                                src={destination.image_url || "/placeholder.svg"}
                                                                                                 alt={destination.name}
                                                                                                 className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                                                                                         />
@@ -346,8 +346,8 @@ const Destinations = () => {
                                                                                         </div>
                                                                                 </div>
 
-                                                                                <Link href={`/destinations/${destination.id}`}>
-                                                                                        <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-white transition-colors">
+                                                                                <Link href={`/destinations/${destination.slug}`}>
+                                                                                        <Button variant="outline" size="sm" className="w-full hover:bg-primary hover:text-white transition-colors bg-transparent">
                                                                                                 Learn More
                                                                                         </Button>
                                                                                 </Link>

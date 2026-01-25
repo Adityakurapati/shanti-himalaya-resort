@@ -177,7 +177,7 @@ const Experiences = () => {
                                                                 <Card key={experience.id} className="shadow-card hover-lift overflow-hidden group">
                                                                         <div className="relative h-64 overflow-hidden">
                                                                                 <img
-                                                                                        src={experience.image_url}
+                                                                                        src={experience.image_url || "/placeholder.svg"}
                                                                                         alt={experience.title}
                                                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                                                 />
@@ -225,9 +225,9 @@ const Experiences = () => {
                                                                                         <span className="font-semibold text-primary text-lg">
                                                                                                 {experience.price}
                                                                                         </span>
-                                                                                        <Link href={`/experiences/${experience.id}`}>
-                                                                                                <Button className="hero-gradient hover-glow">
-                                                                                                        View Experience
+<Link href={`/experiences/${encodeURIComponent(experience.title.toLowerCase().replace(/\s+/g, '-'))}`}>
+  <Button className="hero-gradient hover-glow">
+  View Experience
                                                                                                         <ArrowRight className="w-4 h-4 ml-2" />
                                                                                                 </Button>
                                                                                         </Link>
@@ -275,7 +275,7 @@ const Experiences = () => {
                                                                 <Card key={experience.id} className="shadow-card hover-lift bg-white overflow-hidden group">
                                                                         <div className="relative h-48 overflow-hidden">
                                                                                 <img
-                                                                                        src={experience.image_url}
+                                                                                        src={experience.image_url || "/placeholder.svg"}
                                                                                         alt={experience.title}
                                                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                                                 />
@@ -328,9 +328,9 @@ const Experiences = () => {
                                                                                         </div>
                                                                                 </div>
 
-                                                                                <Link href={`/experiences/${experience.id}`}>
-                                                                                        <Button variant="outline" size="sm" className="w-full text-xs">
-                                                                                                View Details
+<Link href={`/experiences/${encodeURIComponent(experience.title.toLowerCase().replace(/\s+/g, '-'))}`}>
+  <Button variant="outline" size="sm" className="w-full text-xs bg-transparent">
+  View Details
                                                                                         </Button>
                                                                                 </Link>
                                                                         </CardContent>

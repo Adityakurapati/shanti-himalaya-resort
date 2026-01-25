@@ -200,7 +200,7 @@ Curated Himalayan Retreats                        </Badge>
                                     <div className="relative h-64 overflow-hidden">
                                         {stay.featuredImage ? (
                                             <img
-                                                src={stay.featuredImage}
+                                                src={stay.featuredImage || "/placeholder.svg"}
                                                 alt={stay.name}
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                                 onError={(e) => {
@@ -259,8 +259,8 @@ Curated Himalayan Retreats                        </Badge>
                                                         {stay.duration || "Custom duration"}
                                                     </span>
                                                 </div>
-                                                <Link href={`/experiential-stays/${stay.id}`}>
-                                                    <Button variant="outline" className="border-primary/20 hover:bg-primary hover:text-white transition-colors">
+                                                <Link href={`/experiential-stays/${stay.slug}`}>
+                                                    <Button variant="outline" className="border-primary/20 hover:bg-primary hover:text-white transition-colors bg-transparent">
                                                         View Details
                                                         <ArrowRight className="w-4 h-4 ml-2" />
                                                     </Button>
@@ -301,7 +301,7 @@ Curated Himalayan Retreats                        </Badge>
                                     Speak to an Expert
                                 </a>
                             </Button>
-                            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white px-8">
+                            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white px-8 bg-transparent">
                                 <a href="mailto:shantihimalayas@gmail.com" className="flex items-center gap-2">
                                     <Mail className="w-5 h-5" />
                                     Send Inquiry

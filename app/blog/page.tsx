@@ -346,7 +346,7 @@ const Blog = () => {
                     )}>
                       {post.image_url ? (
                         <img
-                          src={post.image_url}
+                          src={post.image_url || "/placeholder.svg"}
                           alt={post.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -372,7 +372,7 @@ const Blog = () => {
                       viewMode === "list" && "flex-1"
                     )}>
                       <div className="flex-1">
-                        <Link href={`/blog/${post.id}`} onClick={() => handlePostClick(post.id)}>
+                        <Link href={`/blog/${post.slug}`} onClick={() => handlePostClick(post.id)}>
                           <h3 className="text-xl font-display font-semibold mb-3 line-clamp-2 hover:text-primary transition-colors">
                             {post.title}
                           </h3>
@@ -440,7 +440,7 @@ const Blog = () => {
                               isBookmarked[post.id] && "fill-current"
                             )} />
                           </Button>
-                          <Link href={`/blog/${post.id}`} onClick={() => handlePostClick(post.id)}>
+                          <Link href={`/blog/${post.slug}`} onClick={() => handlePostClick(post.id)}>
                             <Button size="sm" className="gap-1">
                               Read
                               <ArrowRight className="w-4 h-4" />
@@ -512,7 +512,7 @@ const Blog = () => {
                       <div className="relative h-80 lg:h-auto">
                         {featuredPosts[featuredIndex].image_url ? (
                           <img
-                            src={featuredPosts[featuredIndex].image_url}
+                            src={featuredPosts[featuredIndex].image_url || "/placeholder.svg"}
                             alt={featuredPosts[featuredIndex].title}
                             className="w-full h-full object-cover"
                           />
@@ -537,7 +537,7 @@ const Blog = () => {
                           <Badge variant="outline" className="mb-4">
                             Featured Story {featuredIndex + 1} of {featuredPosts.length}
                           </Badge>
-                          <Link href={`/blog/${featuredPosts[featuredIndex].id}`} onClick={() => handlePostClick(featuredPosts[featuredIndex].id)}>
+                          <Link href={`/blog/${featuredPosts[featuredIndex].slug}`} onClick={() => handlePostClick(featuredPosts[featuredIndex].id)}>
                             <h3 className="text-3xl lg:text-4xl font-display font-bold mb-4 hover:text-primary transition-colors">
                               {featuredPosts[featuredIndex].title}
                             </h3>
@@ -562,7 +562,7 @@ const Blog = () => {
                           </div>
 
                           <div className="flex items-center gap-4">
-                            <Link href={`/blog/${featuredPosts[featuredIndex].id}`} onClick={() => handlePostClick(featuredPosts[featuredIndex].id)}>
+                            <Link href={`/blog/${featuredPosts[featuredIndex].slug}`} onClick={() => handlePostClick(featuredPosts[featuredIndex].id)}>
                               <Button size="lg" className="gap-2">
                                 Read Full Story
                                 <ArrowRight className="w-5 h-5" />
@@ -651,12 +651,12 @@ const Blog = () => {
               <CardContent className="space-y-4">
                 {popularPosts.map((post: any, index: number) => (
                   <div key={post.id} className="group">
-                    <Link href={`/blog/${post.id}`} onClick={() => handlePostClick(post.id)}>
+                    <Link href={`/blog/${post.slug}`} onClick={() => handlePostClick(post.id)}>
                       <div className="flex space-x-3 cursor-pointer items-start">
                         <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
                           {post.image_url ? (
                             <img
-                              src={post.image_url}
+                              src={post.image_url || "/placeholder.svg"}
                               alt={post.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />

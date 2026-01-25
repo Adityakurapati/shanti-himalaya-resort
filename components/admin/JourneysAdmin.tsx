@@ -38,6 +38,7 @@ const JourneysAdmin = () => {
                 featured: false,
                 category: "",
                 image_url: "",
+                slug: "",
         })
 
         useEffect(() => {
@@ -93,11 +94,17 @@ const JourneysAdmin = () => {
                 }
         }
 
+
+        // Update handleSubmit to include slug generation
         const handleSubmit = async (e: React.FormEvent) => {
                 e.preventDefault()
 
+                // Generate a slug from the title if not already provided
+                const slugValue = formData.slug || generateSlug(formData.title)
+
                 const journeyData = {
                         ...formData,
+                        slug: slugValue,
                         activities: formData.activities
                                 .split(",")
                                 .map((a: any) => a.trim())
@@ -106,7 +113,10 @@ const JourneysAdmin = () => {
 
                 try {
                         if (editingJourney) {
-                                const { error } = await supabase.from("journeys").update(journeyData).eq("id", editingJourney.id)
+                                const { error } = await supabase
+                                        .from("journeys")
+                                        .update(journeyData)
+                                        .eq("id", editingJourney.id)
 
                                 if (error) throw error
                                 toast({ title: "Journey updated successfully" })
@@ -128,6 +138,31 @@ const JourneysAdmin = () => {
                 }
         }
 
+        // Add a function to generate slug
+        const generateSlug = (text: string) => {
+                return text
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '')
+        }
+
+        // Update resetForm to include slug
+        const resetForm = () => {
+                setFormData({
+                        title: "",
+                        description: "",
+                        duration: "",
+                        difficulty: "",
+                        activities: "",
+                        featured: false,
+                        category: "",
+                        image_url: "",
+                        slug: "", // Add this
+                })
+                setEditingJourney(null)
+        }
+
+        // Update handleEdit to populate slug
         const handleEdit = (journey: Journey) => {
                 setEditingJourney(journey)
                 setFormData({
@@ -139,63 +174,51 @@ const JourneysAdmin = () => {
                         featured: journey.featured ?? false,
                         category: journey.category,
                         image_url: journey.image_url || "",
+                        slug: journey.slug, // Add this
                 })
                 setIsDialogOpen(true)
         }
 
         const handleDelete = async (id: string) => {
-  if (!confirm("Are you sure you want to delete this journey?")) return
+                if (!confirm("Are you sure you want to delete this journey?")) return
 
-  try {
-    // First, delete all enquiries related to this journey
-    const { error: enquiriesError } = await supabase
-      .from('enquiries')
-      .delete()
-      .eq('journey_id', id)
-    
-    if (enquiriesError) {
-      console.error('Error deleting related enquiries:', enquiriesError)
-      // If we can't delete enquiries, inform the user
-      const shouldProceed = confirm(
-        'This journey has associated enquiries. Deleting it will also delete all related enquiries. Continue?'
-      )
-      if (!shouldProceed) return
-      
-      // Try to delete again or show error
-      throw new Error('Cannot delete journey with related enquiries. Please delete enquiries first.')
-    }
+                try {
+                        // First, delete all enquiries related to this journey
+                        const { error: enquiriesError } = await supabase
+                                .from('enquiries')
+                                .delete()
+                                .eq('journey_id', id)
 
-    // Then delete the journey
-    const { error } = await supabase.from("journeys").delete().eq("id", id)
+                        if (enquiriesError) {
+                                console.error('Error deleting related enquiries:', enquiriesError)
+                                // If we can't delete enquiries, inform the user
+                                const shouldProceed = confirm(
+                                        'This journey has associated enquiries. Deleting it will also delete all related enquiries. Continue?'
+                                )
+                                if (!shouldProceed) return
 
-    if (error) throw error
-    toast({ 
-      title: "Journey deleted successfully",
-      description: "All related enquiries have also been removed."
-    })
-  } catch (error: any) {
-    console.error('Delete error:', error)
-    toast({
-      title: "Error deleting journey",
-      description: error.message || "This journey cannot be deleted because it has related enquiries.",
-      variant: "destructive",
-    })
-  }
-}
+                                // Try to delete again or show error
+                                throw new Error('Cannot delete journey with related enquiries. Please delete enquiries first.')
+                        }
 
-        const resetForm = () => {
-                setFormData({
-                        title: "",
-                        description: "",
-                        duration: "",
-                        difficulty: "",
-                        activities: "",
-                        featured: false,
-                        category: "",
-                        image_url: "",
-                })
-                setEditingJourney(null)
+                        // Then delete the journey
+                        const { error } = await supabase.from("journeys").delete().eq("id", id)
+
+                        if (error) throw error
+                        toast({
+                                title: "Journey deleted successfully",
+                                description: "All related enquiries have also been removed."
+                        })
+                } catch (error: any) {
+                        console.error('Delete error:', error)
+                        toast({
+                                title: "Error deleting journey",
+                                description: error.message || "This journey cannot be deleted because it has related enquiries.",
+                                variant: "destructive",
+                        })
+                }
         }
+
 
         if (loading) {
                 return (

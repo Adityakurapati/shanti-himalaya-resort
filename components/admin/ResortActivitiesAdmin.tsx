@@ -49,6 +49,7 @@ export const ResortActivitiesAdmin = () => {
                 full_description: "",
                 icon: "Mountain",
                 image_url: "",
+                slug: "",
         })
 
         const travelIconOptions = [
@@ -99,12 +100,25 @@ export const ResortActivitiesAdmin = () => {
                 }
         }
 
+
+        // Update handleSubmit to include slug generation
         const handleSubmit = async (e: React.FormEvent) => {
                 e.preventDefault()
 
+                // Generate a slug from the title if not already provided
+                const slugValue = formData.slug || generateSlug(formData.title)
+
+                const activityData = {
+                        ...formData,
+                        slug: slugValue,
+                }
+
                 try {
                         if (editingActivity) {
-                                const { error } = await supabase.from("resort_activities").update(formData).eq("id", editingActivity.id)
+                                const { error } = await supabase
+                                        .from("resort_activities")
+                                        .update(activityData)
+                                        .eq("id", editingActivity.id)
 
                                 if (error) {
                                         toast({
@@ -118,7 +132,7 @@ export const ResortActivitiesAdmin = () => {
                                         resetForm()
                                 }
                         } else {
-                                const { error } = await supabase.from("resort_activities").insert([formData])
+                                const { error } = await supabase.from("resort_activities").insert([activityData])
 
                                 if (error) {
                                         toast({
@@ -141,6 +155,29 @@ export const ResortActivitiesAdmin = () => {
                 }
         }
 
+        // Add a function to generate slug
+        const generateSlug = (text: string) => {
+                return text
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '')
+        }
+
+        // Update resetForm to include slug
+        const resetForm = () => {
+                setFormData({
+                        title: "",
+                        description: "",
+                        full_description: "",
+                        icon: "Mountain",
+                        image_url: "",
+                        slug: "", // Add this
+                })
+                setEditingActivity(null)
+                setIsDialogOpen(false)
+        }
+
+        // Update handleEdit to populate slug
         const handleEdit = (activity: Activity) => {
                 setEditingActivity(activity)
                 setFormData({
@@ -149,6 +186,7 @@ export const ResortActivitiesAdmin = () => {
                         full_description: activity.full_description,
                         icon: activity.icon,
                         image_url: activity.image_url || "",
+                        slug: activity.slug, // Add this
                 })
                 setIsDialogOpen(true)
         }
@@ -178,17 +216,6 @@ export const ResortActivitiesAdmin = () => {
                 }
         }
 
-        const resetForm = () => {
-                setFormData({
-                        title: "",
-                        description: "",
-                        full_description: "",
-                        icon: "Mountain",
-                        image_url: "",
-                })
-                setEditingActivity(null)
-                setIsDialogOpen(false)
-        }
 
         const getIconComponent = (iconName: string) => {
                 const iconOption = travelIconOptions.find((option: any) => option.name === iconName)

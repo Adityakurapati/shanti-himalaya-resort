@@ -1,5 +1,7 @@
 "use client"
 
+import React from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -29,13 +31,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import activitiesImage from "@/assets/activities.jpg"
-import { Json } from "@/types"
+import type { Json } from "@/integrations/supabase/types"
 import { destinationsImages, experiencesImages, heroImages, journeysImages, resortImages } from "@/app/images";
 
 const Index = () => {
     const [currentHeroImage, setCurrentHeroImage] = useState(0)
 
     const [experientialStays, setExperientialStays] = useState<{
+        slug: any
         id: string;
         name: string;
         duration: string | null;
@@ -315,7 +318,7 @@ const Index = () => {
                 <div className="absolute inset-0">
                     <div className="relative h-full w-full">
                         <img
-                            src={getImagePath("HERO", heroImages[heroCurrentImage])}
+                            src={getImagePath("HERO", heroImages[heroCurrentImage]) || "/placeholder.svg"}
                             alt="Shanti Himalaya - Himalayan Adventure"
                             className="w-full h-full object-cover transition-opacity duration-1000"
                             onError={(e) => {
@@ -424,7 +427,7 @@ const Index = () => {
                         <div className="relative">
                             <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
                                 <img
-                                    src={getImagePath("Resort", resortImages[resortCurrentImage])}
+                                    src={getImagePath("Resort", resortImages[resortCurrentImage]) || "/placeholder.svg"}
                                     alt={`Resort view ${resortCurrentImage + 1}`}
                                     className="w-full h-full object-cover transition-opacity duration-500"
                                     onError={(e) => {
@@ -473,7 +476,7 @@ const Index = () => {
                         <div className="relative">
                             <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
                                 <img
-                                    src={getImagePath("Epic Journeys", journeysImages[journeysCurrentImage])}
+                                    src={getImagePath("Epic Journeys", journeysImages[journeysCurrentImage]) || "/placeholder.svg"}
                                     alt={`Epic journey ${journeysCurrentImage + 1}`}
                                     className="w-full h-full object-cover transition-opacity duration-500"
                                     onError={(e) => {
@@ -554,12 +557,12 @@ const Index = () => {
                     ) : blogPosts.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {blogPosts.map((post) => (
-                                <Link key={post.id} href={`/blog/${post.id}`} className="group">
+                                <Link key={post.id} href={`/blog/${post.slug}`} className="group">
                                     <Card className="shadow-card hover-lift overflow-hidden h-full">
                                         <div className="h-48 relative overflow-hidden">
                                             {post.image_url ? (
                                                 <img
-                                                    src={post.image_url}
+                                                    src={post.image_url || "/placeholder.svg"}
                                                     alt={post.title}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                     onError={(e) => {
@@ -681,7 +684,7 @@ const Index = () => {
                         <div className="relative">
                             <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
                                 <img
-                                    src={getImagePath("Amazing Destinations", destinationsImages[destinationsCurrentImage])}
+                                    src={getImagePath("Amazing Destinations", destinationsImages[destinationsCurrentImage]) || "/placeholder.svg"}
                                     alt={`Destination ${destinationsCurrentImage + 1}`}
                                     className="w-full h-full object-cover transition-opacity duration-500"
                                     onError={(e) => {
@@ -763,7 +766,7 @@ const Index = () => {
                                         >
                                             <div className="h-56 relative overflow-hidden">
                                                 <img
-                                                    src={stay.featuredImage}
+                                                    src={stay.featuredImage || "/placeholder.svg"}
                                                     alt={stay.name}
                                                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                                     onError={(e) => {
@@ -802,7 +805,7 @@ const Index = () => {
                                                     <span className="text-sm text-muted-foreground">
                                                         {stay.imageCount || 0} photos
                                                     </span>
-                                                    <Link href={`/experiential-stays/${stay.id}`}>
+                                                    <Link href={`/experiential-stays/${stay.slug}`}>
                                                         <Button size="sm" variant="outline" className="bg-transparent">
                                                             View Details
                                                         </Button>
@@ -831,7 +834,7 @@ const Index = () => {
                             <Home className="w-16 h-16 mx-auto mb-4 opacity-30" />
                             <p className="text-lg">No experiential stays available at the moment. Please check back later.</p>
                             <Link href="/admin" className="mt-4 inline-block">
-                                <Button variant="outline" className="mt-4">
+                                <Button variant="outline" className="mt-4 bg-transparent">
                                     Go to Admin Panel
                                 </Button>
                             </Link>
@@ -840,7 +843,7 @@ const Index = () => {
 
                     <div className="text-center mt-12">
                         <Link href="/experiential-stays">
-                            <Button size="lg" variant="outline" className="px-8">
+                            <Button size="lg" variant="outline" className="px-8 bg-transparent">
                                 View All Stays
                             </Button>
                         </Link>
@@ -863,7 +866,7 @@ const Index = () => {
                         <div className="relative">
                             <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
                                 <img
-                                    src={getImagePath("Experiences", experiencesImages[experiencesCurrentImage])}
+                                    src={getImagePath("Experiences", experiencesImages[experiencesCurrentImage]) || "/placeholder.svg"}
                                     alt={`Experience ${experiencesCurrentImage + 1}`}
                                     className="w-full h-full object-cover transition-opacity duration-500"
                                     onError={(e) => {
@@ -951,7 +954,7 @@ const Index = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
                             <Image
-                                src={activitiesImage}
+                                src={activitiesImage || "/placeholder.svg"}
                                 alt="Founders of Shanti Himalaya sketching plans in a Himalayan teahouse"
                                 className="rounded-2xl shadow-card hover-lift"
                                 width={800}

@@ -184,7 +184,7 @@ const Header = () => {
                       <>
                         {topJourneys.map((journey) => (
                           <DropdownMenuItem key={journey.id} asChild>
-                            <Link href={`/journeys/${journey.id}`} className="cursor-pointer">
+                            <Link href={`/journeys/${journey.slug}`} className="cursor-pointer">
                               {journey.title}
                             </Link>
                           </DropdownMenuItem>
@@ -217,7 +217,7 @@ const Header = () => {
                       <>
                         {topDestinations.map((destination) => (
                           <DropdownMenuItem key={destination.id} asChild>
-                            <Link href={`/destinations/${destination.id}`} className="cursor-pointer">
+                            <Link href={`/destinations/${destination.slug}`} className="cursor-pointer">
                               {destination.name}
                             </Link>
                           </DropdownMenuItem>
@@ -250,7 +250,7 @@ const Header = () => {
                       <>
                         {topExperiences.map((experience) => (
                           <DropdownMenuItem key={experience.id} asChild>
-                            <Link href={`/experiences/${experience.id}`} className="cursor-pointer">
+                            <Link href={`/experiences/${experience.slug}`} className="cursor-pointer">
                               {experience.title}
                             </Link>
                           </DropdownMenuItem>
@@ -344,7 +344,7 @@ const Header = () => {
                         {topJourneys.slice(0, 3).map((journey) => (
                           <Link
                             key={journey.id}
-                            href={`/journeys/${journey.id}`}
+                            href={`/journeys/${journey.slug}`}
                             onClick={() => setIsMenuOpen(false)}
                             className="block py-1 text-sm text-foreground hover:text-primary"
                           >
@@ -373,7 +373,7 @@ const Header = () => {
                         {topDestinations.slice(0, 3).map((destination) => (
                           <Link
                             key={destination.id}
-                            href={`/destinations/${destination.slug || destination.id}`}
+                            href={`/destinations/${destination.slug}`}
                             onClick={() => setIsMenuOpen(false)}
                             className="block py-1 text-sm text-foreground hover:text-primary"
                           >
@@ -402,7 +402,7 @@ const Header = () => {
                         {topExperiences.slice(0, 3).map((experience) => (
                           <Link
                             key={experience.id}
-                            href={`/experiences/${experience.id}`}
+                            href={`/experiences/${experience.slug}`}
                             onClick={() => setIsMenuOpen(false)}
                             className="block py-1 text-sm text-foreground hover:text-primary"
                           >

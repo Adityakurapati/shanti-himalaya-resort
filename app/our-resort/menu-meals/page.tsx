@@ -22,6 +22,7 @@ import {
   Star,
   Camera // Add Camera icon
 } from "lucide-react"
+import { bonfireImageFiles, diningImages } from "@/app/images"
 
 export default function MenuMealsPage() {
   // Dining carousel states
@@ -35,52 +36,13 @@ export default function MenuMealsPage() {
 
   // Dining images
   // Update the diningImages array with your actual images
-  const diningImages = [
-    "20211229_151508_6d97a77.jpg",
-    "20211229_152449.jpg",
-    "20220101_113943.jpg",
-    "20220122_194501.jpg",
-    "20220123_094139.jpg",
-    "20220123_094142.jpg",
-    "20220123_094146.jpg",
-    "Restaurant Inside 1.jpg",
-    "Restaurant Inside 2.jpg",
-    "Restaurant Inside 3.jpg",
-    "Restaurant Inside 5.jpg",
-    "Restaurant Inside I.jpg",
-    "Restaurant Inside II.jpg",
-    "Restaurant Inside.jpg",
-    "Restaurant Table 1.jpg",
-    "Restaurant Table 3.jpg",
-    "Restaurant Table 5.jpg",
-    "Restaurant Table Long View.jpg",
-    "Restaurant Table View.jpg",
-    "Restaurant View.jpg",
-    "Restuarant Lounge.jpg",
-    "Restuarant Table 2.jpg",
-    "Retaurant View.jpg"
-  ]
+  
 
   // Create a helper function to get the full image path
   const getDiningImagePath = (filename: string) => {
     const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || ''
     return `${basePath}/Restaurnt/${filename}`
   }
-  // Bonfire images array
-  const bonfireImageFiles = [
-    "20211017_155650.jpg",
-    "20211017_155652.jpg",
-    "20211017_155748.jpg",
-    "20211215_175342.jpg",
-    "20220101_213005.jpg",
-    "20220101_213148.jpg",
-    "20220113_203013.jpg",
-    "20220113_203048.jpg",
-    "20220113_203055.jpg",
-    "20220113_203102.jpg",
-    "20220113_203109.jpg",
-    "20220113_203118.jpg"
-  ]
 
   // Dining carousel effects
   const startDiningInterval = () => {

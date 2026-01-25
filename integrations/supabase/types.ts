@@ -680,6 +680,47 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_images: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          id: string
+          image_order: number | null
+          image_type: string | null
+          image_url: string
+          is_featured: boolean | null
+          stay_id: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          id?: string
+          image_order?: number | null
+          image_type?: string | null
+          image_url: string
+          is_featured?: boolean | null
+          stay_id?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          id?: string
+          image_order?: number | null
+          image_type?: string | null
+          image_url?: string
+          is_featured?: boolean | null
+          stay_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_images_stay_id_fkey"
+            columns: ["stay_id"]
+            isOneToOne: false
+            referencedRelation: "experiential_stays"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stay_images: {
         Row: {
           caption: string | null

@@ -35,6 +35,8 @@ import {
 import { useState } from "react"
 import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client"
+import { locationImages } from "@/app/images";
+
 
 const OurResort = () => {
         const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -844,29 +846,6 @@ const OurResort = () => {
                                                 <div className="relative">
                                                         {/* Location Images Array */}
                                                         {(() => {
-                                                                const locationImages = [
-                                                                        "20211015_120119.jpg",
-                                                                        "20211015_120415.jpg",
-                                                                        "20211015_124129.jpg",
-                                                                        "20211021_093903.jpg",
-                                                                        "20211021_093918.jpg",
-                                                                        "20220106_102543.jpg",
-                                                                        "20220106_102552.jpg",
-                                                                        "20220106_102556.jpg",
-                                                                        "20220106_105411.jpg",
-                                                                        "20220106_110635.jpg",
-                                                                        "20220106_110642.jpg",
-                                                                        "20220106_110644.jpg",
-                                                                        "20220106_110706.jpg",
-                                                                        "20220106_110718.jpg",
-                                                                        "20220106_110727.jpg",
-                                                                        "20220116_174513.jpg",
-                                                                        "20220116_174645.jpg",
-                                                                        "20220117_174613.jpg",
-                                                                        "Snowfall View Gujrugarhi.jpg",
-                                                                        "Sunrise.jpg",
-                                                                        "Top Temple.jpg",
-                                                                ];
 
                                                                 // State for the carousel
                                                                 const [currentLocationSlide, setCurrentLocationSlide] = useState(0);

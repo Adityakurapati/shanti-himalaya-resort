@@ -30,6 +30,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import activitiesImage from "@/assets/activities.jpg"
 import { Json } from "@/types"
+import { destinationsImages, experiencesImages, heroImages, journeysImages, resortImages } from "@/app/images";
 
 const Index = () => {
     const [currentHeroImage, setCurrentHeroImage] = useState(0)
@@ -66,106 +67,26 @@ const Index = () => {
     // State for resort images carousel
     const [resortCurrentImage, setResortCurrentImage] = useState(0)
     const [resortAutoSlide, setResortAutoSlide] = useState(true)
-    const resortImages = [
-        "20220116_124349 - Copy.jpg",
-        "20220116_124514 - Copy (2).jpg",
-        "20220116_124521 - Copy (2).jpg",
-        "20220116_125100 - Copy.jpg",
-        "20220116_125114 - Copy (2).jpg",
-        "Camp Ext 1.jpg",
-        "Camp Ext 2.jpg",
-        "Camp View Out.jpg",
-        "IMG_20220107_105940_644.webp",
-        "Resort Night View (2).jpg",
-        "Resort Night View (3) - Copy.jpg",
-        "Resort View.jpg",
-        "View 6.jpg",
-        "View Himalaya.jpg",
-        "View Umbrella.jpg"
-    ]
-
+    
     // State for Epic Journeys carousel
     const [journeysCurrentImage, setJourneysCurrentImage] = useState(0)
     const [journeysAutoSlide, setJourneysAutoSlide] = useState(true)
-    const journeysImages = [
-        "DSC07594.JPG",
-        "IMG_9743.JPG",
-        "KakaoTalk_20240929_122150604_08.jpg",
-        "KakaoTalk_20240929_122150604_15.jpg",
-        "KGL People.jpg",
-        "Ladakh Cycling 1.jpg",
-        "Ladakh Cycling.jpg",
-        "Nanda Devi Base Camp 1.jpg"
-    ]
+   
 
     // State for Amazing Destinations carousel
     const [destinationsCurrentImage, setDestinationsCurrentImage] = useState(0)
     const [destinationsAutoSlide, setDestinationsAutoSlide] = useState(true)
-    const destinationsImages = [
-        "7 Nanda Devi1.jpg",
-        "9 KGL 1.jpg",
-        "DSC04949.JPG",
-        "Fishtail 1.jpg",
-        "Indus Landscape.jpg",
-        "Ladakh 10.jpg",
-        "Ladakh Mountain.jpg",
-        "Phewa Lake View.jpeg",
-        "Rinpung Dzong Paro - Copy.jpg",
-        "Rinpung Dzong Paro.jpg",
-        "Terrace farming.jpg"
-    ]
+    
 
     // State for Experiences carousel
     const [experiencesCurrentImage, setExperiencesCurrentImage] = useState(0)
     const [experiencesAutoSlide, setExperiencesAutoSlide] = useState(true)
-    const experiencesImages = [
-        "4 Karmapa group.JPG",
-        "Achithang Village Kids.jpg",
-        "Cycle Lunch.JPG",
-        "dharamshala01.jpg",
-        "IMG_9731.JPG",
-        "Indus Valley near Shey.jpg",
-        "Kalka Shimla Toy Train.jpg",
-        "Ladakh Cycle Monastry.jpg",
-        "Ladakh Cycling 1.jpg",
-        "Ladakh Cycling.jpg",
-        "Mon (3).jpg",
-        "Nubra Dine and Dance.jpg",
-        "Nubra woman.jpg"
-    ]
+    
 
     // State for Hero carousel
     const [heroCurrentImage, setHeroCurrentImage] = useState(0)
     const [heroAutoSlide, setHeroAutoSlide] = useState(true)
-    const heroImages = [
-        "1 Thicksey.JPG",
-        "3 Himachal House.JPG",
-        "3 India Flag.jpg",
-        "3 Ladakh woman.jpg",
-        "4 Kashmir.jpg",
-        "5 Gurung Lodge.jpg",
-        "6 Naga Woman Ornaments.jpg",
-        "Achithang Apricot Blossom.jpg",
-        "Achithang People.jpg",
-        "Australian Camp Treking Day Tour from Pokhara.jpg",
-        "Bhutan Painting.JPG",
-        "Budhist.jpg",
-        "CyclingForiegn.jpg",
-        "dharamshala12.jpg",
-        "KGL People.jpg",
-        "Ladakh Cycling.jpg",
-        "Ladakh Girls.jpg",
-        "Ladakh Trek Camping 6.jpg",
-        "nepal-trek-himalayan-vulture.jpg",
-        "P1000090.JPG",
-        "SHam Trek Pic.jpg",
-        "Temple Top.jpg",
-        "Thamelk market landscape.jpg",
-        "View Himalaya.jpg",
-        "view on Trek.jpg",
-        "Yangthang Local.JPG",
-        "yangthang_village_1.jpg"
-    ]
+   
 
     // State for blogs
     const [blogPosts, setBlogPosts] = useState<any[]>([])
@@ -183,7 +104,6 @@ const Index = () => {
         // For other sections, they're in "HERO/[folder]" structure
         return `${basePath}/HERO/${encodeURIComponent(folder)}/${encodeURIComponent(filename)}`
     }
-
     // Carousel navigation functions for Experiential Stays
     const nextStay = () => {
         const maxIndex = Math.ceil(experientialStays.length / 3) - 1
@@ -1068,7 +988,7 @@ const Index = () => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Link href="/our-resort#accommodation">
+                                <Link href="/about-us" className="flex-1">
                                     <Button size="lg" className="hero-gradient hover-glow">
                                         Experience Our Vision
                                     </Button>

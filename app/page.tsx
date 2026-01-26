@@ -33,6 +33,8 @@ import { supabase } from "@/integrations/supabase/client"
 import activitiesImage from "@/assets/activities.jpg"
 import type { Json } from "@/integrations/supabase/types"
 import { destinationsImages, experiencesImages, heroImages, journeysImages, resortImages } from "@/app/images";
+import { StructuredData } from "@/components/seo/StructuredData";
+import { generateJSONLD } from "@/lib/seo-utils";
 
 const Index = () => {
     const [currentHeroImage, setCurrentHeroImage] = useState(0)
@@ -311,6 +313,18 @@ const Index = () => {
 
     return (
         <div className="min-h-screen bg-background">
+            {/* Organization Schema */}
+            <StructuredData 
+                data={generateJSONLD(
+                    {
+                        name: "Shanti Himalaya",
+                        url: "https://shantihimalaya.com"
+                    },
+                    "Organization"
+                )}
+                type="Organization"
+            />
+            
             <Header />
 
             {/* Hero Section with Carousel */}
@@ -349,11 +363,11 @@ const Index = () => {
                         Luxury Himalayan Resort & Spa
                     </Badge>
                     <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-                        Welcome to
-                        <span className="block text-luxury">Shanti Himalaya</span>
+                        Shanti Himalaya
+                        <span className="block text-luxury">Luxury Himalayan Resort & Wilderness Glamping</span>
                     </h1>
                     <p className="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed">
-                        Experience tranquility and luxury in the heart of the majestic Himalayas. Where serenity meets adventure.
+                        Experience tranquility and luxury in the heart of the majestic Himalayas near Corbett National Park. Where serenity meets adventure with exclusive glamping, guided nature walks, and wellness retreats.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/our-resort">

@@ -1,3 +1,4 @@
+import React from "react"
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -13,13 +14,13 @@ import ClientProviders from '@/components/providers/ClientProviders'
 const inter = Inter({ subsets: ['latin'] })
 
 const SITE_NAME = 'Shanti Himalaya'
-const SITE_URL = 'https://shantihimlaya.com'
-const SITE_DESCRIPTION = 'Experience tranquility and luxury at Shanti Himalaya, a luxury Himalayan resort & wilderness glamping experience near Corbett National Park.'
+const SITE_URL = 'https://shantihimalaya.com'
+const SITE_DESCRIPTION = 'Luxury Himalayan resort & wilderness glamping near Corbett National Park. Experience tranquility with exclusive stays, guided nature walks, and wellness retreats in the majestic Himalayas.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} - Luxury Himalayan Resort & Wilderness Glamping`,
+    default: `${SITE_NAME} - Luxury Himalayan Resort & Glamping near Corbett`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: SITE_URL,
-    title: `${SITE_NAME} - Luxury Himalayan Resort & Wilderness Glamping`,
+    title: `${SITE_NAME} - Luxury Resort & Glamping near Corbett`,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
     images: [
@@ -63,10 +64,10 @@ export const metadata: Metadata = {
   // Twitter
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE_NAME} - Luxury Himalayan Resort & Wilderness Glamping`,
+    title: `${SITE_NAME} - Luxury Himalayan Resort & Glamping near Corbett`,
     description: SITE_DESCRIPTION,
     images: ['/images/og-default.jpg'],
-    creator: '@shantihimlaya',
+    creator: '@shantihimalaya',
   },
 
   // Verification
@@ -106,20 +107,33 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
-  ],
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: true,
+  themeColor: '#ffffff',
 }
 
-// Remove this: const queryClient = new QueryClient()
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en">
       <head>
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-XXXXXXXXXX');
+            `,
+          }}
+        />
         {/* ... keep your head content ... */}
       </head>
       <body>

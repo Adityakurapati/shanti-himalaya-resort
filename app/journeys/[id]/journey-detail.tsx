@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
-import { generateJSONLD } from "@/lib/seo-utils";
+import { generateJSONLD, generateBreadcrumbJSONLD } from "@/lib/seo-utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Breadcrumbs } from "@/components/seo/Breadcrumps";
 import {
   Mountain,
   Clock,
@@ -451,6 +452,11 @@ export const JourneyDetail = () => {
 
   // JSON-LD structured data for the journey
   const journeyStructuredData = generateJSONLD(journey, "Journey");
+  const breadcrumbStructuredData = generateBreadcrumbJSONLD([
+    { name: 'Home', url: '/' },
+    { name: 'Journeys', url: '/journeys' },
+    { name: journey.title, url: `/journeys/${journey.slug}` }
+  ]);
 
   return (
     <>
@@ -459,9 +465,15 @@ export const JourneyDetail = () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(journeyStructuredData) }}
       />
+      {/* Breadcrumb Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+      />
 
       <div className="min-h-screen bg-background">
         <Header />
+        <Breadcrumbs />
 
         {/* Hero Section */}
         <section className="pt-32 pb-20 relative overflow-hidden">
@@ -524,17 +536,7 @@ export const JourneyDetail = () => {
                   </div>
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl p-4 shadow-lg border">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-amber-100 rounded-lg">
-                      <MapPin className="w-5 h-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-white/80">Best Time</p>
-                      <p className="font-semibold text-white">{journey.best_time}</p>
-                    </div>
-                  </div>
-                </div>
+               
               </div>
 
               <Button size="lg" className="bg-white text-black hover:bg-white/90" onClick={() => setIsEnquiryModalOpen(true)}>

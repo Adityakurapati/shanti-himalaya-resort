@@ -3,9 +3,10 @@
 import { Metadata } from "next";
 import Image from "next/image";
 import type { Tables } from "@/integrations/supabase/types";
-import { generateDestinationSEO, generateSEOMetadata } from "@/lib/seo-utils";
+import { generateDestinationSEO, generateSEOMetadata, generateJSONLD, generateBreadcrumbJSONLD } from "@/lib/seo-utils";
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import { Breadcrumbs } from "@/components/seo/Breadcrumps"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -231,113 +232,129 @@ const DestinationDetail = () => {
         const seasonData = getSeasonData();
         const accommodationData = getAccommodationData();
 
+        // Structured data
+        const destinationJSONLD = generateJSONLD(destination, 'Destination');
+        const breadcrumbStructuredData = generateBreadcrumbJSONLD([
+                { name: 'Home', url: '/' },
+                { name: 'Destinations', url: '/destinations' },
+                { name: destination.name, url: `/destinations/${destination.slug}` }
+        ]);
+
         return (
-                <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50/30">
-                        <Header />
+                <>
+                        <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(destinationJSONLD) }}
+                        />
+                        <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+                        />
+                        <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50/30">
+                                <Header />
+                                <Breadcrumbs />
 
-                       // Replace the existing hero section with this updated version
+                                {/* Animated Hero Section */}
+                                <section className="pt-32 pb-20 relative overflow-hidden">
+                                        {/* Conditional rendering for banner image or gradient */}
+                                        {destination.image_url ? (
+                                                <div className="absolute inset-0">
+                                                        <img
+                                                                src={destination.image_url || "/placeholder.svg"}
+                                                                alt={destination.name}
+                                                                className="w-full h-full object-cover"
+                                                        />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/10"></div>
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+                                                </div>
+                                        ) : (
+                                                <>
+                                                        <div className="absolute inset-0 hero-gradient"></div>
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-500/20"></div>
+                                                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
+                                                </>
+                                        )}
 
-{/* Animated Hero Section */}
-<section className="pt-32 pb-20 relative overflow-hidden">
-  {/* Conditional rendering for banner image or gradient */}
-  {destination.image_url ? (
-    <div className="absolute inset-0">
-      <img 
-        src={destination.image_url || "/placeholder.svg"} 
-        alt={destination.name}
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/10"></div>
-      <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
-    </div>
-  ) : (
-    <>
-      <div className="absolute inset-0 hero-gradient"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-500/20"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
-    </>
-  )}
+                                        <div className="container mx-auto px-4 relative z-10">
+                                                <motion.div
+                                                        initial={{ opacity: 0, y: 30 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ duration: 0.8 }}
+                                                        className="max-w-6xl mx-auto"
+                                                >
+                                                        <Link
+                                                                href="/destinations"
+                                                                className={`inline-flex items-center mb-8 transition-all duration-300 group ${destination.image_url ? 'text-white/80 hover:text-white' : 'text-foreground/70 hover:text-foreground'}`}
+                                                        >
+                                                                <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+                                                                Back to Destinations
+                                                        </Link>
 
-  <div className="container mx-auto px-4 relative z-10">
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="max-w-6xl mx-auto"
-    >
-      <Link
-        href="/destinations"
-        className={`inline-flex items-center mb-8 transition-all duration-300 group ${destination.image_url ? 'text-white/80 hover:text-white' : 'text-foreground/70 hover:text-foreground'}`}
-      >
-        <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-        Back to Destinations
-      </Link>
+                                                        <div className="flex flex-wrap gap-3 mb-6">
+                                                                <Badge className={`px-3 py-1 text-sm ${destination.image_url ? 'bg-white/20 text-white backdrop-blur-sm border-white/30' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
+                                                                        {destination.category}
+                                                                </Badge>
 
-      <div className="flex flex-wrap gap-3 mb-6">
-        <Badge className={`px-3 py-1 text-sm ${destination.image_url ? 'bg-white/20 text-white backdrop-blur-sm border-white/30' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
-          {destination.category}
-        </Badge>
+                                                                {destination.featured && (
+                                                                        <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 px-3 py-1 text-sm backdrop-blur-sm">
+                                                                                Featured
+                                                                        </Badge>
+                                                                )}
+                                                        </div>
 
-        {destination.featured && (
-          <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 px-3 py-1 text-sm backdrop-blur-sm">
-            Featured
-          </Badge>
-        )}
-      </div>
+                                                        <motion.h1
+                                                                className={`text-5xl md:text-7xl font-bold mb-6 ${destination.image_url ? 'text-white' : 'text-luxury'}`}
+                                                                initial={{ opacity: 0, y: 40 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ duration: 0.8, delay: 0.2 }}
+                                                        >
+                                                                {destination.name}
+                                                        </motion.h1>
 
-      <motion.h1
-        className={`text-5xl md:text-7xl font-bold mb-6 ${destination.image_url ? 'text-white' : 'text-luxury'}`}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        {destination.name}
-      </motion.h1>
+                                                        {/* Stats Grid - Updated for better visibility on both backgrounds */}
+                                                        <motion.div
+                                                                className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8"
+                                                                initial={{ opacity: 0, y: 30 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ duration: 0.8, delay: 0.6 }}
+                                                        >
+                                                                <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+                                                                        <div className="flex items-center space-x-3">
+                                                                                <div className="p-2 bg-emerald-100 rounded-lg">
+                                                                                        <Clock className="w-5 h-5 text-emerald-600" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Duration</p>
+                                                                                        <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.duration}</p>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
 
-      {/* Stats Grid - Updated for better visibility on both backgrounds */}
-      <motion.div
-        className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
-      >
-        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <Clock className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Duration</p>
-              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.duration}</p>
-            </div>
-          </div>
-        </div>
+                                                                <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+                                                                        <div className="flex items-center space-x-3">
+                                                                                <div className="p-2 bg-amber-100 rounded-lg">
+                                                                                        <Mountain className="w-5 h-5 text-amber-600" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Difficulty</p>
+                                                                                        <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.difficulty}</p>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
 
-        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-amber-100 rounded-lg">
-              <Mountain className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Difficulty</p>
-              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.difficulty}</p>
-            </div>
-          </div>
-        </div>
+                                                                <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+                                                                        <div className="flex items-center space-x-3">
+                                                                                <div className="p-2 bg-teal-100 rounded-lg">
+                                                                                        <Thermometer className="w-5 h-5 text-teal-600" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Best Time</p>
+                                                                                        <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.best_time}</p>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
 
-        <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-teal-100 rounded-lg">
-              <Thermometer className="w-5 h-5 text-teal-600" />
-            </div>
-            <div>
-              <p className={`text-sm ${destination.image_url ? 'text-white/80' : 'text-muted-foreground'}`}>Best Time</p>
-              <p className={`font-semibold ${destination.image_url ? 'text-white' : 'text-foreground'}`}>{destination.best_time}</p>
-            </div>
-          </div>
-        </div>
-
-                {/* <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
+                                                                {/* <div className={`${destination.image_url ? 'bg-white/10 backdrop-blur-sm border-white/20' : 'bg-white/80 backdrop-blur-sm border-white/20'} rounded-2xl p-4 shadow-lg border`}>
                 <div className="flex items-center space-x-3">
                 <div className="p-2 bg-cyan-100 rounded-lg">
                 <Compass className="w-5 h-5 text-cyan-600" />
@@ -348,113 +365,113 @@ const DestinationDetail = () => {
                 </div>
                 </div>
                 </div> */}
-      </motion.div>
+                                                        </motion.div>
 
-      <motion.div
-        className="flex flex-col sm:flex-row gap-4"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.8 }}
-      >
-        <Button
-          size="lg"
-          className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${destination.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
-          onClick={() => {
-            window.location.href = `mailto:shantihimalayas@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
-          }}
-        >
-          Enquire Now
-        </Button>
-      </motion.div>
-    </motion.div>
-  </div>
-</section>
+                                                        <motion.div
+                                                                className="flex flex-col sm:flex-row gap-4"
+                                                                initial={{ opacity: 0, y: 30 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ duration: 0.8, delay: 0.8 }}
+                                                        >
+                                                                <Button
+                                                                        size="lg"
+                                                                        className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${destination.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
+                                                                        onClick={() => {
+                                                                                window.location.href = `mailto:shantihimalayas@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
+                                                                        }}
+                                                                >
+                                                                        Enquire Now
+                                                                </Button>
+                                                        </motion.div>
+                                                </motion.div>
+                                        </div>
+                                </section>
 
-                
 
-                        {/* Interactive Tabs Section */}
-                        <section className="py-16 bg-transparent">
-                                <div className="container mx-auto px-4">
-                                        <div className="max-w-6xl mx-auto">
-                                                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-                                                        <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-2 bg-background/50 backdrop-blur-sm p-1 rounded-2xl border">
-                                                                <TabsTrigger value="overview" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Overview
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="places" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Places
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="activities" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Activities
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="itinerary" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Itinerary
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="transport" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        How To Reach
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="besttime" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Best Time to Visit
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="accommodation" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        Stay
-                                                                </TabsTrigger>
-                                                                <TabsTrigger value="faqs" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
-                                                                        FAQs
-                                                                </TabsTrigger>
-                                                        </TabsList>
 
-                                                        {/* Overview Tab */}
-                                                        <TabsContent value="overview" className="space-y-8">
-                                                                <FadeInSection>
-                                                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                                                                <div className="lg:col-span-2 space-y-6">
-                                                                                        {destination.overview_image_url && (
-                                                                                                <div className="rounded-2xl overflow-hidden shadow-lg">
-                                                                                                        <img
-                                                                                                                src={destination.overview_image_url || "/placeholder.svg"}
-                                                                                                                alt={`${destination.name} Overview`}
-                                                                                                                className="w-full h-64 object-cover"
-                                                                                                        />
+                                {/* Interactive Tabs Section */}
+                                <section className="py-16 bg-transparent">
+                                        <div className="container mx-auto px-4">
+                                                <div className="max-w-6xl mx-auto">
+                                                        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+                                                                <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-2 bg-background/50 backdrop-blur-sm p-1 rounded-2xl border">
+                                                                        <TabsTrigger value="overview" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                Overview
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="places" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                Places
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="activities" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                Activities
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="itinerary" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                Itinerary
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="transport" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                How To Reach
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="besttime" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                Best Time to Visit
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="accommodation" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                Stay
+                                                                        </TabsTrigger>
+                                                                        <TabsTrigger value="faqs" className="rounded-xl data-[state=active]:hero-gradient data-[state=active]:text-white">
+                                                                                FAQs
+                                                                        </TabsTrigger>
+                                                                </TabsList>
+
+                                                                {/* Overview Tab */}
+                                                                <TabsContent value="overview" className="space-y-8">
+                                                                        <FadeInSection>
+                                                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                                                                        <div className="lg:col-span-2 space-y-6">
+                                                                                                {destination.overview_image_url && (
+                                                                                                        <div className="rounded-2xl overflow-hidden shadow-lg">
+                                                                                                                <img
+                                                                                                                        src={destination.overview_image_url || "/placeholder.svg"}
+                                                                                                                        alt={`${destination.name} Overview`}
+                                                                                                                        className="w-full h-64 object-cover"
+                                                                                                                />
+                                                                                                        </div>
+                                                                                                )}
+                                                                                                <div>
+                                                                                                        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                                                                                                                About {destination.name}
+                                                                                                        </h2>
+                                                                                                        <p className="text-lg text-muted-foreground leading-relaxed">
+                                                                                                                {destination.overview || destination.description}
+                                                                                                        </p>
                                                                                                 </div>
-                                                                                        )}
-                                                                                        <div>
-                                                                                                <h2 className="text-3xl font-bold mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                                                                                                        About {destination.name}
-                                                                                                </h2>
-                                                                                                <p className="text-lg text-muted-foreground leading-relaxed">
-                                                                                                        {destination.overview || destination.description}
-                                                                                                </p>
+
+                                                                                                {destination.highlights && destination.highlights.length > 0 && (
+                                                                                                        <div>
+                                                                                                                <h3 className="text-2xl font-bold mb-4 flex items-center">
+                                                                                                                        <Star className="w-6 h-6 text-amber-500 mr-2" />
+                                                                                                                        Key Highlights
+                                                                                                                </h3>
+                                                                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                                                                        {destination.highlights.map((highlight: any, index: number) => (
+                                                                                                                                <motion.div
+                                                                                                                                        key={index}
+                                                                                                                                        className="flex items-start space-x-3 p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-shadow duration-300"
+                                                                                                                                        whileHover={{ scale: 1.02 }}
+                                                                                                                                        transition={{ type: "spring", stiffness: 300 }}
+                                                                                                                                >
+                                                                                                                                        <div className="p-2 bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg">
+                                                                                                                                                <Star className="w-4 h-4 text-white" />
+                                                                                                                                        </div>
+                                                                                                                                        <span className="text-foreground font-medium">{highlight}</span>
+                                                                                                                                </motion.div>
+                                                                                                                        ))}
+                                                                                                                </div>
+                                                                                                        </div>
+                                                                                                )}
                                                                                         </div>
 
-                                                                                        {destination.highlights && destination.highlights.length > 0 && (
-                                                                                                <div>
-                                                                                                        <h3 className="text-2xl font-bold mb-4 flex items-center">
-                                                                                                                <Star className="w-6 h-6 text-amber-500 mr-2" />
-                                                                                                                Key Highlights
-                                                                                                        </h3>
-                                                                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                                                                {destination.highlights.map((highlight: any, index: number) => (
-                                                                                                                        <motion.div
-                                                                                                                                key={index}
-                                                                                                                                className="flex items-start space-x-3 p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-shadow duration-300"
-                                                                                                                                whileHover={{ scale: 1.02 }}
-                                                                                                                                transition={{ type: "spring", stiffness: 300 }}
-                                                                                                                        >
-                                                                                                                                <div className="p-2 bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg">
-                                                                                                                                        <Star className="w-4 h-4 text-white" />
-                                                                                                                                </div>
-                                                                                                                                <span className="text-foreground font-medium">{highlight}</span>
-                                                                                                                        </motion.div>
-                                                                                                                ))}
-                                                                                                        </div>
-                                                                                                </div>
-                                                                                        )}
-                                                                                </div>
-
-                                                                                {/* Quick Facts Sidebar */}
-                                                                                <div className="space-y-6">
-                                                                                        {/* <Card className="bg-gradient-to-br from-white to-emerald-50/50 backdrop-blur-sm border-emerald-100 shadow-lg">
+                                                                                        {/* Quick Facts Sidebar */}
+                                                                                        <div className="space-y-6">
+                                                                                                {/* <Card className="bg-gradient-to-br from-white to-emerald-50/50 backdrop-blur-sm border-emerald-100 shadow-lg">
                                                                                                 <CardContent className="p-6">
                                                                                                         <h3 className="text-xl font-bold mb-4 text-foreground">Quick Facts</h3>
                                                                                                         <div className="space-y-4">
@@ -478,565 +495,566 @@ const DestinationDetail = () => {
                                                                                                 </CardContent>
                                                                                         </Card> */}
 
-                                                                                        {destination.travel_tips && destination.travel_tips.length > 0 && (
-                                                                                                <Card className="bg-gradient-to-br from-white to-teal-50/50 backdrop-blur-sm border-teal-100 shadow-lg">
-                                                                                                        <CardContent className="p-6">
-                                                                                                                <h3 className="text-xl font-bold mb-4 text-foreground flex items-center">
-                                                                                                                        <Lightbulb className="w-5 h-5 text-teal-600 mr-2" />
-                                                                                                                        Quick Tips
-                                                                                                                </h3>
-                                                                                                                <ul className="space-y-2">
-                                                                                                                        {destination.travel_tips.slice(0, 3).map((tip: any, index: number) => (
-                                                                                                                                <li key={index} className="flex items-start space-x-2 text-sm">
-                                                                                                                                        <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                                                                                                                                        <span className="text-muted-foreground">{tip}</span>
-                                                                                                                                </li>
-                                                                                                                        ))}
-                                                                                                                </ul>
-                                                                                                        </CardContent>
-                                                                                                </Card>
-                                                                                        )}
-                                                                                </div>
-                                                                        </div>
-                                                                </FadeInSection>
-                                                        </TabsContent>
-
-                                                        {/* Places to Visit Tab */}
-                                                        <TabsContent value="places">
-                                                                {destination.places_image_url && (
-                                                                        <FadeInSection>
-                                                                                <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
-                                                                                        <img
-                                                                                                src={destination.places_image_url || "/placeholder.svg"}
-                                                                                                alt={`${destination.name} Places to Visit`}
-                                                                                                className="w-full h-64 object-cover"
-                                                                                        />
-                                                                                </div>
-                                                                        </FadeInSection>
-                                                                )}
-                                                                {getPlacesToVisit().length > 0 ? (
-                                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                                                {getPlacesToVisit().map((place: any, index: number) => (
-                                                                                        <FadeInSection key={place.id || index} delay={index * 0.1}>
-                                                                                                <motion.div
-                                                                                                        whileHover={{ y: -5 }}
-                                                                                                        transition={{ type: "spring", stiffness: 300 }}
-                                                                                                >
-                                                                                                        <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                                                                                                {destination.travel_tips && destination.travel_tips.length > 0 && (
+                                                                                                        <Card className="bg-gradient-to-br from-white to-teal-50/50 backdrop-blur-sm border-teal-100 shadow-lg">
                                                                                                                 <CardContent className="p-6">
-                                                                                                                        <div className="flex items-start space-x-3 mb-3">
-                                                                                                                                <div className="p-2 hero-gradient rounded-lg group-hover:scale-110 transition-transform duration-300">
-                                                                                                                                        <MapPin className="w-5 h-5 text-white" />
-                                                                                                                                </div>
-                                                                                                                                <h3 className="text-xl font-bold text-foreground group-hover:text-emerald-600 transition-colors duration-300">
-                                                                                                                                        {place.name}
-                                                                                                                                </h3>
-                                                                                                                        </div>
-                                                                                                                        {place.image_url && (
-                                                                                                                                <div className="mb-4 rounded-lg overflow-hidden">
-                                                                                                                                        <img
-                                                                                                                                                src={place.image_url || "/placeholder.svg"}
-                                                                                                                                                alt={place.name}
-                                                                                                                                                className="w-full h-40 object-cover"
-                                                                                                                                        />
-                                                                                                                                </div>
-                                                                                                                        )}
-                                                                                                                        <p className="text-muted-foreground mb-4 leading-relaxed">{place.description}</p>
-                                                                                                                        {place.highlights && place.highlights.length > 0 && (
-                                                                                                                                <div className="space-y-2">
-                                                                                                                                        <p className="text-sm font-semibold text-foreground">Highlights:</p>
-                                                                                                                                        <ul className="space-y-1">
-                                                                                                                                                {place.highlights.map((highlight: any, idx: number) => (
-                                                                                                                                                        <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                                                                                                                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                                                                                                                                                                <span>{highlight}</span>
-                                                                                                                                                        </li>
-                                                                                                                                                ))}
-                                                                                                                                        </ul>
-                                                                                                                                </div>
-                                                                                                                        )}
-                                                                                                                </CardContent>
-                                                                                                        </Card>
-                                                                                                </motion.div>
-                                                                                        </FadeInSection>
-                                                                                ))}
-                                                                        </div>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <MapPin className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No places information available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
-
-                                                        {/* Things to Do Tab */}
-                                                        <TabsContent value="activities">
-                                                                {destination.activities_image_url && (
-                                                                        <FadeInSection>
-                                                                                <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
-                                                                                        <img
-                                                                                                src={destination.activities_image_url || "/placeholder.svg"}
-                                                                                                alt={`${destination.name} Things to Do`}
-                                                                                                className="w-full h-64 object-cover"
-                                                                                        />
-                                                                                </div>
-                                                                        </FadeInSection>
-                                                                )}
-                                                                {getThingsToDo().length > 0 ? (
-                                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                                                {getThingsToDo().map((activity: any, index: number) => (
-                                                                                        <SlideInSection key={activity.id || index} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
-                                                                                                <div className="h-full">
-                                                                                                        <motion.div
-                                                                                                                whileHover={{ scale: 1.02 }}
-                                                                                                                transition={{ type: "spring", stiffness: 300 }}
-                                                                                                                className="h-full"
-                                                                                                        >
-                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                                                                                                        <CardContent className="p-6 h-full flex flex-col">
-                                                                                                                                <div className="flex items-center space-x-3 mb-3">
-                                                                                                                                        <div className="p-2 hero-gradient rounded-lg">
-                                                                                                                                                <Activity className="w-5 h-5 text-white" />
-                                                                                                                                        </div>
-                                                                                                                                        <h3 className="text-lg font-bold text-foreground">{activity.title}</h3>
-                                                                                                                                </div>
-                                                                                                                                {activity.image_url && (
-                                                                                                                                        <div className="mb-4 rounded-lg overflow-hidden flex-shrink-0">
-                                                                                                                                                <img
-                                                                                                                                                        src={activity.image_url || "/placeholder.svg"}
-                                                                                                                                                        alt={activity.title}
-                                                                                                                                                        className="w-full h-40 object-cover"
-                                                                                                                                                />
-                                                                                                                                        </div>
-                                                                                                                                )}
-                                                                                                                                <div className="flex-grow overflow-hidden">
-                                                                                                                                        <div className="h-full overflow-y-auto pr-2">
-                                                                                                                                                <p className="text-muted-foreground leading-relaxed">
-                                                                                                                                                        {activity.description}
-                                                                                                                                                </p>
-                                                                                                                                        </div>
-                                                                                                                                </div>
-                                                                                                                        </CardContent>
-                                                                                                                </Card>
-                                                                                                        </motion.div>
-                                                                                                </div>
-                                                                                        </SlideInSection>
-                                                                                ))}
-                                                                        </div>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <Activity className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No activities information available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
-
-                                                        {/* Itinerary Tab */}
-<TabsContent value="itinerary">
-    {getItinerary().length > 0 ? (
-        <div className="space-y-8">
-            {getItinerary().map((day: any, index: number) => (
-                <FadeInSection key={day.id || index} delay={index * 0.1}>
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/20 overflow-hidden">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full">
-                            {/* Left Column - Day Info & Activities */}
-                            <div className="lg:col-span-5 p-6">
-                                <div className="h-full flex flex-col">
-                                    {/* Day Header */}
-                                    <div className="mb-6">
-                                        <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 mb-3 px-3 py-1 text-sm">
-                                            Day {day.day}
-                                        </Badge>
-                                        <h3 className="text-2xl font-bold text-foreground mb-2">{day.title}</h3>
-                                    </div>
-
-                                    {/* Activities Section */}
-                                    <div className="flex-grow">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h4 className="font-semibold text-foreground text-lg flex items-center">
-                                                <Activity className="w-5 h-5 text-emerald-500 mr-2" />
-                                                Day Activities
-                                            </h4>
-                                            {day.meals && (
-                                                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                                                    {day.meals}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="space-y-3 pr-2">
-                                            {day.activities && day.activities.map((activity: any, idx: number) => (
-                                                <motion.div 
-                                                    key={idx}
-                                                    initial={{ opacity: 0, x: -10 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: idx * 0.05 }}
-                                                    className="flex items-start space-x-3 group"
-                                                >
-                                                    <div className="flex-shrink-0 mt-1">
-                                                        <div className="w-2 h-2 bg-emerald-500 rounded-full group-hover:scale-150 transition-transform duration-300"></div>
-                                                    </div>
-                                                    <div className="flex-grow">
-                                                        <p className="text-foreground/90 leading-relaxed text-sm md:text-base group-hover:text-emerald-600 transition-colors duration-300">
-                                                            {activity}
-                                                        </p>
-                                                    </div>
-                                                </motion.div>
-                                            ))}
-                                        </div>
-
-                                        {/* Additional Info */}
-                                        {(day.highlights || day.tips) && (
-                                            <div className="mt-8 pt-6 border-t border-gray-100">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {day.highlights && (
-                                                        <div>
-                                                            <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
-                                                                <Star className="w-4 h-4 text-amber-500 mr-2" />
-                                                                Key Highlights
-                                                            </h5>
-                                                            <p className="text-sm text-muted-foreground">{day.highlights}</p>
-                                                        </div>
-                                                    )}
-                                                    {day.tips && (
-                                                        <div>
-                                                            <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
-                                                                <Lightbulb className="w-4 h-4 text-teal-500 mr-2" />
-                                                                Travel Tips
-                                                            </h5>
-                                                            <p className="text-sm text-muted-foreground">{day.tips}</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Accomodation info if available */}
-                                    {day.accommodation && (
-                                        <div className="mt-6 pt-6 border-t border-gray-100">
-                                            <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
-                                                <Hotel className="w-4 h-4 text-teal-500 mr-2" />
-                                                Accommodation
-                                            </h5>
-                                            <p className="text-sm text-muted-foreground">{day.accommodation}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Right Column - Image Gallery */}
-                            <div className="lg:col-span-7 bg-gradient-to-br from-gray-50 to-gray-100/50 p-0">
-                                {day.image_url ? (
-                                    <div className="h-full relative overflow-hidden">
-                                        {/* Main Image */}
-                                        <div className="h-full min-h-[400px] lg:min-h-full relative group">
-                                            <img
-                                                src={day.image_url || "/placeholder.svg"}
-                                                alt={`Day ${day.day} - ${day.title}`}
-                                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                            
-                                        </div>
-
-                                        {/* Additional Images Gallery */}
-                                        {day.additional_images && day.additional_images.length > 0 && (
-                                            <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-3">
-                                                <p className="text-white text-sm mb-2 font-medium">More Views</p>
-                                                <div className="flex gap-2 overflow-x-auto max-w-[300px]">
-                                                    {day.additional_images.map((img: string, idx: number) => (
-                                                        <button
-                                                            key={idx}
-                                                            className="flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors"
-                                                            onClick={() => {
-                                                                // You could implement a lightbox here
-                                                                console.log('Open image:', img);
-                                                            }}
-                                                        >
-                                                            <img
-                                                                src={img || "/placeholder.svg"}
-                                                                alt={`View ${idx + 1}`}
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    /* Fallback when no image */
-                                    <div className="h-full min-h-[400px] lg:min-h-full flex flex-col items-center justify-center p-8 text-center">
-                                        </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </FadeInSection>
-            ))}
-        </div>
-    ) : (
-        <div className="text-center py-16 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/20">
-            <Calendar className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-2xl font-bold text-gray-400 mb-3">Itinerary Coming Soon</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                We're currently curating the perfect itinerary for {destination.name}. 
-                Check back soon for detailed day-by-day planning.
-            </p>
-        </div>
-    )}
-</TabsContent>
-
-                                                        {/* Transport Tab */}
-                                                        <TabsContent value="transport">
-                                                                {transportData && Object.keys(transportData).length > 0 ? (
-                                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                                                {Object.entries(transportData).map(([key, value]: [string, any], index) => (
-                                                                                        <SlideInSection key={key} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
-                                                                                                <motion.div
-                                                                                                        whileHover={{ y: -5 }}
-                                                                                                        transition={{ type: "spring", stiffness: 300 }}
-                                                                                                >
-                                                                                                        <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                                                                                                <CardContent className="p-6">
-                                                                                                                        <div className="flex items-center space-x-3 mb-4">
-                                                                                                                                <div className={`p-3 rounded-xl ${key === 'air' ? 'bg-emerald-100' :
-                                                                                                                                        key === 'train' ? 'bg-teal-100' : 'bg-amber-100'
-                                                                                                                                        }`}>
-                                                                                                                                        {key === 'air' && <Plane className="w-6 h-6 text-emerald-600" />}
-                                                                                                                                        {key === 'train' && <Train className="w-6 h-6 text-teal-600" />}
-                                                                                                                                        {key === 'road' && <Car className="w-6 h-6 text-amber-600" />}
-                                                                                                                                </div>
-                                                                                                                                <h3 className="text-lg font-bold text-foreground">{value.title}</h3>
-                                                                                                                        </div>
+                                                                                                                        <h3 className="text-xl font-bold mb-4 text-foreground flex items-center">
+                                                                                                                                <Lightbulb className="w-5 h-5 text-teal-600 mr-2" />
+                                                                                                                                Quick Tips
+                                                                                                                        </h3>
                                                                                                                         <ul className="space-y-2">
-                                                                                                                                {value.details && value.details.map((detail: any, idx: number) => (
-                                                                                                                                        <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
+                                                                                                                                {destination.travel_tips.slice(0, 3).map((tip: any, index: number) => (
+                                                                                                                                        <li key={index} className="flex items-start space-x-2 text-sm">
                                                                                                                                                 <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                                                                                                                                                <span>{detail}</span>
+                                                                                                                                                <span className="text-muted-foreground">{tip}</span>
                                                                                                                                         </li>
                                                                                                                                 ))}
                                                                                                                         </ul>
                                                                                                                 </CardContent>
                                                                                                         </Card>
-                                                                                                </motion.div>
-                                                                                        </SlideInSection>
-                                                                                ))}
-                                                                        </div>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <Car className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No transport information available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
+                                                                                                )}
+                                                                                        </div>
+                                                                                </div>
+                                                                        </FadeInSection>
+                                                                </TabsContent>
 
-                                                        {/* Best Time to Visit Tab */}
-                                                        <TabsContent value="besttime">
-                                                                {seasonData && Object.keys(seasonData).length > 0 ? (
-                                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                                                {Object.entries(seasonData).map(([season, details]: [string, any], index) => (
-                                                                                        <FadeInSection key={season} delay={index * 0.1}>
-                                                                                                <motion.div
-                                                                                                        whileHover={{ scale: 1.05, y: -5 }}
-                                                                                                        transition={{ type: "spring", stiffness: 300 }}
-                                                                                                >
-                                                                                                        <Card className="h-full bg-gradient-to-br from-white to-slate-50/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
-                                                                                                                {/* Season Header with Gradient */}
-                                                                                                                <div className={`p-6 text-white relative overflow-hidden ${season === 'winter' ? 'bg-gradient-to-r from-cyan-500 to-blue-600' :
-                                                                                                                        season === 'summer' ? 'bg-gradient-to-r from-amber-500 to-orange-600' :
-                                                                                                                                'bg-gradient-to-r from-emerald-500 to-teal-600'
-                                                                                                                        }`}>
-                                                                                                                        <div className="absolute inset-0 bg-black/10"></div>
-                                                                                                                        <div className="relative z-10">
-                                                                                                                                <Badge className={`text-sm capitalize mb-2 ${season === 'winter' ? 'bg-cyan-700' :
-                                                                                                                                        season === 'summer' ? 'bg-amber-700' :
-                                                                                                                                                'bg-emerald-700'
-                                                                                                                                        }`}>
-                                                                                                                                        {season}
-                                                                                                                                </Badge>
-                                                                                                                                <h3 className="text-xl font-bold">{details.season}</h3>
+                                                                {/* Places to Visit Tab */}
+                                                                <TabsContent value="places">
+                                                                        {destination.places_image_url && (
+                                                                                <FadeInSection>
+                                                                                        <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
+                                                                                                <img
+                                                                                                        src={destination.places_image_url || "/placeholder.svg"}
+                                                                                                        alt={`${destination.name} Places to Visit`}
+                                                                                                        className="w-full h-64 object-cover"
+                                                                                                />
+                                                                                        </div>
+                                                                                </FadeInSection>
+                                                                        )}
+                                                                        {getPlacesToVisit().length > 0 ? (
+                                                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                                                        {getPlacesToVisit().map((place: any, index: number) => (
+                                                                                                <FadeInSection key={place.id || index} delay={index * 0.1}>
+                                                                                                        <motion.div
+                                                                                                                whileHover={{ y: -5 }}
+                                                                                                                transition={{ type: "spring", stiffness: 300 }}
+                                                                                                        >
+                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                                                                                                                        <CardContent className="p-6">
+                                                                                                                                <div className="flex items-start space-x-3 mb-3">
+                                                                                                                                        <div className="p-2 hero-gradient rounded-lg group-hover:scale-110 transition-transform duration-300">
+                                                                                                                                                <MapPin className="w-5 h-5 text-white" />
+                                                                                                                                        </div>
+                                                                                                                                        <h3 className="text-xl font-bold text-foreground group-hover:text-emerald-600 transition-colors duration-300">
+                                                                                                                                                {place.name}
+                                                                                                                                        </h3>
+                                                                                                                                </div>
+                                                                                                                                {place.image_url && (
+                                                                                                                                        <div className="mb-4 rounded-lg overflow-hidden">
+                                                                                                                                                <img
+                                                                                                                                                        src={place.image_url || "/placeholder.svg"}
+                                                                                                                                                        alt={place.name}
+                                                                                                                                                        className="w-full h-40 object-cover"
+                                                                                                                                                />
+                                                                                                                                        </div>
+                                                                                                                                )}
+                                                                                                                                <p className="text-muted-foreground mb-4 leading-relaxed">{place.description}</p>
+                                                                                                                                {place.highlights && place.highlights.length > 0 && (
+                                                                                                                                        <div className="space-y-2">
+                                                                                                                                                <p className="text-sm font-semibold text-foreground">Highlights:</p>
+                                                                                                                                                <ul className="space-y-1">
+                                                                                                                                                        {place.highlights.map((highlight: any, idx: number) => (
+                                                                                                                                                                <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                                                                                                                                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                                                                                                                                                                        <span>{highlight}</span>
+                                                                                                                                                                </li>
+                                                                                                                                                        ))}
+                                                                                                                                                </ul>
+                                                                                                                                        </div>
+                                                                                                                                )}
+                                                                                                                        </CardContent>
+                                                                                                                </Card>
+                                                                                                        </motion.div>
+                                                                                                </FadeInSection>
+                                                                                        ))}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <div className="text-center py-12">
+                                                                                        <MapPin className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                                                                                        <p className="text-muted-foreground">No places information available yet.</p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
+
+                                                                {/* Things to Do Tab */}
+                                                                <TabsContent value="activities">
+                                                                        {destination.activities_image_url && (
+                                                                                <FadeInSection>
+                                                                                        <div className="rounded-2xl overflow-hidden shadow-lg mb-8">
+                                                                                                <img
+                                                                                                        src={destination.activities_image_url || "/placeholder.svg"}
+                                                                                                        alt={`${destination.name} Things to Do`}
+                                                                                                        className="w-full h-64 object-cover"
+                                                                                                />
+                                                                                        </div>
+                                                                                </FadeInSection>
+                                                                        )}
+                                                                        {getThingsToDo().length > 0 ? (
+                                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                                                        {getThingsToDo().map((activity: any, index: number) => (
+                                                                                                <SlideInSection key={activity.id || index} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
+                                                                                                        <div className="h-full">
+                                                                                                                <motion.div
+                                                                                                                        whileHover={{ scale: 1.02 }}
+                                                                                                                        transition={{ type: "spring", stiffness: 300 }}
+                                                                                                                        className="h-full"
+                                                                                                                >
+                                                                                                                        <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                                                                                                <CardContent className="p-6 h-full flex flex-col">
+                                                                                                                                        <div className="flex items-center space-x-3 mb-3">
+                                                                                                                                                <div className="p-2 hero-gradient rounded-lg">
+                                                                                                                                                        <Activity className="w-5 h-5 text-white" />
+                                                                                                                                                </div>
+                                                                                                                                                <h3 className="text-lg font-bold text-foreground">{activity.title}</h3>
+                                                                                                                                        </div>
+                                                                                                                                        {activity.image_url && (
+                                                                                                                                                <div className="mb-4 rounded-lg overflow-hidden flex-shrink-0">
+                                                                                                                                                        <img
+                                                                                                                                                                src={activity.image_url || "/placeholder.svg"}
+                                                                                                                                                                alt={activity.title}
+                                                                                                                                                                className="w-full h-40 object-cover"
+                                                                                                                                                        />
+                                                                                                                                                </div>
+                                                                                                                                        )}
+                                                                                                                                        <div className="flex-grow overflow-hidden">
+                                                                                                                                                <div className="h-full overflow-y-auto pr-2">
+                                                                                                                                                        <p className="text-muted-foreground leading-relaxed">
+                                                                                                                                                                {activity.description}
+                                                                                                                                                        </p>
+                                                                                                                                                </div>
+                                                                                                                                        </div>
+                                                                                                                                </CardContent>
+                                                                                                                        </Card>
+                                                                                                                </motion.div>
+                                                                                                        </div>
+                                                                                                </SlideInSection>
+                                                                                        ))}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <div className="text-center py-12">
+                                                                                        <Activity className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                                                                                        <p className="text-muted-foreground">No activities information available yet.</p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
+
+                                                                {/* Itinerary Tab */}
+                                                                <TabsContent value="itinerary">
+                                                                        {getItinerary().length > 0 ? (
+                                                                                <div className="space-y-8">
+                                                                                        {getItinerary().map((day: any, index: number) => (
+                                                                                                <FadeInSection key={day.id || index} delay={index * 0.1}>
+                                                                                                        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/20 overflow-hidden">
+                                                                                                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 h-full">
+                                                                                                                        {/* Left Column - Day Info & Activities */}
+                                                                                                                        <div className="lg:col-span-5 p-6">
+                                                                                                                                <div className="h-full flex flex-col">
+                                                                                                                                        {/* Day Header */}
+                                                                                                                                        <div className="mb-6">
+                                                                                                                                                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 mb-3 px-3 py-1 text-sm">
+                                                                                                                                                        Day {day.day}
+                                                                                                                                                </Badge>
+                                                                                                                                                <h3 className="text-2xl font-bold text-foreground mb-2">{day.title}</h3>
+                                                                                                                                        </div>
+
+                                                                                                                                        {/* Activities Section */}
+                                                                                                                                        <div className="flex-grow">
+                                                                                                                                                <div className="flex items-center justify-between mb-4">
+                                                                                                                                                        <h4 className="font-semibold text-foreground text-lg flex items-center">
+                                                                                                                                                                <Activity className="w-5 h-5 text-emerald-500 mr-2" />
+                                                                                                                                                                Day Activities
+                                                                                                                                                        </h4>
+                                                                                                                                                        {day.meals && (
+                                                                                                                                                                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                                                                                                                                                        {day.meals}
+                                                                                                                                                                </Badge>
+                                                                                                                                                        )}
+                                                                                                                                                </div>
+
+                                                                                                                                                <div className="space-y-3 pr-2">
+                                                                                                                                                        {day.activities && day.activities.map((activity: any, idx: number) => (
+                                                                                                                                                                <motion.div
+                                                                                                                                                                        key={idx}
+                                                                                                                                                                        initial={{ opacity: 0, x: -10 }}
+                                                                                                                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                                                                                                                        transition={{ delay: idx * 0.05 }}
+                                                                                                                                                                        className="flex items-start space-x-3 group"
+                                                                                                                                                                >
+                                                                                                                                                                        <div className="flex-shrink-0 mt-1">
+                                                                                                                                                                                <div className="w-2 h-2 bg-emerald-500 rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+                                                                                                                                                                        </div>
+                                                                                                                                                                        <div className="flex-grow">
+                                                                                                                                                                                <p className="text-foreground/90 leading-relaxed text-sm md:text-base group-hover:text-emerald-600 transition-colors duration-300">
+                                                                                                                                                                                        {activity}
+                                                                                                                                                                                </p>
+                                                                                                                                                                        </div>
+                                                                                                                                                                </motion.div>
+                                                                                                                                                        ))}
+                                                                                                                                                </div>
+
+                                                                                                                                                {/* Additional Info */}
+                                                                                                                                                {(day.highlights || day.tips) && (
+                                                                                                                                                        <div className="mt-8 pt-6 border-t border-gray-100">
+                                                                                                                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                                                                                                                        {day.highlights && (
+                                                                                                                                                                                <div>
+                                                                                                                                                                                        <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
+                                                                                                                                                                                                <Star className="w-4 h-4 text-amber-500 mr-2" />
+                                                                                                                                                                                                Key Highlights
+                                                                                                                                                                                        </h5>
+                                                                                                                                                                                        <p className="text-sm text-muted-foreground">{day.highlights}</p>
+                                                                                                                                                                                </div>
+                                                                                                                                                                        )}
+                                                                                                                                                                        {day.tips && (
+                                                                                                                                                                                <div>
+                                                                                                                                                                                        <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
+                                                                                                                                                                                                <Lightbulb className="w-4 h-4 text-teal-500 mr-2" />
+                                                                                                                                                                                                Travel Tips
+                                                                                                                                                                                        </h5>
+                                                                                                                                                                                        <p className="text-sm text-muted-foreground">{day.tips}</p>
+                                                                                                                                                                                </div>
+                                                                                                                                                                        )}
+                                                                                                                                                                </div>
+                                                                                                                                                        </div>
+                                                                                                                                                )}
+                                                                                                                                        </div>
+
+                                                                                                                                        {/* Accomodation info if available */}
+                                                                                                                                        {day.accommodation && (
+                                                                                                                                                <div className="mt-6 pt-6 border-t border-gray-100">
+                                                                                                                                                        <h5 className="font-semibold text-foreground mb-2 flex items-center text-sm">
+                                                                                                                                                                <Hotel className="w-4 h-4 text-teal-500 mr-2" />
+                                                                                                                                                                Accommodation
+                                                                                                                                                        </h5>
+                                                                                                                                                        <p className="text-sm text-muted-foreground">{day.accommodation}</p>
+                                                                                                                                                </div>
+                                                                                                                                        )}
+                                                                                                                                </div>
+                                                                                                                        </div>
+
+                                                                                                                        {/* Right Column - Image Gallery */}
+                                                                                                                        <div className="lg:col-span-7 bg-gradient-to-br from-gray-50 to-gray-100/50 p-0">
+                                                                                                                                {day.image_url ? (
+                                                                                                                                        <div className="h-full relative overflow-hidden">
+                                                                                                                                                {/* Main Image */}
+                                                                                                                                                <div className="h-full min-h-[400px] lg:min-h-full relative group">
+                                                                                                                                                        <img
+                                                                                                                                                                src={day.image_url || "/placeholder.svg"}
+                                                                                                                                                                alt={`Day ${day.day} - ${day.title}`}
+                                                                                                                                                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                                                                                                                                                        />
+                                                                                                                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                                                                                                                                                </div>
+
+                                                                                                                                                {/* Additional Images Gallery */}
+                                                                                                                                                {day.additional_images && day.additional_images.length > 0 && (
+                                                                                                                                                        <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-3">
+                                                                                                                                                                <p className="text-white text-sm mb-2 font-medium">More Views</p>
+                                                                                                                                                                <div className="flex gap-2 overflow-x-auto max-w-[300px]">
+                                                                                                                                                                        {day.additional_images.map((img: string, idx: number) => (
+                                                                                                                                                                                <button
+                                                                                                                                                                                        key={idx}
+                                                                                                                                                                                        className="flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors"
+                                                                                                                                                                                        onClick={() => {
+                                                                                                                                                                                                // You could implement a lightbox here
+                                                                                                                                                                                                console.log('Open image:', img);
+                                                                                                                                                                                        }}
+                                                                                                                                                                                >
+                                                                                                                                                                                        <img
+                                                                                                                                                                                                src={img || "/placeholder.svg"}
+                                                                                                                                                                                                alt={`View ${idx + 1}`}
+                                                                                                                                                                                                className="w-full h-full object-cover"
+                                                                                                                                                                                        />
+                                                                                                                                                                                </button>
+                                                                                                                                                                        ))}
+                                                                                                                                                                </div>
+                                                                                                                                                        </div>
+                                                                                                                                                )}
+                                                                                                                                        </div>
+                                                                                                                                ) : (
+                                                                                                                                        /* Fallback when no image */
+                                                                                                                                        <div className="h-full min-h-[400px] lg:min-h-full flex flex-col items-center justify-center p-8 text-center">
+                                                                                                                                        </div>
+                                                                                                                                )}
                                                                                                                         </div>
                                                                                                                 </div>
+                                                                                                        </div>
+                                                                                                </FadeInSection>
+                                                                                        ))}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <div className="text-center py-16 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/20">
+                                                                                        <Calendar className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+                                                                                        <h3 className="text-2xl font-bold text-gray-400 mb-3">Itinerary Coming Soon</h3>
+                                                                                        <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                                                                                                We're currently curating the perfect itinerary for {destination.name}.
+                                                                                                Check back soon for detailed day-by-day planning.
+                                                                                        </p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
 
-                                                                                                                <CardContent className="p-6">
-                                                                                                                        <div className="space-y-4">
-                                                                                                                                {details.weather && (
-                                                                                                                                        <div className="flex items-start space-x-3">
-                                                                                                                                                <div className="p-2 bg-slate-100 rounded-lg flex-shrink-0">
-                                                                                                                                                        <Thermometer className="w-4 h-4 text-slate-600" />
-                                                                                                                                                </div>
-                                                                                                                                                <div>
-                                                                                                                                                        <p className="font-semibold text-foreground text-sm">Weather</p>
-                                                                                                                                                        <p className="text-muted-foreground text-sm">{details.weather}</p>
-                                                                                                                                                </div>
+                                                                {/* Transport Tab */}
+                                                                <TabsContent value="transport">
+                                                                        {transportData && Object.keys(transportData).length > 0 ? (
+                                                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                                                        {Object.entries(transportData).map(([key, value]: [string, any], index) => (
+                                                                                                <SlideInSection key={key} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
+                                                                                                        <motion.div
+                                                                                                                whileHover={{ y: -5 }}
+                                                                                                                transition={{ type: "spring", stiffness: 300 }}
+                                                                                                        >
+                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                                                                                        <CardContent className="p-6">
+                                                                                                                                <div className="flex items-center space-x-3 mb-4">
+                                                                                                                                        <div className={`p-3 rounded-xl ${key === 'air' ? 'bg-emerald-100' :
+                                                                                                                                                key === 'train' ? 'bg-teal-100' : 'bg-amber-100'
+                                                                                                                                                }`}>
+                                                                                                                                                {key === 'air' && <Plane className="w-6 h-6 text-emerald-600" />}
+                                                                                                                                                {key === 'train' && <Train className="w-6 h-6 text-teal-600" />}
+                                                                                                                                                {key === 'road' && <Car className="w-6 h-6 text-amber-600" />}
                                                                                                                                         </div>
-                                                                                                                                )}
-
-                                                                                                                                {details.why_visit && (
-                                                                                                                                        <div className="flex items-start space-x-3">
-                                                                                                                                                <div className="p-2 bg-slate-100 rounded-lg flex-shrink-0">
-                                                                                                                                                        <Star className="w-4 h-4 text-slate-600" />
-                                                                                                                                                </div>
-                                                                                                                                                <div>
-                                                                                                                                                        <p className="font-semibold text-foreground text-sm">Why Visit</p>
-                                                                                                                                                        <p className="text-muted-foreground text-sm">{details.why_visit}</p>
-                                                                                                                                                </div>
-                                                                                                                                        </div>
-                                                                                                                                )}
-
-                                                                                                                                {details.events && (
-                                                                                                                                        <div className="flex items-start space-x-3">
-                                                                                                                                                <div className="p-2 bg-slate-100 rounded-lg flex-shrink-0">
-                                                                                                                                                        <Calendar className="w-4 h-4 text-slate-600" />
-                                                                                                                                                </div>
-                                                                                                                                                <div>
-                                                                                                                                                        <p className="font-semibold text-foreground text-sm">Events & Festivals</p>
-                                                                                                                                                        <p className="text-muted-foreground text-sm">{details.events}</p>
-                                                                                                                                                </div>
-                                                                                                                                        </div>
-                                                                                                                                )}
-                                                                                                                        </div>
-                                                                                                                </CardContent>
-                                                                                                        </Card>
-                                                                                                </motion.div>
-                                                                                        </FadeInSection>
-                                                                                ))}
-                                                                        </div>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <Thermometer className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No seasonal information available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
-
-                                                        {/* Accommodation Tab */}
-                                                        <TabsContent value="accommodation">
-                                                                {accommodationData && Object.keys(accommodationData).length > 0 ? (
-                                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                                                {Object.entries(accommodationData).map(([category, details]: [string, any], index) => (
-                                                                                        <SlideInSection key={category} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
-                                                                                                <motion.div
-                                                                                                        whileHover={{ y: -5 }}
-                                                                                                        transition={{ type: "spring", stiffness: 300 }}
-                                                                                                >
-                                                                                                        <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                                                                                                <CardContent className="p-6">
-                                                                                                                        <div className="flex items-center space-x-3 mb-4">
-                                                                                                                                <div className="p-2 bg-teal-100 rounded-lg">
-                                                                                                                                        <Hotel className="w-5 h-5 text-teal-600" />
+                                                                                                                                        <h3 className="text-lg font-bold text-foreground">{value.title}</h3>
                                                                                                                                 </div>
-                                                                                                                                <h3 className="text-lg font-bold text-foreground capitalize">{category}</h3>
+                                                                                                                                <ul className="space-y-2">
+                                                                                                                                        {value.details && value.details.map((detail: any, idx: number) => (
+                                                                                                                                                <li key={idx} className="flex items-start space-x-2 text-sm text-muted-foreground">
+                                                                                                                                                        <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                                                                                                                                        <span>{detail}</span>
+                                                                                                                                                </li>
+                                                                                                                                        ))}
+                                                                                                                                </ul>
+                                                                                                                        </CardContent>
+                                                                                                                </Card>
+                                                                                                        </motion.div>
+                                                                                                </SlideInSection>
+                                                                                        ))}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <div className="text-center py-12">
+                                                                                        <Car className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                                                                                        <p className="text-muted-foreground">No transport information available yet.</p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
+
+                                                                {/* Best Time to Visit Tab */}
+                                                                <TabsContent value="besttime">
+                                                                        {seasonData && Object.keys(seasonData).length > 0 ? (
+                                                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                                                        {Object.entries(seasonData).map(([season, details]: [string, any], index) => (
+                                                                                                <FadeInSection key={season} delay={index * 0.1}>
+                                                                                                        <motion.div
+                                                                                                                whileHover={{ scale: 1.05, y: -5 }}
+                                                                                                                transition={{ type: "spring", stiffness: 300 }}
+                                                                                                        >
+                                                                                                                <Card className="h-full bg-gradient-to-br from-white to-slate-50/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
+                                                                                                                        {/* Season Header with Gradient */}
+                                                                                                                        <div className={`p-6 text-white relative overflow-hidden ${season === 'winter' ? 'bg-gradient-to-r from-cyan-500 to-blue-600' :
+                                                                                                                                season === 'summer' ? 'bg-gradient-to-r from-amber-500 to-orange-600' :
+                                                                                                                                        'bg-gradient-to-r from-emerald-500 to-teal-600'
+                                                                                                                                }`}>
+                                                                                                                                <div className="absolute inset-0 bg-black/10"></div>
+                                                                                                                                <div className="relative z-10">
+                                                                                                                                        <Badge className={`text-sm capitalize mb-2 ${season === 'winter' ? 'bg-cyan-700' :
+                                                                                                                                                season === 'summer' ? 'bg-amber-700' :
+                                                                                                                                                        'bg-emerald-700'
+                                                                                                                                                }`}>
+                                                                                                                                                {season}
+                                                                                                                                        </Badge>
+                                                                                                                                        <h3 className="text-xl font-bold">{details.season}</h3>
+                                                                                                                                </div>
                                                                                                                         </div>
 
-                                                                                                                        <p className="text-muted-foreground mb-4 text-sm">{details.description}</p>
+                                                                                                                        <CardContent className="p-6">
+                                                                                                                                <div className="space-y-4">
+                                                                                                                                        {details.weather && (
+                                                                                                                                                <div className="flex items-start space-x-3">
+                                                                                                                                                        <div className="p-2 bg-slate-100 rounded-lg flex-shrink-0">
+                                                                                                                                                                <Thermometer className="w-4 h-4 text-slate-600" />
+                                                                                                                                                        </div>
+                                                                                                                                                        <div>
+                                                                                                                                                                <p className="font-semibold text-foreground text-sm">Weather</p>
+                                                                                                                                                                <p className="text-muted-foreground text-sm">{details.weather}</p>
+                                                                                                                                                        </div>
+                                                                                                                                                </div>
+                                                                                                                                        )}
 
-                                                                                                                        {details.options && details.options.length > 0 && (
-                                                                                                                                <div>
-                                                                                                                                        <p className="font-semibold text-foreground text-sm mb-2">Options:</p>
-                                                                                                                                        <ul className="space-y-1">
-                                                                                                                                                {details.options.map((option: any, idx: number) => (
-                                                                                                                                                        <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                                                                                                                                                <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
-                                                                                                                                                                <span>{option}</span>
-                                                                                                                                                        </li>
-                                                                                                                                                ))}
-                                                                                                                                        </ul>
+                                                                                                                                        {details.why_visit && (
+                                                                                                                                                <div className="flex items-start space-x-3">
+                                                                                                                                                        <div className="p-2 bg-slate-100 rounded-lg flex-shrink-0">
+                                                                                                                                                                <Star className="w-4 h-4 text-slate-600" />
+                                                                                                                                                        </div>
+                                                                                                                                                        <div>
+                                                                                                                                                                <p className="font-semibold text-foreground text-sm">Why Visit</p>
+                                                                                                                                                                <p className="text-muted-foreground text-sm">{details.why_visit}</p>
+                                                                                                                                                        </div>
+                                                                                                                                                </div>
+                                                                                                                                        )}
+
+                                                                                                                                        {details.events && (
+                                                                                                                                                <div className="flex items-start space-x-3">
+                                                                                                                                                        <div className="p-2 bg-slate-100 rounded-lg flex-shrink-0">
+                                                                                                                                                                <Calendar className="w-4 h-4 text-slate-600" />
+                                                                                                                                                        </div>
+                                                                                                                                                        <div>
+                                                                                                                                                                <p className="font-semibold text-foreground text-sm">Events & Festivals</p>
+                                                                                                                                                                <p className="text-muted-foreground text-sm">{details.events}</p>
+                                                                                                                                                        </div>
+                                                                                                                                                </div>
+                                                                                                                                        )}
                                                                                                                                 </div>
-                                                                                                                        )}
-                                                                                                                </CardContent>
-                                                                                                        </Card>
-                                                                                                </motion.div>
-                                                                                        </SlideInSection>
-                                                                                ))}
-                                                                        </div>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <Hotel className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No accommodation information available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
+                                                                                                                        </CardContent>
+                                                                                                                </Card>
+                                                                                                        </motion.div>
+                                                                                                </FadeInSection>
+                                                                                        ))}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <div className="text-center py-12">
+                                                                                        <Thermometer className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                                                                                        <p className="text-muted-foreground">No seasonal information available yet.</p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
 
-                                                        {/* FAQs Tab */}
-                                                        <TabsContent value="faqs">
-                                                                {getFAQs().length > 0 ? (
-                                                                        <Accordion type="single" collapsible className="space-y-4">
-                                                                                {getFAQs().map((faq: any, index: number) => (
-                                                                                        <FadeInSection key={faq.id || index} delay={index * 0.1}>
-                                                                                                <AccordionItem value={`faq-${faq.id || index}`} className="bg-white/80 backdrop-blur-sm rounded-xl border-0 shadow-lg px-6">
-                                                                                                        <AccordionTrigger className="hover:no-underline [&[data-state=open]]:text-emerald-600">
-                                                                                                                <div className="flex items-center space-x-3 text-left">
-                                                                                                                        <HelpCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                                                                                                                        <span className="font-semibold">{faq.question}</span>
-                                                                                                                </div>
-                                                                                                        </AccordionTrigger>
-                                                                                                        <AccordionContent className="text-muted-foreground pt-2 pb-4">
-                                                                                                                {faq.answer}
-                                                                                                        </AccordionContent>
-                                                                                                </AccordionItem>
-                                                                                        </FadeInSection>
-                                                                                ))}
-                                                                        </Accordion>
-                                                                ) : (
-                                                                        <div className="text-center py-12">
-                                                                                <HelpCircle className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                                                                                <p className="text-muted-foreground">No FAQs available yet.</p>
-                                                                        </div>
-                                                                )}
-                                                        </TabsContent>
-                                                </Tabs>
-                                        </div>
-                                </div>
-                        </section>
+                                                                {/* Accommodation Tab */}
+                                                                <TabsContent value="accommodation">
+                                                                        {accommodationData && Object.keys(accommodationData).length > 0 ? (
+                                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                                                        {Object.entries(accommodationData).map(([category, details]: [string, any], index) => (
+                                                                                                <SlideInSection key={category} direction={index % 2 === 0 ? "left" : "right"} delay={index * 0.1}>
+                                                                                                        <motion.div
+                                                                                                                whileHover={{ y: -5 }}
+                                                                                                                transition={{ type: "spring", stiffness: 300 }}
+                                                                                                        >
+                                                                                                                <Card className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                                                                                        <CardContent className="p-6">
+                                                                                                                                <div className="flex items-center space-x-3 mb-4">
+                                                                                                                                        <div className="p-2 bg-teal-100 rounded-lg">
+                                                                                                                                                <Hotel className="w-5 h-5 text-teal-600" />
+                                                                                                                                        </div>
+                                                                                                                                        <h3 className="text-lg font-bold text-foreground capitalize">{category}</h3>
+                                                                                                                                </div>
 
-                        {/* Enhanced CTA Section */}
-                        <FadeInSection>
-                                <section className="py-20 hero-gradient text-white relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent"></div>
-                                        <div className="container mx-auto px-4 relative z-10">
-                                                <div className="max-w-4xl mx-auto text-center">
-                                                        <motion.h2
-                                                                className="text-4xl font-bold mb-6"
-                                                                initial={{ opacity: 0, y: 30 }}
-                                                                whileInView={{ opacity: 1, y: 0 }}
-                                                                transition={{ duration: 0.6 }}
-                                                        >
-                                                                Ready to Explore {destination.name}?
-                                                        </motion.h2>
-                                                        <motion.p
-                                                                className="text-xl text-white/90 mb-8 leading-relaxed"
-                                                                initial={{ opacity: 0, y: 30 }}
-                                                                whileInView={{ opacity: 1, y: 0 }}
-                                                                transition={{ duration: 0.6, delay: 0.2 }}
-                                                        >
-                                                                Contact us for personalized travel planning and expert guidance for your perfect journey.
-                                                        </motion.p>
-                                                        <motion.div
-                                                                className="flex flex-col sm:flex-row gap-4 justify-center"
-                                                                initial={{ opacity: 0, y: 30 }}
-                                                                whileInView={{ opacity: 1, y: 0 }}
-                                                                transition={{ duration: 0.6, delay: 0.4 }}
-                                                        >
-                                                                <Button
-                                                                        size="lg"
-                                                                        className="bg-white text-emerald-600 hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl text-lg px-8 py-4"
-                                                                >
-                                                                         <a href="tel:919910775073">
-Enquire Now                    </a>
-                                                                        
-                                                                </Button>
-                                                        </motion.div>
+                                                                                                                                <p className="text-muted-foreground mb-4 text-sm">{details.description}</p>
 
+                                                                                                                                {details.options && details.options.length > 0 && (
+                                                                                                                                        <div>
+                                                                                                                                                <p className="font-semibold text-foreground text-sm mb-2">Options:</p>
+                                                                                                                                                <ul className="space-y-1">
+                                                                                                                                                        {details.options.map((option: any, idx: number) => (
+                                                                                                                                                                <li key={idx} className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                                                                                                                                                        <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                                                                                                                                                                        <span>{option}</span>
+                                                                                                                                                                </li>
+                                                                                                                                                        ))}
+                                                                                                                                                </ul>
+                                                                                                                                        </div>
+                                                                                                                                )}
+                                                                                                                        </CardContent>
+                                                                                                                </Card>
+                                                                                                        </motion.div>
+                                                                                                </SlideInSection>
+                                                                                        ))}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <div className="text-center py-12">
+                                                                                        <Hotel className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                                                                                        <p className="text-muted-foreground">No accommodation information available yet.</p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
+
+                                                                {/* FAQs Tab */}
+                                                                <TabsContent value="faqs">
+                                                                        {getFAQs().length > 0 ? (
+                                                                                <Accordion type="single" collapsible className="space-y-4">
+                                                                                        {getFAQs().map((faq: any, index: number) => (
+                                                                                                <FadeInSection key={faq.id || index} delay={index * 0.1}>
+                                                                                                        <AccordionItem value={`faq-${faq.id || index}`} className="bg-white/80 backdrop-blur-sm rounded-xl border-0 shadow-lg px-6">
+                                                                                                                <AccordionTrigger className="hover:no-underline [&[data-state=open]]:text-emerald-600">
+                                                                                                                        <div className="flex items-center space-x-3 text-left">
+                                                                                                                                <HelpCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                                                                                                                                <span className="font-semibold">{faq.question}</span>
+                                                                                                                        </div>
+                                                                                                                </AccordionTrigger>
+                                                                                                                <AccordionContent className="text-muted-foreground pt-2 pb-4">
+                                                                                                                        {faq.answer}
+                                                                                                                </AccordionContent>
+                                                                                                        </AccordionItem>
+                                                                                                </FadeInSection>
+                                                                                        ))}
+                                                                                </Accordion>
+                                                                        ) : (
+                                                                                <div className="text-center py-12">
+                                                                                        <HelpCircle className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                                                                                        <p className="text-muted-foreground">No FAQs available yet.</p>
+                                                                                </div>
+                                                                        )}
+                                                                </TabsContent>
+                                                        </Tabs>
                                                 </div>
                                         </div>
                                 </section>
-                        </FadeInSection>
 
-                        <Footer />
-                </div>
+                                {/* Enhanced CTA Section */}
+                                <FadeInSection>
+                                        <section className="py-20 hero-gradient text-white relative overflow-hidden">
+                                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent"></div>
+                                                <div className="container mx-auto px-4 relative z-10">
+                                                        <div className="max-w-4xl mx-auto text-center">
+                                                                <motion.h2
+                                                                        className="text-4xl font-bold mb-6"
+                                                                        initial={{ opacity: 0, y: 30 }}
+                                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                                        transition={{ duration: 0.6 }}
+                                                                >
+                                                                        Ready to Explore {destination.name}?
+                                                                </motion.h2>
+                                                                <motion.p
+                                                                        className="text-xl text-white/90 mb-8 leading-relaxed"
+                                                                        initial={{ opacity: 0, y: 30 }}
+                                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                                        transition={{ duration: 0.6, delay: 0.2 }}
+                                                                >
+                                                                        Contact us for personalized travel planning and expert guidance for your perfect journey.
+                                                                </motion.p>
+                                                                <motion.div
+                                                                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                                                                        initial={{ opacity: 0, y: 30 }}
+                                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                                        transition={{ duration: 0.6, delay: 0.4 }}
+                                                                >
+                                                                        <Button
+                                                                                size="lg"
+                                                                                className="bg-white text-emerald-600 hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-2xl text-lg px-8 py-4"
+                                                                        >
+                                                                                <a href="tel:919910775073">
+                                                                                        Enquire Now                    </a>
+
+                                                                        </Button>
+                                                                </motion.div>
+
+                                                        </div>
+                                                </div>
+                                        </section>
+                                </FadeInSection>
+
+                                <Footer />
+                        </div>
+                </>
         )
 }
 

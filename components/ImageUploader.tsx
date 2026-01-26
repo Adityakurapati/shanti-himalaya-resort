@@ -4,11 +4,12 @@ import type React from "react"
 import { useCallback, useRef, useState } from "react"
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop, type PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
+Dialog
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { uploadService } from "@/lib/upload-service"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
 
 type Props = {
   label?: string

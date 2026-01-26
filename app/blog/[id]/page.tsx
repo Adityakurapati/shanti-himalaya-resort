@@ -1,12 +1,14 @@
 "use client";
 
 import type { Tables } from "@/integrations/supabase/types";
+import { generateArticleJSONLD, generateBreadcrumbJSONLD } from "@/lib/seo-utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Breadcrumbs } from "@/components/seo/Breadcrumps";
 import {
   Calendar,
   User,

@@ -15,13 +15,13 @@ This guide documents all SEO optimizations implemented for Shanti Himalaya resor
 - **Canonical URL field** for handling redirects and canonicalization
 
 #### Tables Updated:
-```
+\`\`\`
 journeys → slug, seo_title, seo_description, seo_image, meta_keywords, canonical_url
 destinations → slug, seo_title, seo_description, seo_image, meta_keywords, canonical_url
 experiences → slug, seo_title, seo_description, seo_image, meta_keywords, canonical_url
 experiential_stays → slug, seo_title, seo_description, seo_image, meta_keywords, canonical_url
 packages (blog) → slug, seo_title, seo_description, seo_image, meta_keywords, canonical_url
-```
+\`\`\`
 
 #### Key Indexes Created:
 - `idx_*_slug` - Fast slug-based lookups
@@ -38,7 +38,7 @@ packages (blog) → slug, seo_title, seo_description, seo_image, meta_keywords, 
 - **Sitemap reference** - Points to XML sitemap
 
 #### Allowed Paths:
-```
+\`\`\`
 /journeys/
 /destinations/
 /experiences/
@@ -48,7 +48,7 @@ packages (blog) → slug, seo_title, seo_description, seo_image, meta_keywords, 
 /about/
 /contact/
 /sustainable-tourism/
-```
+\`\`\`
 
 ### 3. Dynamic Sitemap Generation
 **File:** `/app/sitemap.ts`
@@ -62,12 +62,12 @@ packages (blog) → slug, seo_title, seo_description, seo_image, meta_keywords, 
 - **Spec compliance** - Respects 50,000 URL limit per sitemap
 
 #### Priority Matrix:
-```
+\`\`\`
 Home: 1.0 (daily)
 Main Categories: 0.95 (daily/weekly)
 Detail Pages: 0.75-0.85 (monthly)
 Policy Pages: 0.3 (yearly)
-```
+\`\`\`
 
 ### 4. Dynamic Metadata Generation
 **File:** `/lib/seo-utils.ts`
@@ -145,13 +145,13 @@ Generates schema.org compatible structured data for:
 ##### Journey Detail Page
 **File:** `/app/journeys/[id]/page.tsx`
 
-```typescript
+\`\`\`typescript
 export async function generateMetadata({ params }) {
   const journey = await fetchJourneyBySlug(params.id);
   const seoProps = generateJourneySEO(journey);
   return generateSEOMetadata(seoProps);
 }
-```
+\`\`\`
 
 **Includes:**
 - Structured data (TouristAttraction schema)
@@ -180,11 +180,11 @@ export async function generateMetadata({ params }) {
 - **Responsive design** with mobile-friendly layout
 
 #### Example Output:
-```
+\`\`\`
 Home > Journeys > Himalayan Trek Adventure
-```
+\`\`\`
 
-```html
+\`\`\`html
 <!-- JSON-LD -->
 {
   "@type": "BreadcrumbList",
@@ -194,13 +194,13 @@ Home > Journeys > Himalayan Trek Adventure
     { "@type": "ListItem", "position": 3, "name": "Himalayan Trek Adventure" }
   ]
 }
-```
+\`\`\`
 
 ### 7. Layout SEO Optimization
 **File:** `/app/layout.tsx`
 
 #### Global Metadata:
-```typescript
+\`\`\`typescript
 export const metadata = {
   metadataBase: new URL('https://shantihimlaya.com'),
   title: { default: '...', template: '%s | Shanti Himalaya' },
@@ -212,10 +212,10 @@ export const metadata = {
   icons: { ... },
   manifest: '/manifest.json'
 }
-```
+\`\`\`
 
 #### Organization Schema in Head:
-```html
+\`\`\`html
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -225,19 +225,19 @@ export const metadata = {
   "amenityFeature": [...]
 }
 </script>
-```
+\`\`\`
 
 ### 8. Performance & Middleware Headers
 **File:** `/middleware.ts`
 
 #### Security Headers:
-```
+\`\`\`
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 X-Frame-Options: DENY
 X-Content-Type-Options: nosniff
 Referrer-Policy: origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
-```
+\`\`\`
 
 #### Caching Headers:
 - **Static assets** (images, css, js): 1 year
@@ -247,7 +247,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### 9. URL Structure Best Practices
 
 #### Current URL Patterns:
-```
+\`\`\`
 /journeys/{slug}
 /destinations/{slug}
 /experiences/{slug}
@@ -255,7 +255,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 /blog/{slug}
 /our-resort/activities/{slug}
 /our-resort/packages/{slug}
-```
+\`\`\`
 
 #### Slug Generation Rules:
 - Convert to lowercase
@@ -285,7 +285,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### 12. JSON-LD Hierarchy
 
 #### Complete JSON-LD Graph:
-```json
+\`\`\`json
 {
   "@context": "https://schema.org",
   "@graph": [
@@ -296,7 +296,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
     { "@type": "Hotel" }
   ]
 }
-```
+\`\`\`
 
 ## Implementation Checklist
 

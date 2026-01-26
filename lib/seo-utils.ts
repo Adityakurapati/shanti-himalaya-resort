@@ -3,8 +3,28 @@ import type { Metadata } from "next";
 const SITE_URL = "https://shantihimlaya.com";
 const SITE_NAME = "Shanti Himalaya";
 
-// Change the type definition to only include valid Open Graph types
-type ValidOpenGraphType = "website" | "article" | "profile";
+// Valid Open Graph types according to the Open Graph protocol
+type ValidOpenGraphType = 
+  | "website"
+  | "article"
+  | "book"
+  | "profile"
+  | "music.song"
+  | "music.album"
+  | "music.playlist"
+  | "music.radio_station"
+  | "video.movie"
+  | "video.episode"
+  | "video.tv_show"
+  | "video.other";
+
+// For Facebook's custom types, we'll use a different approach
+type FacebookType = 
+  | "place"
+  | "product"
+  | "product.item"
+  | "hotel"
+  | "restaurant";
 
 interface SEOProps {
   title: string;
@@ -16,7 +36,8 @@ interface SEOProps {
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
-  type?: ValidOpenGraphType; // Changed from custom type to valid OG types
+  type?: ValidOpenGraphType; // Open Graph type (required)
+  facebookType?: FacebookType; // Facebook-specific type (optional)
   section?: string;
   tags?: string[];
   noindex?: boolean;
@@ -35,6 +56,7 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
     publishedTime,
     modifiedTime,
     type = "website",
+    facebookType,
     section,
     tags,
     noindex = false,
@@ -58,6 +80,44 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
     ...keywords
   ];
 
+  // Prepare Open Graph object
+  const openGraph: any = {
+    title: metadataTitle,
+    description,
+    url: metadataUrl,
+    siteName: SITE_NAME,
+    locale: "en_US",
+    type,
+    images: [
+      {
+        url: image.startsWith('http') ? image : `${SITE_URL}${image}`,
+        width: 1200,
+        height: 630,
+        alt: title,
+      },
+    ],
+    publishedTime,
+    modifiedTime,
+  };
+
+  // Add Facebook-specific properties if provided
+  if (facebookType) {
+    // Facebook uses custom properties for specific types
+    openGraph[`${facebookType}`] = {
+      // Add specific properties based on type
+    };
+    
+    // For hotels/places, you can add location data
+    if (facebookType === "place" || facebookType === "hotel") {
+      openGraph[`${facebookType}`] = {
+        location: {
+          latitude: 29.4521, // Example coordinates for Corbett
+          longitude: 79.1089,
+        }
+      };
+    }
+  }
+
   return {
     title: metadataTitle,
     description,
@@ -67,26 +127,7 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
     publisher: SITE_NAME,
     
     // Open Graph
-    openGraph: {
-      title: metadataTitle,
-      description,
-      url: metadataUrl,
-      siteName: SITE_NAME,
-      locale: "en_US",
-      type,
-      images: [
-        {
-          url: image.startsWith('http') ? image : `${SITE_URL}${image}`,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
-      publishedTime,
-      modifiedTime,
-      section,
-      tags,
-    },
+    openGraph,
     
     // Twitter
     twitter: {
@@ -94,8 +135,8 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
       title: metadataTitle,
       description,
       images: [image.startsWith('http') ? image : `${SITE_URL}${image}`],
-      creator: "@shantihimalaya", // Add your Twitter handle if available
-      site: "@shantihimalaya", // Add your Twitter handle if available
+      creator: "@shantihimlaya",
+      site: "@shantihimlaya",
     },
     
     // Additional metadata
@@ -115,8 +156,6 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
     alternates: {
       canonical: fullCanonical,
     },
-    
-    // Structured data will be added via JSON-LD separately
   };
 }
 
@@ -132,7 +171,8 @@ export function generateJourneySEO(journey: any): SEOProps {
       `Join our ${journey.title} journey. ${journey.duration} of incredible trekking experiences in the Himalayas with Shanti Himalaya.`,
     image: journey.seo_image || journey.image_url || "/images/journeys-default.jpg",
     url: `${SITE_URL}/journeys/${journey.slug}`,
-    type: "website", // Changed from "product" to "website"
+    type: "website", // Use "website" for journeys
+    facebookType: "product", // Facebook sees it as a product
     keywords: [
       journey.title,
       "Himalayan trek",
@@ -159,7 +199,8 @@ export function generateDestinationSEO(destination: any): SEOProps {
       `Visit ${destination.name} with Shanti Himalaya. Best time: ${destination.best_time}. ${destination.difficulty} difficulty. Perfect for ${destination.category} travelers.`,
     image: destination.seo_image || destination.image_url || "/images/destinations-default.jpg",
     url: `${SITE_URL}/destinations/${destination.slug}`,
-    type: "place",
+    type: "website", // Changed from "place" to "website"
+    facebookType: "place", // Facebook-specific type for places
     keywords: [
       destination.name,
       "Himalayan destination",
@@ -189,7 +230,8 @@ export function generateExperienceSEO(experience: any): SEOProps {
       `${experience.category} experience at Shanti Himalaya. ${experience.duration} duration. Perfect for ${experience.group_size} people.`,
     image: experience.seo_image || experience.image_url || "/images/experiences-default.jpg",
     url: `${SITE_URL}/experiences/${slug}`,
-    type: "product",
+    type: "website", // Changed from "product" to "website"
+    facebookType: "product", // Facebook-specific type
     keywords: [
       experience.title,
       "Himalayan experience",
@@ -220,7 +262,8 @@ export function generateStaySEO(stay: any): SEOProps {
       `Experience luxury wilderness glamping at ${stay.name}. ${stay.duration} stay with Shanti Himalaya near Corbett National Park.`,
     image: stay.seo_image || stay.featuredImage || "/images/stays-default.jpg",
     url: `${SITE_URL}/experiential-stays/${slug}`,
-    type: "product",
+    type: "website", // Changed from "product" to "website"
+    facebookType: "hotel", // Facebook-specific type for hotels
     keywords: [
       stay.name,
       "glamping",
@@ -249,7 +292,7 @@ export function generateBlogSEO(blog: any): SEOProps {
       `Read about ${blog.title} on Shanti Himalaya blog. Travel tips, guides, and Himalayan adventure stories.`,
     image: blog.seo_image || blog.image_url || "/images/blog-default.jpg",
     url: `${SITE_URL}/blog/${blog.slug}`,
-    type: "article",
+    type: "article", // This is a valid Open Graph type for blog posts
     keywords: [
       ...(blog.tags || []),
       "Himalayan travel blog",

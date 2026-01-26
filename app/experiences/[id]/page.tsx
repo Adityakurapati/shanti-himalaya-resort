@@ -2,7 +2,7 @@
 
 import { Metadata } from "next";
 import type { Tables } from "@/integrations/supabase/types";
-import { generateExperienceSEO, generateSEOMetadata } from "@/lib/seo-utils";
+import { generateExperienceSEO, generateSEOMetadata, generateJSONLD, generateBreadcrumbJSONLD } from "@/lib/seo-utils";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Breadcrumbs } from "@/components/seo/Breadcrumps";
 import {
         Sparkles,
         Users,
@@ -112,9 +113,27 @@ const ExperienceDetail = () => {
                 );
         }
 
+        // Structured data
+        const experienceJSONLD = generateJSONLD(experience, 'Experience');
+        const breadcrumbStructuredData = generateBreadcrumbJSONLD([
+                { name: 'Home', url: '/' },
+                { name: 'Experiences', url: '/experiences' },
+                { name: experience.title, url: `/experiences/${experience.slug}` }
+        ]);
+
         return (
+                <>
+                        <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(experienceJSONLD) }}
+                        />
+                        <script
+                                type="application/ld+json"
+                                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+                        />
                 <div className="min-h-screen bg-background">
                         <Header />
+                        <Breadcrumbs />
 
                         {/* Hero Section */}
                         <section className="pt-32 pb-16 text-white relative overflow-hidden">
@@ -238,7 +257,7 @@ const ExperienceDetail = () => {
                                                                                                 <span className="text-muted-foreground">Group Size</span>
                                                                                                 <span className="font-semibold text-foreground">{experience.group_size}</span>
                                                                                         </div>
-                                                                                        <div className="flex justify-between items-center py-3 border-b">
+                                                                                        <div className="flex justify-between items-center py-3">
                                                                                                 <span className="text-muted-foreground">Category</span>
                                                                                                 <Badge variant="outline" className="font-semibold">
                                                                                                         {experience.category}
@@ -292,6 +311,7 @@ const ExperienceDetail = () => {
 
                         <Footer />
                 </div>
+        </>
         );
 };
 

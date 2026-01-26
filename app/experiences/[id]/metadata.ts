@@ -1,6 +1,11 @@
 import { Metadata } from "next";
 import { supabase } from "@/integrations/supabase/client";
-import { generateExperienceSEO, generateSEOMetadata } from "@/lib/seo-utils";
+import { 
+  generateExperienceSEO, 
+  generateSEOMetadata, 
+  generateJSONLD,
+  generateBreadcrumbJSONLD 
+} from "@/lib/seo-utils";
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
@@ -22,7 +27,23 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     }
 
     const seoProps = generateExperienceSEO(experience);
-    return generateSEOMetadata(seoProps);
+    const metadata = generateSEOMetadata(seoProps);
+
+    // Add structured data via metadata
+    const experienceJSONLD = generateJSONLD(experience, 'Experience');
+    const breadcrumbJSONLD = generateBreadcrumbJSONLD([
+      { name: 'Home', url: '/' },
+      { name: 'Experiences', url: '/experiences' },
+      { name: experience.title, url: `/experiences/${experience.slug}` }
+    ]);
+
+    return {
+      ...metadata,
+      other: {
+        'structured-data': JSON.stringify(experienceJSONLD),
+        'breadcrumb-data': JSON.stringify(breadcrumbJSONLD),
+      }
+    };
   } catch (error) {
     console.error("Error generating metadata for experience:", error);
     return {

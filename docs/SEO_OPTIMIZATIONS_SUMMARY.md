@@ -17,26 +17,26 @@ Comprehensive SEO optimization framework implemented across Shanti Himalaya webs
 ### 2. Robots & Crawlability Optimization
 **Impact:** Better control over search engine crawling behavior
 
-```text
+\`\`\`text
 Before: Basic robots.txt with limited directives
 After: Advanced rules with:
   - Specific allow/disallow paths
   - Google Bot optimization
   - Bad bot blocking
   - Clear sitemap reference
-```
+\`\`\`
 
 ### 3. Dynamic Sitemap Generation
 **Impact:** All 50,000+ URLs properly indexed
 
-```typescript
+\`\`\`typescript
 Features:
 - Automatic generation from database
 - Change frequency per content type
 - Priority scoring (1.0 to 0.3)
 - Daily updates
 - Error handling & fallback
-```
+\`\`\`
 
 ### 4. Structured Data (JSON-LD)
 **Impact:** Rich snippets in Google Search results
@@ -58,7 +58,7 @@ Implemented 12 different schema types:
 ### 5. Dynamic Page Metadata
 **Impact:** Unique, optimized metadata for every page
 
-```
+\`\`\`
 Journey Pages: TouristAttraction schema
   - Title: [Journey Name] | Shanti Himalaya
   - Description: Duration, difficulty, best time
@@ -85,24 +85,24 @@ Blog Pages: NewsArticle schema
   - Publication date
   - Updated date tracking
   - Category and tags
-```
+\`\`\`
 
 ### 6. Breadcrumb Navigation
 **Impact:** Better navigation & improved CTR in search results
 
-```html
+\`\`\`html
 User sees:
   Home > Journeys > Himalayan Trek Adventure
 
 Google sees (JSON-LD):
   BreadcrumbList with 3 items
   Each with position and URL
-```
+\`\`\`
 
 ### 7. Global SEO Configuration
 **Impact:** All pages inherit base SEO optimization
 
-```typescript
+\`\`\`typescript
 layout.tsx now includes:
 - Metadata base URL
 - Keywords list (8 main keywords)
@@ -112,7 +112,7 @@ layout.tsx now includes:
 - Robots directives
 - Security headers
 - Organization schema
-```
+\`\`\`
 
 ### 8. Performance & Security Headers
 **Impact:** Faster loading, better security, improved crawlability
@@ -129,27 +129,27 @@ Headers added:
 ## Files Created/Modified
 
 ### New Files Created (8):
-```
+\`\`\`
 /scripts/add-seo-slug-fields.sql
 /app/journeys/[id]/journey-detail.tsx
 /docs/SEO_IMPLEMENTATION_GUIDE.md
 /docs/SEO_OPTIMIZATIONS_SUMMARY.md (this file)
-```
+\`\`\`
 
 ### Core Files Enhanced (5):
-```
+\`\`\`
 /app/robots.ts              → Advanced crawl rules
 /app/sitemap.ts             → Dynamic generation
 /app/layout.tsx             → Global SEO
 /lib/seo-utils.ts           → +300 lines of JSON-LD generators
 /components/seo/Breadcrumps.tsx → Enhanced with schema
 /middleware.ts              → Security & caching headers
-```
+\`\`\`
 
 ### Page Files Updated:
-```
+\`\`\`
 /app/journeys/[id]/page.tsx → Added generateMetadata
-```
+\`\`\`
 
 ## Impact Metrics
 
@@ -162,50 +162,50 @@ Headers added:
 - **Crawl Efficiency**: 50% reduction in crawl budget waste
 
 ### Technical SEO Score:
-```
+\`\`\`
 Before: ~65/100
 After:  ~92/100
-```
+\`\`\`
 
 ## URL Structure Overview
 
 ### Main Category Pages:
-```
+\`\`\`
 https://shantihimlaya.com/journeys
 https://shantihimlaya.com/destinations
 https://shantihimlaya.com/experiences
 https://shantihimlaya.com/experiential-stays
 https://shantihimlaya.com/blog
-```
+\`\`\`
 
 ### Detail Pages (Slug-based):
-```
+\`\`\`
 https://shantihimlaya.com/journeys/himalayan-trek-adventure
 https://shantihimlaya.com/destinations/delhi-to-rishikesh
 https://shantihimlaya.com/experiences/yoga-meditation-retreat
 https://shantihimlaya.com/experiential-stays/jahaanuma-boutique
 https://shantihimlaya.com/blog/travel-tips-himalayan-region
-```
+\`\`\`
 
 ### Resort Pages:
-```
+\`\`\`
 https://shantihimlaya.com/our-resort
 https://shantihimlaya.com/our-resort/accommodations
 https://shantihimlaya.com/our-resort/activities/{slug}
 https://shantihimlaya.com/our-resort/packages/{slug}
 https://shantihimlaya.com/our-resort/menu-meals
 https://shantihimlaya.com/our-resort/how-to-reach
-```
+\`\`\`
 
 ### Utility Pages:
-```
+\`\`\`
 https://shantihimlaya.com/about
 https://shantihimlaya.com/contact
 https://shantihimlaya.com/sustainable-tourism
 https://shantihimlaya.com/privacy
 https://shantihimlaya.com/terms
 https://shantihimlaya.com/cookies
-```
+\`\`\`
 
 ## Key Metrics to Monitor
 

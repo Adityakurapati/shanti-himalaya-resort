@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react"
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Breadcrumbs } from "@/components/seo/Breadcrumps";
+import { generateStaySEO, generateSEOMetadata, generateJSONLD, generateBreadcrumbJSONLD } from "@/lib/seo-utils";
 import {
   Home,
   MapPin,
@@ -282,7 +284,7 @@ const RestaurantImageCarousel = ({
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge className={getImageTypeBadge(image.image_type)}>
+                    <Badge className={getImageTypeBadge(image.image_type)} >
                       {getImageTypeLabel(image.image_type)}
                     </Badge>
                     {image.is_featured && (
@@ -699,7 +701,7 @@ ${formData.contactNumber} | ${formData.email}
         <div className="pt-32 pb-16 text-center">
           <div className="max-w-md mx-auto">
             <Home className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-foreground mb-4">Stay Not Found</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Stay Not Found</h1>
             <p className="text-muted-foreground mb-6">The stay you're looking for doesn't exist or has been removed.</p>
             <Link href="/experiential-stays">
               <Button className="gap-2">
@@ -714,473 +716,495 @@ ${formData.contactNumber} | ${formData.email}
     );
   }
 
+  // Generate JSON-LD structured data
+  const stayJSONLD = generateJSONLD(stay, "Stay");
+  const breadcrumbStructuredData = generateBreadcrumbJSONLD([
+    { name: "Home", url: "/" },
+    { name: "Experiential Stays", url: "/experiential-stays" },
+    { name: stay.name, url: `/experiential-stays/${stay.slug}` },
+  ]);
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(stayJSONLD) }}
+      />
+      {/* Breadcrumb Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
+      />
 
-      <section className="pt-24 pb-8 relative">
-        <div className="container mx-auto px-4">
-          <Link
-            href="/experiential-stays"
-            className="inline-flex items-center mb-8 text-primary hover:text-primary/80 transition-colors group"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to All Stays
-          </Link>
-        </div>
-      </section>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <Breadcrumbs />
 
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Stay Name and Badge */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                    {stay.name}
-                  </h1>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MapPin className="w-5 h-5" />
-                    <span className="text-lg">{stay.location || "Location not specified"}</span>
-                  </div>
-                </div>
-                <Badge className="bg-primary text-primary-foreground px-4 py-2 text-lg">
-                  {stay.badge}
-                </Badge>
-              </div>
-            </div>
+        <section className="pt-24 pb-8 relative">
+          <div className="container mx-auto px-4">
+            <Link
+              href="/experiential-stays"
+              className="inline-flex items-center mb-8 text-primary hover:text-primary/80 transition-colors group"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to All Stays
+            </Link>
+          </div>
+        </section>
 
-            {/* Categories */}
-            {stay.categories && stay.categories.length > 0 && (
-              <div className="mb-8">
-                <div className="flex flex-wrap gap-2">
-                  {stay.categories.map((category: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="text-sm px-3 py-1">
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="border-t border-border my-8"></div>
-
-            {/* Image Gallery Section */}
-            <div className="mb-12">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-foreground">Gallery</h2>
-                <div className="flex gap-2">
-                  <Button
-                    variant={activeImageTab === "property" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleImageTabChange("property")}
-                    className="gap-2"
-                  >
-                    <Home className="w-4 h-4" />
-                    Property ({propertyImages.length})
-                  </Button>
-                  <Button
-                    variant={activeImageTab === "restaurant" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleImageTabChange("restaurant")}
-                    className="gap-2"
-                  >
-                    <Utensils className="w-4 h-4" />
-                    Restaurant ({restaurantImages.length})
-                  </Button>
-                </div>
-              </div>
-
-              {/* Image Gallery */}
-              {currentImages.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  {/* Main Image */}
-                  <div className="lg:col-span-2">
-                    <div className="relative h-[400px] rounded-xl overflow-hidden">
-                      <img
-                        src={currentImage?.image_url || "/placeholder.svg"}
-                        alt={`${stay.name} - ${getImageCaption(currentImage, currentImageIndex)}`}
-                        className="w-full h-full object-cover transition-opacity duration-500 ease-in-out cursor-pointer"
-                        onClick={() => setShowFullScreen(true)}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/placeholder.svg";
-                        }}
-                      />
-                      <div className="absolute top-4 left-4">
-                        <Badge className={getImageTypeBadge(currentImage?.image_type || 'other')}>
-                          {getImageTypeLabel(currentImage?.image_type || 'other')}
-                        </Badge>
-                      </div>
-                      <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-sm">
-                        {getImageCaption(currentImage, currentImageIndex)}
-                      </div>
-                      {currentImage?.is_featured && (
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-amber-500 hover:bg-amber-600">
-                            <Star className="w-3 h-3 mr-1 fill-current" />
-                            Featured
-                          </Badge>
-                        </div>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="absolute bottom-4 right-4 bg-black/60 text-white hover:bg-black/80 border-none"
-                        onClick={() => setShowFullScreen(true)}
-                      >
-                        <Maximize2 className="w-4 h-4 mr-2" />
-                        View Full Size
-                      </Button>
+        <section className="py-8">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              {/* Stay Name and Badge */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+                      {stay.name}
+                    </h1>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="w-5 h-5" />
+                      <span className="text-lg">{stay.location || "Location not specified"}</span>
                     </div>
                   </div>
-
-                  {/* Right Column Images */}
-                  <div className="space-y-4">
-                    {getRightImage(1) && (
-                      <div
-                        className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => handleImageSelect((currentImageIndex + 1) % currentImages.length)}
-                      >
-                        <img
-                          src={getRightImage(1).image_url || "/placeholder.svg"}
-                          alt={`${stay.name} - ${getThumbnailCaption(1)}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/placeholder.svg";
-                          }}
-                        />
-                        <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
-                          {getThumbnailCaption(1)}
-                        </div>
-                      </div>
-                    )}
-
-                    {getRightImage(2) && (
-                      <div
-                        className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => handleImageSelect((currentImageIndex + 2) % currentImages.length)}
-                      >
-                        <img
-                          src={getRightImage(2).image_url || "/placeholder.svg"}
-                          alt={`${stay.name} - ${getThumbnailCaption(2)}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/placeholder.svg";
-                          }}
-                        />
-                        <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
-                          {getThumbnailCaption(2)}
-                        </div>
-                      </div>
-                    )}
-
-                    {getRightImage(3) && (
-                      <div
-                        className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => handleImageSelect((currentImageIndex + 3) % currentImages.length)}
-                      >
-                        <img
-                          src={getRightImage(3).image_url || "/placeholder.svg"}
-                          alt={`${stay.name} - ${getThumbnailCaption(3)}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/placeholder.svg";
-                          }}
-                        />
-                        <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
-                          {getThumbnailCaption(3)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <Badge className="bg-primary text-primary-foreground px-4 py-2 text-lg">
+                    {stay.badge}
+                  </Badge>
                 </div>
-              ) : (
-                <div className="rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 h-[400px] flex items-center justify-center">
-                  <div className="text-center">
-                    {activeImageTab === "property" ? (
-                      <Home className="w-20 h-20 text-primary/30 mx-auto mb-4" />
-                    ) : (
-                      <Utensils className="w-20 h-20 text-primary/30 mx-auto mb-4" />
-                    )}
-                    <p className="text-muted-foreground">
-                      No {activeImageTab} images available yet
-                    </p>
-                  </div>
-                </div>
-              )}
+              </div>
 
-              {/* Image Navigation */}
-              {currentImages.length > 1 && (
-                <div className="flex justify-center items-center gap-4 mt-4">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      prevImage();
-                      if (slideIntervalRef.current) {
-                        clearInterval(slideIntervalRef.current);
-                      }
-                      slideIntervalRef.current = setInterval(() => {
-                        setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
-                      }, 3000);
-                    }}
-                    className="h-8 w-8"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <div className="flex space-x-2">
-                    {currentImages.map((img, index) => (
-                      <button
-                        key={img.id}
-                        onClick={() => handleImageSelect(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex ? "bg-primary w-6" : "bg-border"}`}
-                      />
+              {/* Categories */}
+              {stay.categories && stay.categories.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex flex-wrap gap-2">
+                    {stay.categories.map((category: string, index: number) => (
+                      <Badge key={index} variant="secondary" className="text-sm px-3 py-1">
+                        {category}
+                      </Badge>
                     ))}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      nextImage();
-                      if (slideIntervalRef.current) {
-                        clearInterval(slideIntervalRef.current);
-                      }
-                      slideIntervalRef.current = setInterval(() => {
-                        setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
-                      }, 3000);
-                    }}
-                    className="h-8 w-8"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-muted-foreground ml-2">
-                    Image {currentImageIndex + 1} of {currentImages.length}
-                  </span>
                 </div>
               )}
-            </div>
 
-            {/* Fullscreen Image Modal */}
-            {showFullScreen && currentImage && (
-              <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-                <div className="relative w-full max-w-6xl max-h-[90vh]">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70"
-                    onClick={() => setShowFullScreen(false)}
-                  >
-                    <span className="sr-only">Close</span>
-                    <span className="text-2xl">×</span>
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70"
-                    onClick={prevImage}
-                  >
-                    <ChevronLeft className="h-6 w-6" />
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70"
-                    onClick={nextImage}
-                  >
-                    <ChevronRight className="h-6 w-6" />
-                  </Button>
+              <div className="border-t border-border my-8"></div>
 
-                  <img
-                    src={currentImage.image_url || "/placeholder.svg"}
-                    alt={getImageCaption(currentImage, currentImageIndex)}
-                    className="w-full h-full object-contain max-h-[80vh] rounded-lg"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/placeholder.svg";
-                    }}
-                  />
-                  
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm">
-                    {getImageCaption(currentImage, currentImageIndex)} 
-                    <span className="ml-2 text-muted-foreground">
-                      ({currentImageIndex + 1} of {currentImages.length})
-                    </span>
+              {/* Image Gallery Section */}
+              <div className="mb-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-foreground">Gallery</h2>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={activeImageTab === "property" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleImageTabChange("property")}
+                      className="gap-2"
+                    >
+                      <Home className="w-4 h-4" />
+                      Property ({propertyImages.length})
+                    </Button>
+                    <Button
+                      variant={activeImageTab === "restaurant" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleImageTabChange("restaurant")}
+                      className="gap-2"
+                    >
+                      <Utensils className="w-4 h-4" />
+                      Restaurant ({restaurantImages.length})
+                    </Button>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Restaurant Section with Carousel */}
-            {(stay.restaurant_description || restaurantImages.length > 0) && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                  <Utensils className="w-6 h-6 text-primary" />
-                  Restaurant & Dining
-                </h2>
-                
-                {/* Restaurant Images Carousel */}
-                {restaurantImages.length > 0 && (
-                  <div className="mb-8">
-                    <h3 className="text-xl font-semibold text-foreground mb-4">Restaurant Gallery</h3>
-                    <RestaurantImageCarousel
-                      images={restaurantImages}
-                      stayName={stay.name}
-                      onImageClick={handleRestaurantImageClick}
-                    />
-                  </div>
-                )}
-
-                {/* Restaurant Description */}
-                {stay.restaurant_description && (
-                  <div className="bg-gradient-to-r from-primary/5 to-transparent rounded-xl p-6 mt-6">
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                      {stay.restaurant_description}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Query Form */}
-            <div className="mb-16">
-              <Card>
-                <CardContent className="p-6">
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-foreground mb-2">Your Query</h2>
-                      <p className="text-muted-foreground">Fill in the details below and we'll get back to you within 24 hours.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="checkInDate">Check In Date</Label>
-                        <Input
-                          id="checkInDate"
-                          name="checkInDate"
-                          type="date"
-                          value={formData.checkInDate}
-                          onChange={handleInputChange}
-                          required
+                {/* Image Gallery */}
+                {currentImages.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    {/* Main Image */}
+                    <div className="lg:col-span-2">
+                      <div className="relative h-[400px] rounded-xl overflow-hidden">
+                        <img
+                          src={currentImage?.image_url || "/placeholder.svg"}
+                          alt={`${stay.name} - ${getImageCaption(currentImage, currentImageIndex)}`}
+                          className="w-full h-full object-cover transition-opacity duration-500 ease-in-out cursor-pointer"
+                          onClick={() => setShowFullScreen(true)}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/placeholder.svg";
+                          }}
                         />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="checkOutDate">Check Out Date</Label>
-                        <Input
-                          id="checkOutDate"
-                          name="checkOutDate"
-                          type="date"
-                          value={formData.checkOutDate}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="adults">No. of Adults</Label>
-                        <Input
-                          id="adults"
-                          name="adults"
-                          type="number"
-                          min="1"
-                          value={formData.adults}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="children">No. of Children</Label>
-                        <Input
-                          id="children"
-                          name="children"
-                          type="number"
-                          min="0"
-                          value={formData.children}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="contactNumber">Contact No.</Label>
-                        <Input
-                          id="contactNumber"
-                          name="contactNumber"
-                          type="tel"
-                          placeholder="+91 12345 67890"
-                          value={formData.contactNumber}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          placeholder="your@email.com"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <Label htmlFor="remarks">Remarks</Label>
-                      <Textarea
-                        id="remarks"
-                        name="remarks"
-                        placeholder="Any special requirements or questions..."
-                        value={formData.remarks}
-                        onChange={handleInputChange}
-                        rows={4}
-                      />
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                      <Button
-                        type="submit"
-                        className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-8"
-                        disabled={isSubmitted}
-                      >
-                        {isSubmitted ? (
-                          <>
-                            <Check className="mr-2 h-4 w-4" />
-                            Query Submitted
-                          </>
-                        ) : (
-                          <>
-                            <Send className="mr-2 h-4 w-4" />
-                            Submit Query
-                          </>
+                        <div className="absolute top-4 left-4">
+                          <Badge className={getImageTypeBadge(currentImage?.image_type || 'other')}>
+                            {getImageTypeLabel(currentImage?.image_type || 'other')}
+                          </Badge>
+                        </div>
+                        <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-sm">
+                          {getImageCaption(currentImage, currentImageIndex)}
+                        </div>
+                        {currentImage?.is_featured && (
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-amber-500 hover:bg-amber-600">
+                              <Star className="w-3 h-3 mr-1 fill-current" />
+                              Featured
+                            </Badge>
+                          </div>
                         )}
-                      </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="absolute bottom-4 right-4 bg-black/60 text-white hover:bg-black/80 border-none"
+                          onClick={() => setShowFullScreen(true)}
+                        >
+                          <Maximize2 className="w-4 h-4 mr-2" />
+                          View Full Size
+                        </Button>
+                      </div>
+                    </div>
 
-                      {isSubmitted && (
-                        <div className="text-green-600 text-sm flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
-                          Thanks for your query. We shall check the availability & reply back within 24 Hours.
+                    {/* Right Column Images */}
+                    <div className="space-y-4">
+                      {getRightImage(1) && (
+                        <div
+                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => handleImageSelect((currentImageIndex + 1) % currentImages.length)}
+                        >
+                          <img
+                            src={getRightImage(1).image_url || "/placeholder.svg"}
+                            alt={`${stay.name} - ${getThumbnailCaption(1)}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "/placeholder.svg";
+                            }}
+                          />
+                          <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                            {getThumbnailCaption(1)}
+                          </div>
+                        </div>
+                      )}
+
+                      {getRightImage(2) && (
+                        <div
+                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => handleImageSelect((currentImageIndex + 2) % currentImages.length)}
+                        >
+                          <img
+                            src={getRightImage(2).image_url || "/placeholder.svg"}
+                            alt={`${stay.name} - ${getThumbnailCaption(2)}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "/placeholder.svg";
+                            }}
+                          />
+                          <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                            {getThumbnailCaption(2)}
+                          </div>
+                        </div>
+                      )}
+
+                      {getRightImage(3) && (
+                        <div
+                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => handleImageSelect((currentImageIndex + 3) % currentImages.length)}
+                        >
+                          <img
+                            src={getRightImage(3).image_url || "/placeholder.svg"}
+                            alt={`${stay.name} - ${getThumbnailCaption(3)}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "/placeholder.svg";
+                            }}
+                          />
+                          <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                            {getThumbnailCaption(3)}
+                          </div>
                         </div>
                       )}
                     </div>
-                  </form>
-                </CardContent>
-              </Card>
+                  </div>
+                ) : (
+                  <div className="rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 h-[400px] flex items-center justify-center">
+                    <div className="text-center">
+                      {activeImageTab === "property" ? (
+                        <Home className="w-20 h-20 text-primary/30 mx-auto mb-4" />
+                      ) : (
+                        <Utensils className="w-20 h-20 text-primary/30 mx-auto mb-4" />
+                      )}
+                      <p className="text-muted-foreground">
+                        No {activeImageTab} images available yet
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Image Navigation */}
+                {currentImages.length > 1 && (
+                  <div className="flex justify-center items-center gap-4 mt-4">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        prevImage();
+                        if (slideIntervalRef.current) {
+                          clearInterval(slideIntervalRef.current);
+                        }
+                        slideIntervalRef.current = setInterval(() => {
+                          setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
+                        }, 3000);
+                      }}
+                      className="h-8 w-8"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="flex space-x-2">
+                      {currentImages.map((img, index) => (
+                        <button
+                          key={img.id}
+                          onClick={() => handleImageSelect(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex ? "bg-primary w-6" : "bg-border"}`}
+                        />
+                      ))}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        nextImage();
+                        if (slideIntervalRef.current) {
+                          clearInterval(slideIntervalRef.current);
+                        }
+                        slideIntervalRef.current = setInterval(() => {
+                          setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
+                        }, 3000);
+                      }}
+                      className="h-8 w-8"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm text-muted-foreground ml-2">
+                      Image {currentImageIndex + 1} of {currentImages.length}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Fullscreen Image Modal */}
+              {showFullScreen && currentImage && (
+                <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+                  <div className="relative w-full max-w-6xl max-h-[90vh]">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70"
+                      onClick={() => setShowFullScreen(false)}
+                    >
+                      <span className="sr-only">Close</span>
+                      <span className="text-2xl">×</span>
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70"
+                      onClick={prevImage}
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70"
+                      onClick={nextImage}
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </Button>
+
+                    <img
+                      src={currentImage.image_url || "/placeholder.svg"}
+                      alt={getImageCaption(currentImage, currentImageIndex)}
+                      className="w-full h-full object-contain max-h-[80vh] rounded-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
+                    />
+                    
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm">
+                      {getImageCaption(currentImage, currentImageIndex)} 
+                      <span className="ml-2 text-muted-foreground">
+                        ({currentImageIndex + 1} of {currentImages.length})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Restaurant Section with Carousel */}
+              {(stay.restaurant_description || restaurantImages.length > 0) && (
+                <div className="mb-12">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+                    <Utensils className="w-6 h-6 text-primary" />
+                    Restaurant & Dining
+                  </h2>
+                  
+                  {/* Restaurant Images Carousel */}
+                  {restaurantImages.length > 0 && (
+                    <div className="mb-8">
+                      <h3 className="text-xl font-semibold text-foreground mb-4">Restaurant Gallery</h3>
+                      <RestaurantImageCarousel
+                        images={restaurantImages}
+                        stayName={stay.name}
+                        onImageClick={handleRestaurantImageClick}
+                      />
+                    </div>
+                  )}
+
+                  {/* Restaurant Description */}
+                  {stay.restaurant_description && (
+                    <div className="bg-gradient-to-r from-primary/5 to-transparent rounded-xl p-6 mt-6">
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                        {stay.restaurant_description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Query Form */}
+              <div className="mb-16">
+                <Card>
+                  <CardContent className="p-6">
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-foreground mb-2">Your Query</h2>
+                        <p className="text-muted-foreground">Fill in the details below and we'll get back to you within 24 hours.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="checkInDate">Check In Date</Label>
+                          <Input
+                            id="checkInDate"
+                            name="checkInDate"
+                            type="date"
+                            value={formData.checkInDate}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="checkOutDate">Check Out Date</Label>
+                          <Input
+                            id="checkOutDate"
+                            name="checkOutDate"
+                            type="date"
+                            value={formData.checkOutDate}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="adults">No. of Adults</Label>
+                          <Input
+                            id="adults"
+                            name="adults"
+                            type="number"
+                            min="1"
+                            value={formData.adults}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="children">No. of Children</Label>
+                          <Input
+                            id="children"
+                            name="children"
+                            type="number"
+                            min="0"
+                            value={formData.children}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="contactNumber">Contact No.</Label>
+                          <Input
+                            id="contactNumber"
+                            name="contactNumber"
+                            type="tel"
+                            placeholder="+91 12345 67890"
+                            value={formData.contactNumber}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="your@email.com"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mb-6">
+                        <Label htmlFor="remarks">Remarks</Label>
+                        <Textarea
+                          id="remarks"
+                          name="remarks"
+                          placeholder="Any special requirements or questions..."
+                          value={formData.remarks}
+                          onChange={handleInputChange}
+                          rows={4}
+                        />
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                        <Button
+                          type="submit"
+                          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-8"
+                          disabled={isSubmitted}
+                        >
+                          {isSubmitted ? (
+                            <>
+                              <Check className="mr-2 h-4 w-4" />
+                              Query Submitted
+                            </>
+                          ) : (
+                            <>
+                              <Send className="mr-2 h-4 w-4" />
+                              Submit Query
+                            </>
+                          )}
+                        </Button>
+
+                        {isSubmitted && (
+                          <div className="text-green-600 text-sm flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            Thanks for your query. We shall check the availability & reply back within 24 Hours.
+                          </div>
+                        )}
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 }

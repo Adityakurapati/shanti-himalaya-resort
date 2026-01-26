@@ -38,7 +38,7 @@ const PackagesAdmin = () => {
                 tags: "",
                 featured: false,
                 read_time: "5 min read",
-                slug:"",
+                slug: "",
         })
 
         useEffect(() => {
@@ -74,93 +74,93 @@ const PackagesAdmin = () => {
         }
 
         const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
+                e.preventDefault()
 
-  // Generate a slug from the title if not already provided
-  const slugValue = formData.slug || generateSlug(formData.title)
+                // Generate a slug from the title if not already provided
+                const slugValue = formData.slug || generateSlug(formData.title)
 
-  const packageData = {
-    ...formData,
-    slug: slugValue,
-    tags: formData.tags
-      .split(",")
-      .map((t: any) => t.trim())
-      .filter(Boolean),
-  }
+                const packageData = {
+                        ...formData,
+                        slug: slugValue,
+                        tags: formData.tags
+                                .split(",")
+                                .map((t: any) => t.trim())
+                                .filter(Boolean),
+                }
 
-  try {
-    if (editingPackage) {
-      const { error } = await supabase
-        .from("packages")
-        .update(packageData)
-        .eq("id", editingPackage.id)
+                try {
+                        if (editingPackage) {
+                                const { error } = await supabase
+                                        .from("packages")
+                                        .update(packageData)
+                                        .eq("id", editingPackage.id)
 
-      if (error) throw error
-      toast({ title: "Package updated successfully" })
-    } else {
-      const { error } = await supabase.from("packages").insert([packageData])
+                                if (error) throw error
+                                toast({ title: "Package updated successfully" })
+                        } else {
+                                const { error } = await supabase.from("packages").insert([packageData])
 
-      if (error) throw error
-      toast({ title: "Package created successfully" })
-    }
+                                if (error) throw error
+                                toast({ title: "Package created successfully" })
+                        }
 
-    resetForm()
-    setIsDialogOpen(false)
-  } catch (error: any) {
-    toast({
-      title: "Error saving package",
-      description: error.message,
-      variant: "destructive",
-    })
-  }
-}
+                        resetForm()
+                        setIsDialogOpen(false)
+                } catch (error: any) {
+                        toast({
+                                title: "Error saving package",
+                                description: error.message,
+                                variant: "destructive",
+                        })
+                }
+        }
 
-// Add a function to generate slug
-const generateSlug = (text: string) => {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
+        // Add a function to generate slug
+        const generateSlug = (text: string) => {
+                return text
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '')
+        }
 
-// Update resetForm to include slug
-const resetForm = () => {
-  setFormData({
-    title: "",
-    excerpt: "",
-    content: "",
-    category: "",
-    author: "",
-    author_bio: "",
-    author_avatar: "",
-    image_url: "",
-    tags: "",
-    featured: false,
-    read_time: "5 min read",
-    slug: "", // Add this
-  })
-  setEditingPackage(null)
-}
+        // Update resetForm to include slug
+        const resetForm = () => {
+                setFormData({
+                        title: "",
+                        excerpt: "",
+                        content: "",
+                        category: "",
+                        author: "",
+                        author_bio: "",
+                        author_avatar: "",
+                        image_url: "",
+                        tags: "",
+                        featured: false,
+                        read_time: "5 min read",
+                        slug: "", // Add this
+                })
+                setEditingPackage(null)
+        }
 
-// Update handleEdit to populate slug
-const handleEdit = (pkg: Package) => {
-  setEditingPackage(pkg)
-  setFormData({
-    title: pkg.title,
-    excerpt: pkg.excerpt,
-    content: pkg.content,
-    category: pkg.category,
-    author: pkg.author,
-    author_bio: pkg.author_bio || "",
-    author_avatar: pkg.author_avatar || "",
-    image_url: pkg.image_url || "",
-    tags: pkg.tags.join(", "),
-    featured: pkg.featured ?? false,
-    read_time: pkg.read_time || "5 min read",
-    slug: pkg.slug, // Add this
-  })
-  setIsDialogOpen(true)
-}
+        // Update handleEdit to populate slug
+        const handleEdit = (pkg: Package) => {
+                setEditingPackage(pkg)
+                setFormData({
+                        title: pkg.title,
+                        excerpt: pkg.excerpt,
+                        content: pkg.content,
+                        category: pkg.category,
+                        author: pkg.author,
+                        author_bio: pkg.author_bio || "",
+                        author_avatar: pkg.author_avatar || "",
+                        image_url: pkg.image_url || "",
+                        tags: pkg.tags.join(", "),
+                        featured: pkg.featured ?? false,
+                        read_time: pkg.read_time || "5 min read",
+                        slug: pkg.slug, // Add this
+                })
+                setIsDialogOpen(true)
+        }
 
         const handleDelete = async (id: string) => {
                 if (!confirm("Are you sure you want to delete this package?")) return
@@ -227,38 +227,38 @@ const handleEdit = (pkg: Package) => {
                                                 </DialogHeader>
                                                 <form onSubmit={handleSubmit} className="space-y-4">
                                                         <div>
-  <div className="flex items-center gap-2 mb-2">
-    <Label htmlFor="title">Title</Label>
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                        <Label htmlFor="title">Title</Label>
 
-    <AIButton
-      title={formData.title}
-      contentType="package"
-      onContentGenerated={(aiContent) => {
-        setFormData((prev) => ({
-          ...prev,
-          excerpt: aiContent.excerpt || prev.excerpt,
-          content: aiContent.content || prev.content,
-          category: aiContent.category || prev.category,
-          tags: aiContent.tags || prev.tags,
-          read_time: aiContent.read_time || prev.read_time,
-          image_url: aiContent.image_url || prev.image_url,
-          author: aiContent.author || prev.author,
-          author_bio: aiContent.author_bio || prev.author_bio,
-          author_avatar: aiContent.author_avatar || prev.author_avatar,
-        }));
-      }}
-    />
-  </div>
+                                                                        <AIButton
+                                                                                title={formData.title}
+                                                                                contentType="package"
+                                                                                onContentGenerated={(aiContent) => {
+                                                                                        setFormData((prev) => ({
+                                                                                                ...prev,
+                                                                                                excerpt: aiContent.excerpt || prev.excerpt,
+                                                                                                content: aiContent.content || prev.content,
+                                                                                                category: aiContent.category || prev.category,
+                                                                                                tags: aiContent.tags || prev.tags,
+                                                                                                read_time: aiContent.read_time || prev.read_time,
+                                                                                                image_url: aiContent.image_url || prev.image_url,
+                                                                                                author: aiContent.author || prev.author,
+                                                                                                author_bio: aiContent.author_bio || prev.author_bio,
+                                                                                                author_avatar: aiContent.author_avatar || prev.author_avatar,
+                                                                                        }));
+                                                                                }}
+                                                                        />
+                                                                </div>
 
-  <Input
-    id="title"
-    value={formData.title}
-    onChange={(e) =>
-      setFormData({ ...formData, title: e.target.value })
-    }
-    required
-  />
-</div>
+                                                                <Input
+                                                                        id="title"
+                                                                        value={formData.title}
+                                                                        onChange={(e) =>
+                                                                                setFormData({ ...formData, title: e.target.value })
+                                                                        }
+                                                                        required
+                                                                />
+                                                        </div>
 
                                                         <div>
                                                                 <Label htmlFor="excerpt">Excerpt</Label>

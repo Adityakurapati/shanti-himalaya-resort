@@ -1,6 +1,58 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
+// In /lib/slug-utils.ts
+import { redirect } from 'next/navigation';
+
+/**
+ * Check if a string is a UUID
+ */
+export function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
+/**
+ * Handle legacy UUID URLs by redirecting to slug-based URLs
+ */
+export async function handleLegacyUrl(id: string, type: 'journey' | 'destination' | 'experience' | 'stay' | 'blog') {
+  if (!isUUID(id)) {
+    return null; // Already a slug
+  }
+  
+  try {
+    let tableName: "journeys" | "destinations" | "experiences" | "experiential_stays" | "packages";
+    if (type === 'blog') {
+      tableName = 'packages';
+    } else if (type === 'stay') {
+      tableName = 'experiential_stays';
+    } else if (type === 'journey') {
+      tableName = 'journeys';
+    } else if (type === 'destination') {
+      tableName = 'destinations';
+    } else if (type === 'experience') {
+      tableName = 'experiences';
+    } else {
+      throw new Error(`Unknown type: ${type}`);
+    }
+    
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('slug')
+      .eq('id', id)
+      .single();
+    
+    if (error || !data || !data.slug) {
+      return null;
+    }
+    
+    // Return the slug for redirection
+    return data.slug;
+  } catch (error) {
+    console.error(`Error handling legacy ${type} URL:`, error);
+    return null;
+  }
+}
 /**
  * Generate a SEO-friendly slug from text
  */

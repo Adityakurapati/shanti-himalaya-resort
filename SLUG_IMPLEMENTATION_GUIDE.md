@@ -48,12 +48,12 @@ This guide outlines the implementation of SEO-friendly, slug-based URLs for the 
 ### 1. Run the Migration Script
 Execute `/scripts/seo-migration.sql` in your Supabase SQL editor:
 
-```sql
+\`\`\`sql
 -- Navigate to Supabase Dashboard
 -- Go to SQL Editor
 -- Copy and paste the contents of scripts/seo-migration.sql
 -- Execute the script
-```
+\`\`\`
 
 **What this does:**
 - Adds `slug` column to destinations, journeys, experiences, and experiential_stays tables
@@ -65,7 +65,7 @@ Execute `/scripts/seo-migration.sql` in your Supabase SQL editor:
 ### 2. Verify Database Changes
 After running the migration, verify with these queries:
 
-```sql
+\`\`\`sql
 -- Check destinations
 SELECT id, name, slug FROM public.destinations LIMIT 5;
 
@@ -86,7 +86,7 @@ SELECT id, name, slug FROM public.resort_packages LIMIT 5;
 
 -- Check blog posts (packages table)
 SELECT id, title, slug FROM public.packages LIMIT 5;
-```
+\`\`\`
 
 All records should have a slug value.
 
@@ -186,20 +186,20 @@ SEO metadata generation utilities:
 ### Automatic Generation
 When you insert a new record into any table with a slug column, the database trigger automatically generates the slug:
 
-```typescript
+\`\`\`typescript
 // Example: Inserting a new journey
 INSERT INTO journeys (title, description, ...)
 VALUES ('Annapurna Circuit Trek', '...', ...)
 // Automatically generates slug: 'annapurna-circuit-trek'
-```
+\`\`\`
 
 ### Manual Slug Generation (in code)
-```typescript
+\`\`\`typescript
 import { generateSlug } from '@/lib/slug-utils';
 
 const slug = generateSlug("Annapurna Circuit Trek");
 // Result: "annapurna-circuit-trek"
-```
+\`\`\`
 
 ### Slug Format Rules
 - Convert to lowercase
@@ -211,12 +211,12 @@ const slug = generateSlug("Annapurna Circuit Trek");
 ## Testing the Implementation
 
 ### 1. Test Database Lookups
-```bash
+\`\`\`bash
 # Verify slugs exist
 psql # Open your database
 SELECT slug FROM destinations LIMIT 5;
 SELECT slug FROM journeys LIMIT 5;
-```
+\`\`\`
 
 ### 2. Test Navigation Links
 - Click on journey cards → Should navigate to `/journeys/annapurna-circuit-trek`
@@ -236,28 +236,28 @@ SELECT slug FROM journeys LIMIT 5;
 All should load correctly with no 404 errors.
 
 ### 4. Test SEO Elements
-```typescript
+\`\`\`typescript
 // Check page title
 document.title // Should be: "Journey Title | Shanti Himalaya Resort"
 
 // Check meta tags
 document.querySelector('meta[name="description"]') // Should exist
 document.querySelector('meta[property="og:title"]') // Should exist
-```
+\`\`\`
 
 ## Migration Path: Old URLs to New URLs
 
 ### Option 1: Redirects (Recommended)
 If you want to preserve old UUID-based URLs and redirect them:
 
-```typescript
+\`\`\`typescript
 // In app/journeys/[id]/page.tsx
 if (isUUID(id)) {
   // This is an old UUID-based URL
   // Fetch by ID and redirect to slug-based URL
   redirect(`/journeys/${journey.slug}`);
 }
-```
+\`\`\`
 
 ### Option 2: Complete Replacement
 Directly update all links to use slugs (already done in this implementation).
@@ -266,42 +266,42 @@ Directly update all links to use slugs (already done in this implementation).
 
 ### Meta Tags
 Each detail page now includes:
-```html
+\`\`\`html
 <title>Journey Title | Shanti Himalaya Resort</title>
 <meta name="description" content="Journey description...">
 <meta property="og:title" content="Journey Title | Shanti Himalaya Resort">
 <meta property="og:image" content="journey-image.jpg">
 <meta property="og:url" content="https://shanti-himalaya-resort.vercel.app/journeys/slug">
 <meta name="twitter:card" content="summary_large_image">
-```
+\`\`\`
 
 ### Structured Data (JSON-LD)
 Implement structured data using:
-```typescript
+\`\`\`typescript
 import { generateJSONLD } from '@/lib/seo-utils';
 
 const jsonLd = generateJSONLD(journey, 'Journey');
 // This provides semantic data for search engines
-```
+\`\`\`
 
 ## Future Enhancements
 
 ### 1. Sitemap Generation
-```typescript
+\`\`\`typescript
 // Generate dynamic sitemap with slugs
 GET /api/sitemap.xml
-```
+\`\`\`
 
 ### 2. OpenGraph Images
-```typescript
+\`\`\`typescript
 // Generate dynamic OG images for social sharing
 GET /api/og?type=journey&slug=annapurna-circuit-trek
-```
+\`\`\`
 
 ### 3. Breadcrumbs
-```html
+\`\`\`html
 Home > Journeys > Annapurna Circuit Trek
-```
+\`\`\`
 
 ### 4. Related Content
 Show related journeys/destinations on detail pages based on category and slug patterns.

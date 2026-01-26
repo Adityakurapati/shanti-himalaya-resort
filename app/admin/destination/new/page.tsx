@@ -182,134 +182,134 @@ const AdminDestinationNew = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setSaving(true);
+    e.preventDefault();
+    setSaving(true);
 
-  try {
-    if (
-      !formData.name ||
-      !formData.description ||
-      !formData.duration ||
-      !formData.difficulty ||
-      !formData.best_time ||
-      !formData.category
-    ) {
-      toast({
-        title: "Missing required fields",
-        description: "Please fill in all required fields marked with *",
-        variant: "destructive",
-      });
-      setSaving(false);
-      return;
-    }
-
-    // Generate or validate slug - ensure it's NEVER null
-    let finalSlug = formData.slug?.trim();
-    if (!finalSlug || finalSlug === '') {
-      finalSlug = generateSlug(formData.name);
-    }
-
-    // Final fallback - generate a unique slug
-    if (!finalSlug || finalSlug.trim() === '') {
-      finalSlug = `destination-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    }
-
-    // Check if slug already exists
-    const slugExists = await checkSlugExists(finalSlug);
-    if (slugExists) {
-      toast({
-        title: "Slug already exists",
-        description: "Please choose a different slug",
-        variant: "destructive",
-      });
-      setSaving(false);
-      return;
-    }
-
-    // Prepare data with proper TypeScript typing
-    const destinationData = {
-      name: formData.name,
-      description: formData.description,
-      highlights: formData.highlights
-        .split(",")
-        .map((h: any) => h.trim())
-        .filter(Boolean),
-      duration: formData.duration,
-      difficulty: formData.difficulty,
-      best_time: formData.best_time,
-      altitude: formData.altitude || null,
-      featured: formData.featured,
-      category: formData.category,
-      image_url: formData.image_url || null,
-      slug: finalSlug, // ✅ This MUST be a string, not null
-      overview: formData.overview || null,
-      overview_image_url: formData.overview_image_url || null,
-      places_image_url: formData.places_image_url || null,
-      activities_image_url: formData.activities_image_url || null,
-      itinerary_image_url: formData.itinerary_image_url || null,
-      places_to_visit: formData.places_to_visit,
-      things_to_do: formData.things_to_do,
-      how_to_reach: formData.how_to_reach,
-      best_time_details: formData.best_time_details,
-      where_to_stay: formData.where_to_stay,
-      itinerary: formData.itinerary,
-      travel_tips: formData.travel_tips,
-      faqs: formData.faqs,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    console.log("💾 Creating new destination:", {
-      ...destinationData,
-      slug: finalSlug,
-      highlights_count: destinationData.highlights?.length || 0,
-      travel_tips_count: destinationData.travel_tips?.length || 0,
-    });
-
-    const { data, error } = await supabase
-      .from("destinations")
-      .insert(destinationData)
-      .select();
-
-    if (error) {
-      console.error("❌ Supabase insert error:", error);
-      if (error.code === "23505") {
-        // Duplicate slug error
+    try {
+      if (
+        !formData.name ||
+        !formData.description ||
+        !formData.duration ||
+        !formData.difficulty ||
+        !formData.best_time ||
+        !formData.category
+      ) {
         toast({
-          title: "Slug already exists",
-          description: "Please choose a different slug for this destination",
+          title: "Missing required fields",
+          description: "Please fill in all required fields marked with *",
           variant: "destructive",
         });
-        // Suggest a new slug
-        const newSlug = `${finalSlug}-${Date.now().toString().slice(-4)}`;
-        setFormData(prev => ({ ...prev, slug: newSlug }));
-      } else {
-        throw error;
+        setSaving(false);
+        return;
       }
-    } else {
-      console.log("✅ Creation successful, returned data:", data);
-      toast({
-        title: "Destination created successfully",
-        description: "New destination has been added to the database.",
+
+      // Generate or validate slug - ensure it's NEVER null
+      let finalSlug = formData.slug?.trim();
+      if (!finalSlug || finalSlug === '') {
+        finalSlug = generateSlug(formData.name);
+      }
+
+      // Final fallback - generate a unique slug
+      if (!finalSlug || finalSlug.trim() === '') {
+        finalSlug = `destination-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      // Check if slug already exists
+      const slugExists = await checkSlugExists(finalSlug);
+      if (slugExists) {
+        toast({
+          title: "Slug already exists",
+          description: "Please choose a different slug",
+          variant: "destructive",
+        });
+        setSaving(false);
+        return;
+      }
+
+      // Prepare data with proper TypeScript typing
+      const destinationData = {
+        name: formData.name,
+        description: formData.description,
+        highlights: formData.highlights
+          .split(",")
+          .map((h: any) => h.trim())
+          .filter(Boolean),
+        duration: formData.duration,
+        difficulty: formData.difficulty,
+        best_time: formData.best_time,
+        altitude: formData.altitude || null,
+        featured: formData.featured,
+        category: formData.category,
+        image_url: formData.image_url || null,
+        slug: finalSlug, // ✅ This MUST be a string, not null
+        overview: formData.overview || null,
+        overview_image_url: formData.overview_image_url || null,
+        places_image_url: formData.places_image_url || null,
+        activities_image_url: formData.activities_image_url || null,
+        itinerary_image_url: formData.itinerary_image_url || null,
+        places_to_visit: formData.places_to_visit,
+        things_to_do: formData.things_to_do,
+        how_to_reach: formData.how_to_reach,
+        best_time_details: formData.best_time_details,
+        where_to_stay: formData.where_to_stay,
+        itinerary: formData.itinerary,
+        travel_tips: formData.travel_tips,
+        faqs: formData.faqs,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log("💾 Creating new destination:", {
+        ...destinationData,
+        slug: finalSlug,
+        highlights_count: destinationData.highlights?.length || 0,
+        travel_tips_count: destinationData.travel_tips?.length || 0,
       });
 
-      if (data && data[0]) {
-        setTimeout(() => {
-          router.push("/admin/destination/edit/" + data[0].id);
-        }, 1000);
+      const { data, error } = await supabase
+        .from("destinations")
+        .insert(destinationData)
+        .select();
+
+      if (error) {
+        console.error("❌ Supabase insert error:", error);
+        if (error.code === "23505") {
+          // Duplicate slug error
+          toast({
+            title: "Slug already exists",
+            description: "Please choose a different slug for this destination",
+            variant: "destructive",
+          });
+          // Suggest a new slug
+          const newSlug = `${finalSlug}-${Date.now().toString().slice(-4)}`;
+          setFormData(prev => ({ ...prev, slug: newSlug }));
+        } else {
+          throw error;
+        }
+      } else {
+        console.log("✅ Creation successful, returned data:", data);
+        toast({
+          title: "Destination created successfully",
+          description: "New destination has been added to the database.",
+        });
+
+        if (data && data[0]) {
+          setTimeout(() => {
+            router.push("/admin/destination/edit/" + data[0].id);
+          }, 1000);
+        }
       }
+    } catch (error: any) {
+      console.error("❌ Error creating destination:", error);
+      toast({
+        title: "Error creating destination",
+        description: error.message || "An unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
     }
-  } catch (error: any) {
-    console.error("❌ Error creating destination:", error);
-    toast({
-      title: "Error creating destination",
-      description: error.message || "An unknown error occurred",
-      variant: "destructive",
-    });
-  } finally {
-    setSaving(false);
-  }
-};
+  };
 
   const handleGenerateAllContent = async () => {
     if (!formData.name.trim()) {
@@ -718,8 +718,8 @@ const AdminDestinationNew = () => {
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-3 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${activeTab === tab.id
-                    ? "border-b-2 border-primary text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                  ? "border-b-2 border-primary text-primary"
+                  : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 <Icon className="w-4 h-4" />
@@ -852,10 +852,10 @@ const AdminDestinationNew = () => {
                 >
                   <option value="">Select a category</option>
                   {categories.map((category: string) => (
-  <option key={category} value={category}>
-    {category}
-  </option>
-))}
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1565,8 +1565,8 @@ const AdminDestinationNew = () => {
                       <div className="md:col-span-2">
                         <ul className="text-sm text-muted-foreground space-y-1">
                           {day.activities?.map((activity: string, i: number) => (
-  <li key={i}>• {activity}</li>
-))}
+                            <li key={i}>• {activity}</li>
+                          ))}
                         </ul>
                       </div>
 
@@ -1621,7 +1621,7 @@ const AdminDestinationNew = () => {
                   }}
                   placeholder="Enter travel tips, one per line"
                   rows={8}
-                  
+
                 />
               </div>
             </form>

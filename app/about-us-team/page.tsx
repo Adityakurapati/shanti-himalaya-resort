@@ -110,7 +110,7 @@ const AboutUsPage = () => {
     {
       name: "Ratnesh Rawat",
       description: "Deeply connected with the local community, our camp manager brings the hills to life through expertly guided village walks and authentic local experiences. His strong local relationships and intimate knowledge of the region ensure guests enjoy meaningful, immersive encounters with the culture, people, and traditions of this region.",
-      role: "Camp Manager & Community Specialist",
+      role: "Camp Manager",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ratnesh.jpg`,
       experience: "14+ years"
     }

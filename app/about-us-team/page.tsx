@@ -20,51 +20,101 @@ import {
   Calendar,
   Star,
   Clock,
-  TreePine
+  TreePine,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { aboutHeroImages } from "../images";
 
 const AboutUsPage = () => {
- const teamMembers = [
-  {
-    name: "Giri",
-    description: "The founder of an offbeat Himalayan camp and travel initiative, he specializes in curating cultural hikes and treks across the Himalayas. Driven by a passion for authentic travel, he creates experiences that connect travelers with local traditions, landscapes, and lesser-known trails.",
-    role: "Founder & Cultural Curator",
-    imageUrl: "https://ik.imagekit.io/cyigpptqp/TEAM/Giri.jpg",
-    experience: "15+ years",
-    featured: true
-  },
-  {
-    name: "Ajit Negi",
-    description: "An outgoing and deeply rooted explorer of the Himalayas, he specializes in organizing immersive cultural trips and guided hikes across the region. With a strong connection to local communities, he blends adventure with authentic cultural experiences.",
-    role: "Cultural Explorer & Guide",
-    imageUrl: "https://ik.imagekit.io/cyigpptqp/TEAM/Ajit-Negi.jpg",
-    experience: "12+ years"
-  },
-  {
-    name: "Anuj Mallik",
-    description: "A dynamic sales and marketing professional with a natural eye for photography, he specializes in curating and selling meaningful travel & stay experiences. With a deep appreciation for nature and detail, he connects clients to thoughtfully designed trips.",
-    role: "Marketing & Experience Curator",
-    imageUrl: "https://ik.imagekit.io/cyigpptqp/TEAM/Anuj-Mallik.jpg",
-    experience: "10+ years"
-  },
-  {
-    name: "Som Bose",
-    description: "A highly knowledgeable Trip Leader and founder of Experiential Himalaya, Som specializes in leading Himalayan trips that offer clients truly enriching experiences. With deep regional knowledge and years of hands-on expertise.",
-    role: "Trip Leader & Founder",
-    imageUrl: "https://ik.imagekit.io/cyigpptqp/TEAM/Som.jpg",
-    experience: "18+ years",
-    featured: true
-  },
-  {
-    name: "Phunchok",
-    description: "A seasoned Trek Leader overseeing operations in Ladakh and Kashmir area, Phunchok is a man for all seasons. With strong knowledge of the region's terrain, culture, and high-altitude conditions, he ensures safe, well-paced, and comfortable treks.",
-    role: "Trek Leader & Operations",
-    imageUrl: "https://ik.imagekit.io/cyigpptqp/TEAM/Phunchok.jpg",
-    experience: "14+ years"
-  }
-];
+  // Carousel state
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  const getHeroImagePath = (filename: string) => {
+                const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || '';
+                return `${basePath}/About Us Hero image/${filename}`;
+        };
+
+  // Hero images array
+  const heroImages = aboutHeroImages.map(getHeroImagePath);
+  // Auto-play carousel
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, heroImages.length]);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000); // Resume auto-play after 10 seconds
+  };
+
+  const goToPrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const goToNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const teamMembers = [
+    {
+      name: "Giri",
+      description: "The founder of an offbeat Himalayan camp and travel initiative, he specializes in curating cultural hikes and treks across the Himalayas. Driven by a passion for authentic travel, he creates experiences that connect travelers with local traditions, landscapes, and lesser-known trails.",
+      role: "Founder & Cultural Curator",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Giri.jpg`,
+      experience: "15+ years",
+      featured: true
+    },
+    {
+      name: "Ajit Negi",
+      description: "An outgoing and deeply rooted explorer of the Himalayas, he specializes in organizing immersive cultural trips and guided hikes across the region. With a strong connection to local communities, he blends adventure with authentic cultural experiences.",
+      role: "Cultural Explorer & Guide",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ajit-Negi.jpg`,
+      experience: "12+ years"
+    },
+    {
+      name: "Anuj Mallik",
+      description: "A dynamic sales and marketing professional with a natural eye for photography, he specializes in curating and selling meaningful travel & stay experiences. With a deep appreciation for nature and detail, he connects clients to thoughtfully designed trips.",
+      role: "Marketing & Experience Curator",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Anuj-Mallik.jpg`,
+      experience: "10+ years"
+    },
+    {
+      name: "Som Bose",
+      description: "A highly knowledgeable Trip Leader and founder of Experiential Himalaya, Som specializes in leading Himalayan trips that offer clients truly enriching experiences. With deep regional knowledge and years of hands-on expertise.",
+      role: "Mentor",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Som.jpg`,
+      experience: "18+ years",
+      featured: true
+    },
+    {
+      name: "Phunchok",
+      description: "A seasoned Trek Leader overseeing operations in Ladakh and Kashmir area, Phunchok is a man for all seasons. With strong knowledge of the region's terrain, culture, and high-altitude conditions, he ensures safe, well-paced, and comfortable treks.",
+      role: "Trek Leader & Operations",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Phunchok.jpg`,
+      experience: "14+ years"
+    },
+    {
+      name: "Ratnesh Rawat",
+      description: "Deeply connected with the local community, our camp manager brings the hills to life through expertly guided village walks and authentic local experiences. His strong local relationships and intimate knowledge of the region ensure guests enjoy meaningful, immersive encounters with the culture, people, and traditions of this region.",
+      role: "Camp Manager & Community Specialist",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ratnesh.jpg`,
+      experience: "14+ years"
+    }
+  ];
 
   const services = [
     {
@@ -109,27 +159,93 @@ const AboutUsPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 hero-gradient text-white">
-        <div className="container mx-auto px-4">
+      {/* Hero Section with Carousel */}
+      <section className="pt-32 pb-16 relative overflow-hidden">
+        {/* Background Carousel */}
+        <div className="absolute inset-0 z-0">
+          {heroImages.map((src, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10" />
+              <img
+                src={heroImages[index] || "/placeholder.svg"}
+                alt={`Hero background ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Hero Content */}
+        <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-white/20 text-white border-white/30">
+            <Badge className="mb-6 bg-white/20 text-white border-white/30 backdrop-blur-sm">
               Discover the Himalayas
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 text-white">
               Beyond
               <span className="block text-luxury">The Ordinary</span>
             </h1>
-            <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto mb-8">
               Shanti Himalaya is a specialized tour & camping operator offering immersive Himalayan journeys,
               experiential stays and expertly guided hikes & treks that connect travelers with the landscapes,
               cultures and spirit of the Himalayas.
             </p>
             
+            {/* Carousel Controls */}
+            <div className="flex items-center justify-center space-x-8 mb-8">
+              <button
+                onClick={goToPrevSlide}
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors backdrop-blur-sm"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              
+              {/* Dots Indicator */}
+              <div className="flex space-x-2">
+                {heroImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentSlide
+                        ? 'bg-luxury w-8'
+                        : 'bg-white/50 hover:bg-white/70'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+              
+              <button
+                onClick={goToNextSlide}
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors backdrop-blur-sm"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="bg-luxury text-white hover:bg-luxury/90"
+              asChild
+            >
+              <Link href="/contact">
+                Start Your Journey
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
+      {/* Rest of your existing code remains the same */}
       {/* Why Choose Us */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
@@ -159,97 +275,93 @@ const AboutUsPage = () => {
         </div>
       </section>
 
-     {/* Our Team */}
-<section id="team" className="py-20 mountain-gradient">
-  <div className="container mx-auto px-4">
-    <div className="text-center mb-16">
-      <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
-        Meet Our Passionate Team
-      </h2>
-      <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-        We have a dedicated team of passionate people that forms the backbone of Shanti Himalaya.
-      </p>
-      <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-        Most of team members including the founder have spent much of their life's time in the mountains.
-        We have travelled extensively across the Himalayas, and thus their understanding of the region
-        goes far beyond maps and guidebooks.
-      </p>
-    </div>
-
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {teamMembers.map((member, index) => (
-        <Card key={index} className="shadow-card hover-lift overflow-hidden bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-6">
-              <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary/20">
-                {member.imageUrl ? (
-                  <img
-                    src={member.imageUrl}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  // Fallback avatar with initial
-                  <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <span className="text-white font-display font-bold text-xl">
-                      {member.name.charAt(0)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-display font-semibold text-xl mb-1">{member.name}</h3>
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
-                      {member.role}
-                    </Badge>
-                  </div>
-                  {member.featured && (
-                    <Badge className="bg-gold text-white text-xs">
-                      <Star className="w-3 h-3 mr-1" />
-                      Featured
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {member.description}
-                </p>
-                {member.experience && (
-                  <div className="mt-3 flex items-center text-xs text-muted-foreground">
-                    <Award className="w-3 h-3 mr-1" />
-                    {member.experience} experience
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-
-    {/* Team Image Gallery */}
-    <div className="mt-16">
-      <Card className="shadow-card overflow-hidden border-0">
-        <CardContent className="p-0">
-          <div className="relative h-fit md:h-fit overflow-hidden">
-            <img
-    src="https://ik.imagekit.io/cyigpptqp/TEAM/Team%20main.jpg"
-    alt="Shanti Himalaya Team"
-    className="w-full h-auto max-h-[500px] object-cover"
-  />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-              <div className="p-6 text-white">
-                <h3 className="text-2xl font-display font-bold mb-2">Our Family</h3>
-                <p className="text-white/90">Together, we create unforgettable Himalayan experiences</p>
-              </div>
-            </div>
+      {/* Our Team */}
+      <section id="team" className="py-20 mountain-gradient">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
+              Meet Our Passionate Team
+            </h2>
+            <p className="text-md text-muted-foreground max-w-2xl mx-auto mb-8">
+              This core leading team is supported by a comprehensive camping and trekking team that typically includes qualified trek leaders, local guides, specialized support staff (cooks and kitchen staff), and logistical crew (porters, muleteers).
+            </p>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  </div>
-</section>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {teamMembers.map((member, index) => (
+              <Card key={index} className="shadow-card hover-lift overflow-hidden bg-white">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-8">
+                    {/* Rectangular portrait image */}
+                    <div className="w-36 h-44 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/20 shadow-md">
+                      {member.imageUrl ? (
+                        <img
+                          src={member.imageUrl}
+                          alt={member.name}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                          <span className="text-white font-display font-bold text-3xl">
+                            {member.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="font-display font-semibold text-2xl mb-2">{member.name}</h3>
+                          <Badge variant="outline" className="text-sm bg-primary/10 text-primary border-primary/30 px-3 py-1">
+                            {member.role}
+                          </Badge>
+                        </div>
+                        {member.featured && (
+                          <Badge className="bg-gold text-white text-sm px-3 py-1">
+                            <Star className="w-4 h-4 mr-1" />
+                            Featured
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground text-base leading-relaxed">
+                        {member.description}
+                      </p>
+                      {member.experience && (
+                        <div className="mt-4 flex items-center text-sm text-muted-foreground">
+                          <Award className="w-4 h-4 mr-2" />
+                          {member.experience} experience
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Team Image Gallery */}
+          <div className="mt-16">
+            <Card className="shadow-card overflow-hidden border-0">
+              <CardContent className="p-0">
+                <div className="relative h-fit md:h-fit overflow-hidden">
+                  <img
+                    src="https://ik.imagekit.io/cyigpptqp/TEAM/Team%20main.jpg"
+                    alt="Shanti Himalaya Team"
+                    className="w-full h-auto max-h-[500px] object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                    <div className="p-6 text-white">
+                      <h3 className="text-2xl font-display font-bold mb-2">Our Family</h3>
+                      <p className="text-white/90">Together, we create unforgettable Himalayan experiences</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Safety & Services */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">

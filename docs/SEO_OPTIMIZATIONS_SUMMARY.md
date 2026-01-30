@@ -199,7 +199,7 @@ https://shantihimlaya.com/our-resort/how-to-reach
 
 ### Utility Pages:
 \`\`\`
-https://shantihimlaya.com/about
+https://shantihimlaya.com/about-us-team
 https://shantihimlaya.com/contact
 https://shantihimlaya.com/sustainable-tourism
 https://shantihimlaya.com/privacy

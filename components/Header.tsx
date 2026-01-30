@@ -21,10 +21,12 @@ const Header = () => {
   const [topJourneys, setTopJourneys] = useState<Tables<"journeys">[]>([]);
   const [topDestinations, setTopDestinations] = useState<Tables<"destinations">[]>([]);
   const [topExperiences, setTopExperiences] = useState<Tables<"experiences">[]>([]);
+  const [topStays, setTopStays] = useState<Tables<"experiential_stays">[]>([]);
   const [loading, setLoading] = useState({
     journeys: true,
     destinations: true,
-    experiences: true
+    experiences: true,
+    stays: true
   });
   
   const pathname = usePathname();
@@ -64,7 +66,7 @@ const Header = () => {
     }
   };
 
-  // Fetch featured journeys, destinations, and experiences
+  // Fetch featured journeys, destinations, experiences, and stays
   useEffect(() => {
     const fetchFeaturedData = async () => {
       try {
@@ -104,10 +106,27 @@ const Header = () => {
         setTopExperiences(experiencesData || []);
         setLoading(prev => ({ ...prev, experiences: false }));
 
+        // Fetch top 5 experiential stays
+        const { data: staysData, error: staysError } = await supabase
+          .from("experiential_stays")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        if (staysError) throw staysError;
+        setTopStays(staysData || []);
+        setLoading(prev => ({ ...prev, stays: false }));
+
       } catch (error) {
         console.error("Error fetching featured data:", error);
         // Set loading to false even on error
-        setLoading({ journeys: false, destinations: false, experiences: false });
+        setLoading({ 
+          journeys: false, 
+          destinations: false, 
+          experiences: false,
+          stays: false 
+        });
       }
     };
 
@@ -117,8 +136,6 @@ const Header = () => {
   }, [showDropdowns]);
 
   const isActive = (path: string) => pathname === path;
-
-  
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border shadow-sm">
@@ -135,26 +152,20 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            {/* Main Navigation Links - Filter out Blogs on resort pages */}
-            {mainNavLinks
-              .filter(link => !isResortPage || link.href !== "/blog") // Hide Blog link on resort pages
-              .map((link: any) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`font-medium transition-all duration-300 relative ${link.featured
-                      ? "text-primary font-semibold"
-                      : isActive(link.href)
-                        ? "text-primary"
-                        : "text-foreground hover:text-primary"
-                    }`}
-                >
-                  {link.label}
-                  {(isActive(link.href) || link.featured) && (
-                    <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-                  )}
-                </Link>
-              ))}
+            {/* Our Resort Link */}
+            <Link
+              href="/our-resort"
+              className={`font-medium transition-all duration-300 relative ${
+                isActive("/our-resort")
+                  ? "text-primary font-semibold"
+                  : "text-foreground hover:text-primary"
+              }`}
+            >
+              Our Resort
+              {isActive("/our-resort") && (
+                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+              )}
+            </Link>
 
             {/* Resort-specific Navigation */}
             {resortNavLinks.map((link: any) => (
@@ -170,6 +181,7 @@ const Header = () => {
             {/* Dropdown Menus - Hidden on Our Resort pages */}
             {showDropdowns && (
               <>
+                {/* Journeys Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
                     <span>Journeys</span>
@@ -203,6 +215,7 @@ const Header = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
+                {/* Destinations Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
                     <span>Destinations</span>
@@ -236,6 +249,7 @@ const Header = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
+                {/* Experiences Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
                     <span>Experiences</span>
@@ -268,6 +282,55 @@ const Header = () => {
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Stays Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
+                    <span>Stays</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
+                    {loading.stays ? (
+                      <DropdownMenuItem className="text-sm text-muted-foreground">
+                        Loading stays...
+                      </DropdownMenuItem>
+                    ) : topStays.length > 0 ? (
+                      <>
+                        {topStays.map((stay) => (
+                          <DropdownMenuItem key={stay.id} asChild>
+                            <Link href={`/experiential-stays/${stay.slug}`} className="cursor-pointer">
+                              {stay.name}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuItem asChild>
+                          <Link href="/experiential-stays" className="cursor-pointer font-semibold text-primary">
+                            View All Stays
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <DropdownMenuItem className="text-sm text-muted-foreground">
+                        No featured stays yet
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Blogs Link */}
+                <Link
+                  href="/blog"
+                  className={`font-medium transition-all duration-300 relative ${
+                    isActive("/blog")
+                      ? "text-primary"
+                      : "text-foreground hover:text-primary"
+                  }`}
+                >
+                  Blogs
+                  {isActive("/blog") && (
+                    <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                  )}
+                </Link>
               </>
             )}
           </nav>
@@ -304,22 +367,18 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border">
             <nav className="flex flex-col space-y-3">
-              {/* Main Navigation Links - Filter out Blogs on resort pages for mobile */}
-              {mainNavLinks
-                .filter(link => !isResortPage || link.href !== "/blog") // Hide Blog link on resort pages
-                .map((link: any) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${isActive(link.href)
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
-                      }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+              {/* Our Resort Link */}
+              <Link
+                href="/our-resort"
+                onClick={() => setIsMenuOpen(false)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  isActive("/our-resort")
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                }`}
+              >
+                Our Resort
+              </Link>
 
               {/* Resort Navigation in Mobile */}
               {resortNavLinks.map((link: any) => (
@@ -335,6 +394,7 @@ const Header = () => {
               {/* Mobile Dropdown Sections - Hidden on Our Resort pages */}
               {showDropdowns && (
                 <>
+                  {/* Journeys Section */}
                   <div className="px-4 py-2">
                     <h4 className="font-semibold text-sm text-muted-foreground mb-2">Journeys</h4>
                     {loading.journeys ? (
@@ -364,6 +424,7 @@ const Header = () => {
                     )}
                   </div>
 
+                  {/* Destinations Section */}
                   <div className="px-4 py-2">
                     <h4 className="font-semibold text-sm text-muted-foreground mb-2">Destinations</h4>
                     {loading.destinations ? (
@@ -393,6 +454,7 @@ const Header = () => {
                     )}
                   </div>
 
+                  {/* Experiences Section */}
                   <div className="px-4 py-2">
                     <h4 className="font-semibold text-sm text-muted-foreground mb-2">Experiences</h4>
                     {loading.experiences ? (
@@ -421,6 +483,49 @@ const Header = () => {
                       <p className="text-sm text-muted-foreground py-1">No featured experiences yet</p>
                     )}
                   </div>
+
+                  {/* Stays Section */}
+                  <div className="px-4 py-2">
+                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">Stays</h4>
+                    {loading.stays ? (
+                      <p className="text-sm text-muted-foreground py-1">Loading stays...</p>
+                    ) : topStays.length > 0 ? (
+                      <>
+                        {topStays.slice(0, 3).map((stay) => (
+                          <Link
+                            key={stay.id}
+                            href={`/experiential-stays/${stay.slug}`}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="block py-1 text-sm text-foreground hover:text-primary"
+                          >
+                            {stay.name}
+                          </Link>
+                        ))}
+                        <Link
+                          href="/experiential-stays"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="block py-1 text-sm text-primary font-semibold"
+                        >
+                          View All Stays
+                        </Link>
+                      </>
+                    ) : (
+                      <p className="text-sm text-muted-foreground py-1">No featured stays yet</p>
+                    )}
+                  </div>
+
+                  {/* Blogs Link */}
+                  <Link
+                    href="/blog"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isActive("/blog")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    Blogs
+                  </Link>
                 </>
               )}
 

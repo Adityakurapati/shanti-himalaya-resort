@@ -45,7 +45,7 @@ packages (blog) → slug, seo_title, seo_description, seo_image, meta_keywords, 
 /experiential-stays/
 /our-resort/
 /blog/
-/about/
+/about-us-team/
 /contact/
 /sustainable-tourism/
 \`\`\`

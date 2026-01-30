@@ -338,7 +338,7 @@ export function generateAboutSEO(): SEOProps {
     title: "Our Story: Himalayan Hospitality Excellence",
     description: "Discover the story behind Shanti Himalaya. A decade of Himalayan exploration leading to our luxury wilderness resort near Corbett National Park.",
     image: "/images/about-og.jpg",
-    url: `${SITE_URL}/about-us`,
+    url: `${SITE_URL}/about-us-team`,
     type: "website",
     keywords: [
       "Shanti Himalaya story",

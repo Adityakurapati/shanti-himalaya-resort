@@ -125,7 +125,7 @@ const Footer = () => {
                 <a href="/contact" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Contact Us
                 </a>
-                <a href="/about" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/about-us-team" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   About Us
                 </a>
                 <a href="/our-resort#accommodation" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
@@ -139,7 +139,7 @@ const Footer = () => {
                 <a href="/sustainable-tourism" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Sustainable Tourism
                 </a>
-                <a href="/about#team" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/about-us-team#team" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
                   Our Team
                 </a>
                 <a href="/terms" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">

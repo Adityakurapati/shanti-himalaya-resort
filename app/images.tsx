@@ -150,5 +150,10 @@ const experiencesImages = [
         "yangthang_village_1.jpg"
     ]
 
+    const aboutHeroImages = [
+        `Hero Image.png`,
+        `Change the AI image on about Us with this image.jpg`
+      ];
+    
 
-export { diningImages, bonfireImageFiles , locationImages , resortImages, journeysImages, destinationsImages , experiencesImages, heroImages };
+export { diningImages, bonfireImageFiles , locationImages , resortImages, journeysImages, destinationsImages , experiencesImages, heroImages, aboutHeroImages };

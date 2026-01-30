@@ -72,26 +72,26 @@ const Index = () => {
     // State for resort images carousel
     const [resortCurrentImage, setResortCurrentImage] = useState(0)
     const [resortAutoSlide, setResortAutoSlide] = useState(true)
-    
+
     // State for Epic Journeys carousel
     const [journeysCurrentImage, setJourneysCurrentImage] = useState(0)
     const [journeysAutoSlide, setJourneysAutoSlide] = useState(true)
-   
+
 
     // State for Amazing Destinations carousel
     const [destinationsCurrentImage, setDestinationsCurrentImage] = useState(0)
     const [destinationsAutoSlide, setDestinationsAutoSlide] = useState(true)
-    
+
 
     // State for Experiences carousel
     const [experiencesCurrentImage, setExperiencesCurrentImage] = useState(0)
     const [experiencesAutoSlide, setExperiencesAutoSlide] = useState(true)
-    
+
 
     // State for Hero carousel
     const [heroCurrentImage, setHeroCurrentImage] = useState(0)
     const [heroAutoSlide, setHeroAutoSlide] = useState(true)
-   
+
 
     // State for blogs
     const [blogPosts, setBlogPosts] = useState<any[]>([])
@@ -314,7 +314,7 @@ const Index = () => {
     return (
         <div className="min-h-screen bg-background">
             {/* Organization Schema */}
-            <StructuredData 
+            <StructuredData
                 data={generateJSONLD(
                     {
                         name: "Shanti Himalaya",
@@ -324,7 +324,7 @@ const Index = () => {
                 )}
                 type="Organization"
             />
-            
+
             <Header />
 
             {/* Hero Section with Carousel */}
@@ -358,13 +358,16 @@ const Index = () => {
                     </div>
                 </div>
 
-                <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+                <div className="relative z-10 text-center text-white pt-6 px-4 max-w-4xl mx-auto">
                     <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
                         Luxury Himalayan Resort & Spa
                     </Badge>
-                    <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-                        Shanti Himalaya
-                        <span className="block text-luxury">Luxury Himalayan Resort & Wilderness Glamping</span>
+                    <h1 className="text-5xl md:text-5xl font-display font-bold mb-6 leading-tight">
+                        Welcome to Shanti Himalaya
+                        <span className="block text-luxury">Meaningful Journeys & Experiential Stays through the Himalayas.
+                            HIMALAYAS
+                            INDIA I NEPAL I BHUTAN I TIBET
+                        </span>
                     </h1>
                     <p className="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed">
                         Experience tranquility and luxury in the heart of the majestic Himalayas near Corbett National Park. Where serenity meets adventure with exclusive glamping, guided nature walks, and wellness retreats.
@@ -402,15 +405,16 @@ const Index = () => {
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Shanti Himalaya Resort</h2>
                         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                            "Shanti Himalaya" Beyond Corbett - Where peace, spirituality, serenity and bounty of nature still exists.
-                            Experience wilderness glamping in the lap of Mother Nature.
+                           'Shanti' Means Peace. Shanti is about peace in the Mind, body & the Soul.
+'Shanti' is about peace of past, present & future.
+
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 px-4 lg:px-24 items-center gap-12">
                         <div className="space-y-8">
                             <div>
-                                <h3 className="text-2xl font-display font-semibold mb-6">Luxury Wilderness Experience</h3>
+                                <h3 className="text-2xl font-display font-semibold mb-6">An Offbeat Wilderness Experience </h3>
                                 <div className="space-y-4">
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
@@ -420,15 +424,31 @@ const Index = () => {
                                     </div>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">All meals included with locally sourced ingredients</span>
+                                        <span className="text-muted-foreground">Secluded location, far from conventional routes</span>
                                     </div>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-gold rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">Guided nature walks and adventure activities</span>
+                                        <span className="text-muted-foreground">Exclusive 4 Camps set amid untouched Himalayan landscapes</span>
                                     </div>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">Cultural experiences and bonfire evenings</span>
+                                        <span className="text-muted-foreground">Quiet luxury defined by space, simplicity, and comfort</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">Thoughtful, personalized service throughout your stay</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">Slow, immersive experiences rooted in nature and place</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">Unhurried days, starlit nights, and profound stillness</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">A retreat designed for presence, privacy, and perspective</span>
                                     </div>
                                 </div>
                                 <Link href="/our-resort">
@@ -480,8 +500,8 @@ const Index = () => {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Epic Journeys</h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Discover curated adventures across the majestic Himalayas with immersive experiences
+                        <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+                           Experience our immersive Himalayan journeys, thoughtfully curated around your interests and comfort. With deep local expertise and seamless service, we create meaningful travel experiences that go beyond the expected.
                         </p>
                     </div>
 
@@ -529,20 +549,32 @@ const Index = () => {
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                                         <span className="text-muted-foreground">
-                                            Everest Base Camp - The ultimate high-altitude adventure
+                                           Ladakh: Vast high-altitude deserts and timeless monasteries.
                                         </span>
                                     </div>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">Annapurna Circuit - Classic Himalayan circuit trek</span>
+                                        <span className="text-muted-foreground">Kashmir: Serene valleys and alpine tranquility.</span>
                                     </div>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-gold rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">Manaslu Circuit - Remote wilderness expedition</span>
+                                        <span className="text-muted-foreground">Himachal: Hidden villages and forested mountain trails.</span>
                                     </div>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">Cultural journeys through ancient mountain villages</span>
+                                        <span className="text-muted-foreground">Garhwal: Sacred rivers and spiritually rooted landscapes.</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">Nepal: Majestic peaks and culturally rich treks.</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">Bhutan : where the Himalayas remain untouched for mindful travel.</span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">North East India: Lush hills and untouched traditions.</span>
                                     </div>
                                 </div>
                                 <Link href="/journeys">
@@ -554,192 +586,14 @@ const Index = () => {
                 </div>
             </section>
 
-            {/* Blog Section - Updated with Database Fetching */}
-            <section className="py-20 bg-background">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Latest from Our Blog</h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Stay updated with travel insights, mountain stories, and adventure guides
-                        </p>
-                    </div>
-
-                    {blogsLoading ? (
-                        <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                        </div>
-                    ) : blogPosts.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {blogPosts.map((post) => (
-                                <Link key={post.id} href={`/blog/${post.slug}`} className="group">
-                                    <Card className="shadow-card hover-lift overflow-hidden h-full">
-                                        <div className="h-48 relative overflow-hidden">
-                                            {post.image_url ? (
-                                                <img
-                                                    src={post.image_url || "/placeholder.svg"}
-                                                    alt={post.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                    onError={(e) => {
-                                                        (e.target as HTMLImageElement).src = "/placeholder.svg";
-                                                    }}
-                                                />
-                                            ) : (
-                                                <div className="h-full bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-                                                    <BookOpen className="w-16 h-16 text-white/30 group-hover:scale-110 transition-transform" />
-                                                </div>
-                                            )}
-                                            <div className="absolute top-4 left-4">
-                                                <Badge className="bg-white text-primary">{post.category}</Badge>
-                                            </div>
-                                        </div>
-                                        <CardContent className="p-6">
-                                            <h3 className="text-lg font-semibold mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                                                {post.title}
-                                            </h3>
-                                            <p className="text-muted-foreground text-sm mb-4 leading-relaxed line-clamp-3">
-                                                {post.excerpt}
-                                            </p>
-                                            <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex items-center gap-1">
-                                                        <Calendar className="w-3 h-3" />
-                                                        <span>{new Date(post.published_date).toLocaleDateString()}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Clock className="w-3 h-3" />
-                                                        <span>{post.read_time}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Eye className="w-3 h-3" />
-                                                    <span>{post.views || 0}</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                                        <User className="w-3 h-3 text-primary" />
-                                                    </div>
-                                                    <span className="text-xs font-medium">{post.author}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1 text-primary text-sm font-medium">
-                                                    Read more
-                                                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-30" />
-                            <p className="text-lg text-muted-foreground">No blog posts available yet. Check back soon!</p>
-                        </div>
-                    )}
-
-                    <div className="text-center mt-12">
-                        <Link href="/blog">
-                            <Button size="lg" variant="outline" className="px-8 bg-transparent">
-                                Read All Posts
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* Amazing Destinations Section with Carousel */}
-            <section className="py-20 mountain-gradient">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Amazing Destinations</h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Explore breathtaking destinations with immersive visuals and detailed experiences
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                        {/* Destination Details */}
-                        <div className="space-y-8">
-                            <div>
-                                <h3 className="text-2xl font-display font-semibold mb-6">Iconic Mountain Destinations</h3>
-                                <div className="space-y-4">
-                                    <div className="flex items-start space-x-4">
-                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">
-                                            Ladakh - High altitude desert landscapes and pristine lakes
-                                        </span>
-                                    </div>
-                                    <div className="flex items-start space-x-4">
-                                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">
-                                            Kashmir Valley - Paradise on earth with Dal Lake and gardens
-                                        </span>
-                                    </div>
-                                    <div className="flex items-start space-x-4">
-                                        <div className="w-2 h-2 bg-gold rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">
-                                            Corbett National Park - Wildlife sanctuary and tiger reserve
-                                        </span>
-                                    </div>
-                                    <div className="flex items-start space-x-4">
-                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                                        <span className="text-muted-foreground">Everest and Annapurna regions - World's highest peaks</span>
-                                    </div>
-                                </div>
-                                <Link href="/destinations">
-                                    <Button className="mt-8 hero-gradient hover-glow">Discover All Destinations</Button>
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Destinations Carousel */}
-                        <div className="relative">
-                            <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
-                                <img
-                                    src={getImagePath("Amazing Destinations", destinationsImages[destinationsCurrentImage]) || "/placeholder.svg"}
-                                    alt={`Destination ${destinationsCurrentImage + 1}`}
-                                    className="w-full h-full object-cover transition-opacity duration-500"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = "/placeholder.svg";
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-
-                                <button
-                                    onClick={() => prevImage(setDestinationsCurrentImage, destinationsImages, setDestinationsAutoSlide)}
-                                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
-                                    aria-label="Previous image"
-                                >
-                                    <ChevronLeft className="w-6 h-6" />
-                                </button>
-
-                                <button
-                                    onClick={() => nextImage(setDestinationsCurrentImage, destinationsImages, setDestinationsAutoSlide)}
-                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
-                                    aria-label="Next image"
-                                >
-                                    <ChevronRight className="w-6 h-6" />
-                                </button>
-
-                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm z-10">
-                                    <span className="font-semibold">{destinationsCurrentImage + 1}</span> / <span className="text-white/80">{destinationsImages.length}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Experiential Stays Carousel Section - FIXED */}
             <section className="py-20 bg-background">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Experiential Stays</h2>
-                        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                            Immerse yourself in authentic Himalayan experiences through our carefully curated stays.
-                        </p>
+                        <p className="text-md text-muted-foreground max-w-3xl mx-auto">
+Boutique Himalayan retreats offering calm, comfort, and serene moments—crafted for the discerning traveler seeking peace and connection with the mountains.                        </p>
                     </div>
 
                     {experientialStays.length > 0 ? (
@@ -865,13 +719,97 @@ const Index = () => {
                 </div>
             </section>
 
+            {/* Amazing Destinations Section with Carousel */}
+            <section className="py-20 mountain-gradient">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Amazing Destinations</h2>
+                        <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+The Himalayas are a land of awe and discovery, from towering peaks and serene valleys to hidden monasteries and secret trails. Beyond the well-known vistas lie remote villages, pristine lakes, and untouched landscapes—each a hidden wonder waiting to be explored.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        {/* Destination Details */}
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-2xl font-display font-semibold mb-6">Iconic Mountain Destinations</h3>
+                                <div className="space-y-4">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">
+                                            Ladakh - High altitude desert landscapes and pristine lakes
+                                        </span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">
+                                            Kashmir Valley - Paradise on earth with Dal Lake and gardens
+                                        </span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-gold rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">
+                                            Corbett National Park - Wildlife sanctuary and tiger reserve
+                                        </span>
+                                    </div>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                        <span className="text-muted-foreground">Everest and Annapurna regions - World's highest peaks</span>
+                                    </div>
+                                </div>
+                                <Link href="/destinations">
+                                    <Button className="mt-8 hero-gradient hover-glow">Discover All Destinations</Button>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Destinations Carousel */}
+                        <div className="relative">
+                            <div className="relative h-96 rounded-2xl shadow-card overflow-hidden">
+                                <img
+                                    src={getImagePath("Amazing Destinations", destinationsImages[destinationsCurrentImage]) || "/placeholder.svg"}
+                                    alt={`Destination ${destinationsCurrentImage + 1}`}
+                                    className="w-full h-full object-cover transition-opacity duration-500"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                                    }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+
+                                <button
+                                    onClick={() => prevImage(setDestinationsCurrentImage, destinationsImages, setDestinationsAutoSlide)}
+                                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                                    aria-label="Previous image"
+                                >
+                                    <ChevronLeft className="w-6 h-6" />
+                                </button>
+
+                                <button
+                                    onClick={() => nextImage(setDestinationsCurrentImage, destinationsImages, setDestinationsAutoSlide)}
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                                    aria-label="Next image"
+                                >
+                                    <ChevronRight className="w-6 h-6" />
+                                </button>
+
+                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm z-10">
+                                    <span className="font-semibold">{destinationsCurrentImage + 1}</span> / <span className="text-white/80">{destinationsImages.length}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
             {/* Unique Experiences Section with Carousel */}
             <section className="py-20 mountain-gradient">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Unique Experiences</h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            Immerse yourself in transformative experiences with cultural authenticity
+                        <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+Experience the Himalayas beyond the usual path—meet local people, walk through remote villages, celebrate vibrant festivals, savor authentic cuisine, hear timeless stories, and embrace adventurous moments that stay with you forever.
                         </p>
                     </div>
 
@@ -962,6 +900,100 @@ const Index = () => {
                 </div>
             </section>
 
+            {/* Blog Section - Updated with Database Fetching */}
+            <section className="py-20 bg-background">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-display font-bold mb-6 text-foreground">Latest from Our Blog</h2>
+                        <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+<b>Discover the Himalayas through </b>stories, experiences and local encounters from hidden corners of the Himalayas. <b>Told by experienced Himalayan guides & locals, these tales bring the mountains to life.</b>                       </p>
+                    </div>
+
+                    {blogsLoading ? (
+                        <div className="flex justify-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        </div>
+                    ) : blogPosts.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {blogPosts.map((post) => (
+                                <Link key={post.id} href={`/blog/${post.slug}`} className="group">
+                                    <Card className="shadow-card hover-lift overflow-hidden h-full">
+                                        <div className="h-48 relative overflow-hidden">
+                                            {post.image_url ? (
+                                                <img
+                                                    src={post.image_url || "/placeholder.svg"}
+                                                    alt={post.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="h-full bg-gradient-to-br from-accent to-primary flex items-center justify-center">
+                                                    <BookOpen className="w-16 h-16 text-white/30 group-hover:scale-110 transition-transform" />
+                                                </div>
+                                            )}
+                                            <div className="absolute top-4 left-4">
+                                                <Badge className="bg-white text-primary">{post.category}</Badge>
+                                            </div>
+                                        </div>
+                                        <CardContent className="p-6">
+                                            <h3 className="text-lg font-semibold mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                                                {post.title}
+                                            </h3>
+                                            <p className="text-muted-foreground text-sm mb-4 leading-relaxed line-clamp-3">
+                                                {post.excerpt}
+                                            </p>
+                                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex items-center gap-1">
+                                                        <Calendar className="w-3 h-3" />
+                                                        <span>{new Date(post.published_date).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" />
+                                                        <span>{post.read_time}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Eye className="w-3 h-3" />
+                                                    <span>{post.views || 0}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                                        <User className="w-3 h-3 text-primary" />
+                                                    </div>
+                                                    <span className="text-xs font-medium">{post.author}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1 text-primary text-sm font-medium">
+                                                    Read more
+                                                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-30" />
+                            <p className="text-lg text-muted-foreground">No blog posts available yet. Check back soon!</p>
+                        </div>
+                    )}
+
+                    <div className="text-center mt-12">
+                        <Link href="/blog">
+                            <Button size="lg" variant="outline" className="px-8 bg-transparent">
+                                Read All Posts
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
             {/* Our Story Section */}
             <section className="py-20 bg-background">
                 <div className="container mx-auto px-4">
@@ -1005,7 +1037,7 @@ const Index = () => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Link href="/about-us" className="flex-1">
+                                <Link href="/about-us-team" className="flex-1">
                                     <Button size="lg" className="hero-gradient hover-glow">
                                         Experience Our Vision
                                     </Button>

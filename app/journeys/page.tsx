@@ -105,13 +105,12 @@ const Journeys = () => {
                                                 <Badge className="mb-6 bg-white/20 text-white border-white/30 text-lg px-6 py-2">
                                                         Discover Your Adventure
                                                 </Badge>
-                                                <h1 className="text-5xl text-white md:text-7xl font-display font-bold mb-6">
+                                                <h1 className="text-4xl pb-4 text-white md:text-7xl font-display font-bold mb-6">
                                                         Epic
-                                                        <span className="block text-luxury">Journeys</span>
+                                                        <span className="block leading-tight text-luxury">Journeys</span>
                                                 </h1>
                                                 <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto">
-                                                        From thrilling adventures to peaceful retreats, discover curated experiences
-                                                        that showcase the best of Nepal's natural beauty and rich culture.
+                                                       From thrilling adventures to peaceful retreats, discover curated journeys that showcase the best of Himalayan natural beauty and reach culture. 
                                                 </p>
                                         </div>
                                 </div>
@@ -125,9 +124,8 @@ const Journeys = () => {
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
                                                         Featured Journeys
                                                 </h2>
-                                                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                                        Our most popular and highly recommended experiences,
-                                                        carefully crafted for unforgettable memories.
+                                                <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+                                                       Our most popular Himalayan journeys that are defined by breathtaking landscapes, immersive cultural encounters, and unhurried exploration. From scenic drives and gentle hikes to village walks and meaningful interactions with local communities, each journey blends comfort, authenticity, and a deep connection with the mountains.
                                                 </p>
                                         </div>
 
@@ -215,9 +213,8 @@ const Journeys = () => {
                                                         ))}
                                                 </div>
 
-                                                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                                        Choose from our diverse range of carefully curated experiences,
-                                                        each designed to offer unique perspectives of Nepal's wonders.
+                                                <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+                                                       Explore from our wide range of Himalayan journeys—from scenic road trips and gentle hikes to cultural tours, village walks, spiritual retreats, and adventure experiences. Each journey reveals a different rhythm of the mountains, shaped around your interests and pace.
                                                 </p>
                                         </div>
 

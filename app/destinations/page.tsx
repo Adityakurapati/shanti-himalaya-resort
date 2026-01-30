@@ -118,7 +118,7 @@ const Destinations = () => {
                                 <div className="container mx-auto px-4 relative z-10">
                                         <div className="max-w-4xl mx-auto text-center">
                                                 <Badge className="mb-6 text-xl bg-white/20 text-white border-white/30">
-                                                        Explore Nepal's Wonders
+                                                        Explore Himalayan Wonders
                                                 </Badge>
                                                 <h1 className="text-5xl text-white md:text-7xl font-display font-bold mb-6">
                                                         Amazing
@@ -126,7 +126,7 @@ const Destinations = () => {
                                                 </h1>
                                                 <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto">
                                                         From towering Himalayan peaks to lush jungles, ancient temples to pristine lakes.
-                                                        Discover the diverse beauty that makes Nepal truly extraordinary.
+                                                        Discover the diverse beauty that makes Himalayan truly extraordinary.
                                                 </p>
                                         </div>
                                 </div>
@@ -140,9 +140,11 @@ const Destinations = () => {
                                                 <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
                                                         Must-Visit Destinations
                                                 </h2>
-                                                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                                        Our top recommended destinations that showcase Nepal's incredible diversity,
-                                                        from world-famous trekking routes to hidden cultural gems.
+                                                <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+                                                       Our top recommended awe-inspiring destinations that showcase snow-capped peaks, hidden valleys, ancient monasteries, and timeless mountain villages. Each place carries its own rhythm and story, inviting travelers to slow down, explore deeply, and experience the mountains in their most authentic form.
+
+Our most popular Himalayan journeys that are defined by breathtaking landscapes, immersive cultural encounters, and unhurried exploration. From scenic drives and gentle hikes to village walks and meaningful interactions with local communities, each journey blends comfort, authenticity, and a deep connection with the mountains.
+
                                                 </p>
                                         </div>
 

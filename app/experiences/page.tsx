@@ -147,11 +147,10 @@ const Experiences = () => {
                                                 </Badge>
                                                 <h1 className="text-5xl text-white md:text-7xl font-display font-bold mb-6">
                                                         Beyond Accommodation
-                                                        <span className="block text-luxury">Extraordinary Experiences</span>
+                                                        <span className="block text-luxury leading-tight">Extraordinary Experiences</span>
                                                 </h1>
-                                                <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto">
-                                                        From starlit dinners to wellness journeys and local adventures –
-                                                        craft unforgettable moments with our carefully curated experiences in the heart of Nepal.
+                                                <p className="text-2xl font-bold text-white/90 max-w-2xl mx-auto">
+                                                From starlit dinners to wellness journeys and local adventures – craft unforgettable moments with our carefully curated experiences in the Himalayas.
                                                 </p>
                                         </div>
                                 </div>
@@ -167,8 +166,10 @@ const Experiences = () => {
                                                         <h2 className="text-4xl font-display font-bold mb-6 text-foreground">
                                                                 Signature Experiences
                                                         </h2>
-                                                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                                                Our most sought-after journeys that showcase the very best of what Nepal has to offer.
+                                                        <p className="text-md text-muted-foreground max-w-5xl mx-auto">
+                                                        In the Himalayas, the most unforgettable moments aren’t found on maps—they’re shared.
+Discover the Himalayas through moments of genuine connection. Join a local festival, step into a village home, learn a traditional dish, or wander through timeless mountain hamlets. Evenings come alive with folk music and dance, while conversations with village elders offer ancient insights. These intimate experiences reveal the soul of the Himalayas—authentic, immersive, and unforgettable.
+
                                                         </p>
                                                 </div>
 

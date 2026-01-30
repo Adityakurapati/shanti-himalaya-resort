@@ -337,8 +337,8 @@ const Header = () => {
 
           {/* Contact Info & CTA */}
           <div className="hidden lg:flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Phone className="w-4 h-4" />
+            <div className="flex items-center space-x-2 text-lg text-muted-foreground">
+              <Phone className="w-6 h-6" />
               <span>+91 99107 75073</span>
             </div>
             {/* Admin Shield Button */}

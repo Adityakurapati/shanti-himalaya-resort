@@ -5,11 +5,9 @@ import './globals.css'
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
-// Remove QueryClientProvider from here
-import ChatBot from "@/components/ChatBot"
-import WhatsAppButton from "@/components/WhatsAppButton"
 import CookieConsent from "@/components/Cookies"
 import ClientProviders from '@/components/providers/ClientProviders'
+import FloatingButtons from "@/components/FloatingButtons"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -145,8 +143,7 @@ export default function RootLayout({
 
             {/* Floating Buttons Container */}
             <div className="fixed bottom-6 right-6 flex flex-col items-center gap-4 z-50">
-              <WhatsAppButton />
-              <ChatBot />
+              <FloatingButtons />
             </div>
 
             <CookieConsent />

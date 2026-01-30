@@ -42,6 +42,7 @@ import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import EnquiryModal from "@/components/EnquiryModal";
 
 const BlogPost = () => {
   const params = useParams();
@@ -57,6 +58,7 @@ const BlogPost = () => {
   const [isCopied, setIsCopied] = React.useState(false);
   const [scrollProgress, setScrollProgress] = React.useState(0);
   const [showScrollTop, setShowScrollTop] = React.useState(false);
+        const [isEnquiryModalOpen, setIsEnquiryModalOpen] = React.useState(false)
 
   React.useEffect(() => {
     if (id) {
@@ -252,6 +254,32 @@ const BlogPost = () => {
             >
               {blogPost.title}
             </motion.h1>
+
+             <motion.div
+                                                                className="flex flex-col sm:flex-row gap-4"
+                                                                initial={{ opacity: 0, y: 30 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ duration: 0.8, delay: 0.8 }}
+                                                        >
+                                                                <Button
+                                                                        size="lg"
+                                                                        className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${blogPost.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
+                                                                        onClick={() => setIsEnquiryModalOpen(true)}
+                                                                >
+                                                                        Enquire Now
+                                                                </Button>
+
+                                                        </motion.div>
+
+                                                        <EnquiryModal
+  item={{
+    id: blogPost.id,
+    title: blogPost.title,
+    type: 'blog'
+  }}
+  isOpen={isEnquiryModalOpen}
+  onClose={() => setIsEnquiryModalOpen(false)}
+/>
 
             {/* Excerpt */}
             <motion.p

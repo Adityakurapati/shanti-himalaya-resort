@@ -239,9 +239,8 @@ const Blog = () => {
               Travel
               <span className="block text-luxury">Stories</span>
             </h1>
-            <p className="text-2xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto mb-8">
-              Discover insider tips, cultural insights, and inspiring stories from the heart of the Himalayas.
-            </p>
+            <p className="text-xl font-bold text-white/90 leading-relaxed max-w-2xl mx-auto mb-8">
+This space is dedicated to stories from the mountains themselves. Our blog features journeys, memories, and travel experiences written by Himalayan wanderers —guides, villagers, storytellers, and travel experts who call these landscapes home. Through their words, discover the Himalayas as lived and felt: intimate trails, quiet traditions, personal encounters, and timeless wisdom shaped by life in the mountains.            </p>
           </div>
         </div>
       </section>
@@ -311,7 +310,7 @@ const Blog = () => {
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-display font-bold">
-                {selectedCategory === "All Posts" ? "All Stories" : selectedCategory}
+                {selectedCategory === "All Posts" ? "Voices of the Himalayas" : selectedCategory}
               </h2>
               <p className="text-muted-foreground">
                 {filteredPosts.length} articles found

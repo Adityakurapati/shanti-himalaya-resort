@@ -38,6 +38,7 @@ import { supabase } from "@/integrations/supabase/client"
 import React from "react"
 import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
+import EnquiryModal from "@/components/EnquiryModal";
 
 const DestinationDetail = () => {
         const params = useParams();
@@ -45,6 +46,7 @@ const DestinationDetail = () => {
         const [destination, setDestination] = React.useState<Tables<"destinations"> | null>(null)
         const [loading, setLoading] = React.useState(true)
         const [activeTab, setActiveTab] = React.useState("overview")
+        const [isEnquiryModalOpen, setIsEnquiryModalOpen] = React.useState(false)
 
         React.useEffect(() => {
                 if (slug) {
@@ -376,18 +378,25 @@ const DestinationDetail = () => {
                                                                 <Button
                                                                         size="lg"
                                                                         className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${destination.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
-                                                                        onClick={() => {
-                                                                                window.location.href = `mailto:shantihimalayas@gmail.com?subject=Enquiry about ${encodeURIComponent(destination.name)}&body=Hi, I would like to know more about ${encodeURIComponent(destination.name)}.`;
-                                                                        }}
+                                                                        onClick={() => setIsEnquiryModalOpen(true)}
                                                                 >
                                                                         Enquire Now
                                                                 </Button>
+
                                                         </motion.div>
                                                 </motion.div>
                                         </div>
                                 </section>
 
-
+<EnquiryModal
+  item={{
+    id: destination.id,
+    title: destination.name,
+    type: 'destination'
+  }}
+  isOpen={isEnquiryModalOpen}
+  onClose={() => setIsEnquiryModalOpen(false)}
+/>
 
                                 {/* Interactive Tabs Section */}
                                 <section className="py-16 bg-transparent">

@@ -26,13 +26,16 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import React from "react";
+import EnquiryModal from "@/components/EnquiryModal";
+import { motion } from "framer-motion";
 
 const ExperienceDetail = () => {
         const params = useParams();
         const slug = Array.isArray(params.id) ? params.id[0] : params.id;
         const [experience, setExperience] = React.useState<Tables<"experiences"> | null>(null);
         const [loading, setLoading] = React.useState(true);
-
+                const [isEnquiryModalOpen, setIsEnquiryModalOpen] = React.useState(false)
+        
         React.useEffect(() => {
                 if (slug) {
                         fetchExperience();
@@ -196,6 +199,22 @@ const ExperienceDetail = () => {
                                                                 </div>
                                                         </div>
                                                 </div>
+
+                                                 <motion.div
+                                                                className="flex flex-col sm:flex-row gap-4"
+                                                                initial={{ opacity: 0, y: 30 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ duration: 0.8, delay: 0.8 }}
+                                                        >
+                                                                <Button
+                                                                        size="lg"
+                                                                        className={`text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-300 ${experience.image_url ? 'bg-white text-emerald-600 hover:bg-white/90' : 'hero-gradient text-white'}`}
+                                                                        onClick={() => setIsEnquiryModalOpen(true)}
+                                                                >
+                                                                        Enquire Now
+                                                                </Button>
+
+                                                        </motion.div>
                                         </div>
                                 </div>
                         </section>
@@ -239,6 +258,16 @@ const ExperienceDetail = () => {
                                                                         </div>
                                                                 )}
                                                         </div>
+
+                                                        <EnquiryModal
+  item={{
+    id: experience.id,
+    title: experience.title,
+    type: 'experience'
+  }}
+  isOpen={isEnquiryModalOpen}
+  onClose={() => setIsEnquiryModalOpen(false)}
+/>
 
                                                         {/* Quick Facts Sidebar */}
                                                         <div className="space-y-6">

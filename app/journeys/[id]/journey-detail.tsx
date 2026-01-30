@@ -35,6 +35,7 @@ import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import EnquiryModal from "@/components/EnquiryModal";
 
 type DaySchedule = {
   id: string;
@@ -99,9 +100,8 @@ const DayCard = ({
       className="px-4 sm:px-0"
     >
       <Card
-        className={`overflow-hidden border-2 transition-all duration-300 ${
-          isExpanded ? "border-primary shadow-xl scale-[1.02]" : "border-border hover:border-primary/50"
-        }`}
+        className={`overflow-hidden border-2 transition-all duration-300 ${isExpanded ? "border-primary shadow-xl scale-[1.02]" : "border-border hover:border-primary/50"
+          }`}
       >
         <CardContent className="p-0">
           {/* Day Header */}
@@ -253,106 +253,6 @@ const DayCard = ({
   );
 };
 
-const EnquiryModal = ({
-  journey,
-  isOpen,
-  onClose,
-}: {
-  journey: any;
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
-  const [formData, setFormData] = React.useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const { error } = await supabase.from("enquiries").insert([
-        {
-          journey_id: journey.id,
-          journey_title: journey.title,
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          status: "new",
-        },
-      ]);
-
-      if (error) throw error;
-
-      setFormData({ name: "", email: "", message: "" });
-      onClose();
-      alert("Thank you for your enquiry! We will get back to you soon.");
-    } catch (error) {
-      console.error("Error submitting enquiry:", error);
-      alert("There was an error submitting your enquiry. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-background rounded-lg max-w-md w-full p-6"
-      >
-        <h3 className="text-2xl font-bold mb-4">Enquire About {journey.title}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Name</label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full p-2 border rounded-md"
-              placeholder="Your name"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Email</label>
-            <input
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full p-2 border rounded-md"
-              placeholder="Your email"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Message</label>
-            <textarea
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full p-2 border rounded-md h-24"
-              placeholder="Any specific requirements or questions?"
-            />
-          </div>
-          <div className="flex gap-3 pt-4">
-            <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {isSubmitting ? "Submitting..." : "Submit Enquiry"}
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </motion.div>
-    </div>
-  );
-};
 
 export const JourneyDetail = () => {
   const params = useParams();
@@ -536,7 +436,7 @@ export const JourneyDetail = () => {
                   </div>
                 </div>
 
-               
+
               </div>
 
               <Button size="lg" className="bg-white text-black hover:bg-white/90" onClick={() => setIsEnquiryModalOpen(true)}>
@@ -602,9 +502,15 @@ export const JourneyDetail = () => {
             </div>
           </div>
         </section>
-
-        <EnquiryModal journey={journey} isOpen={isEnquiryModalOpen} onClose={() => setIsEnquiryModalOpen(false)} />
-        <Footer />
+        <EnquiryModal
+          item={{
+            id: journey.id,
+            title: journey.title,
+            type: 'journey'
+          }}
+          isOpen={isEnquiryModalOpen}
+          onClose={() => setIsEnquiryModalOpen(false)}
+        />
       </div>
     </>
   );

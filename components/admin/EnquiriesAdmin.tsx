@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-import { Mail, Calendar, User, Eye, EyeOff, Trash2, Reply } from "lucide-react"
+import { Mail, Calendar, User, Eye, EyeOff, Trash2, Reply, Phone } from "lucide-react"
 import type { Tables } from "@/integrations/supabase/types";
 
 type Enquiry = Tables<"enquiries">
@@ -191,6 +191,9 @@ const EnquiriesAdmin = () => {
                                                                         <div>
                                                                                 <CardTitle className="flex items-center gap-2">
                                                                                         {enquiry.journey_title}
+                                                                                        <Badge variant="outline" className="text-xs">
+                                                                                                {enquiry.enquiry_type || 'journey'}
+                                                                                        </Badge>
                                                                                         {!enquiry.is_read && (
                                                                                                 <Badge variant="default" className="bg-blue-500">New</Badge>
                                                                                         )}
@@ -203,6 +206,10 @@ const EnquiriesAdmin = () => {
                                                                                         <span className="flex items-center gap-1">
                                                                                                 <Mail className="w-4 h-4" />
                                                                                                 {enquiry.email}
+                                                                                        </span>
+                                                                                        <span className="flex items-center gap-1">
+                                                                                                <Phone className="w-4 h-4" />
+                                                                                                {enquiry.phone || 'N/A'}
                                                                                         </span>
                                                                                         <span className="flex items-center gap-1">
                                                                                                 <Calendar className="w-4 h-4" />

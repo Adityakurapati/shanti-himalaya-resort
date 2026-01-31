@@ -72,40 +72,27 @@ const AboutUsPage = () => {
   const teamMembers = [
     {
       name: "Giri",
-      description: "The founder of an offbeat Himalayan camp and travel initiative, he specializes in curating cultural hikes and treks across the Himalayas. Driven by a passion for authentic travel, he creates experiences that connect travelers with local traditions, landscapes, and lesser-known trails.",
+      description: "The founder of an offbeat Himalayan camp and travel initiative, he specializes in curating cultural hikes and treks across the Himalayas. Driven by a passion for authentic travel, he creates experiences that connect travelers with local traditions, landscapes, and lesser-known trails. His vision blends simplicity, sustainability, and deep cultural immersion, offering journeys that go far beyond conventional Himalayan travel.",
       role: "Founder & Cultural Curator",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Giri.jpg`,
       experience: "15+ years",
-      featured: true
+      imageStyle: "true",
     },
     {
       name: "Ajit Negi",
-      description: "An outgoing and deeply rooted explorer of the Himalayas, he specializes in organizing immersive cultural trips and guided hikes across the region. With a strong connection to local communities, he blends adventure with authentic cultural experiences.",
-      role: "Cultural Explorer & Guide",
-      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ajit-Negi.jpg`,
-      experience: "12+ years"
-    },
-    {
-      name: "Anuj Mallik",
-      description: "A dynamic sales and marketing professional with a natural eye for photography, he specializes in curating and selling meaningful travel & stay experiences. With a deep appreciation for nature and detail, he connects clients to thoughtfully designed trips.",
+      description: "An outgoing and deeply rooted explorer of the Himalayas, he specializes in organizing immersive cultural trips and guided hikes across the region. With a strong connection to local communities, he blends adventure with authentic cultural experiences, offering journeys that go beyond the usual trails. His trips are designed for travelers who seek meaningful exploration, breathtaking landscapes, and a true understanding of Himalayan life.",
       role: "Marketing & Experience Curator",
-      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Anuj-Mallik.jpg`,
-      experience: "10+ years"
-    },
-    {
-      name: "Som Bose",
-      description: "A highly knowledgeable Trip Leader and founder of Experiential Himalaya, Som specializes in leading Himalayan trips that offer clients truly enriching experiences. With deep regional knowledge and years of hands-on expertise.",
-      role: "Mentor",
-      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Som.jpg`,
-      experience: "18+ years",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ajit-Negi.jpg`,
+      experience: "12+ years",
       featured: true
     },
     {
-      name: "Phunchok",
-      description: "A seasoned Trek Leader overseeing operations in Ladakh and Kashmir area, Phunchok is a man for all seasons. With strong knowledge of the region's terrain, culture, and high-altitude conditions, he ensures safe, well-paced, and comfortable treks.",
-      role: "Trek Leader & Operations",
-      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Phunchok.jpg`,
-      experience: "14+ years"
+      name: "Anuj Mallik",
+      description: "A dynamic sales and marketing professional with a natural eye for photography, he specializes in curating and selling meaningful travel & stay experiences. With a deep appreciation for nature and detail, he connects clients to thoughtfully designed trips focused on bird watching and immersive exploration. His blend of storytelling, visual creativity, and client understanding helps travelers choose journeys & stays that are enriching, responsible, and truly memorable.",
+      role: "Marketing & PR",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Anuj-Mallik.jpg`,
+      experience: "10+ years",
+      featured: true
     },
     {
       name: "Ratnesh Rawat",
@@ -113,7 +100,21 @@ const AboutUsPage = () => {
       role: "Camp Manager",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ratnesh.jpg`,
       experience: "14+ years"
-    }
+    },
+    {
+      name: "Som Bose",
+      description: "A highly knowledgeable Trip Leader and founder of Experiential Himalaya, Som specializes in leading Himalayan trips that offer clients truly enriching experiences. With deep regional knowledge and years of hands-on expertise, he is quite experimental and ensures that every journey is safe, well-guided, and meaningful. His leadership style blends professionalism with warmth, allowing travelers to connect deeply with the landscapes, culture, and spirit of the Himalayas.",
+      role: "Mentor & Leader",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Som.jpg`,
+      experience: "18+ years",
+    },
+    {
+      name: "Phunchok",
+      description: "A seasoned Trek Leader overseeing operations in Ladakh and Kashmir area,  Phunchok is a man for all seasons. With strong knowledge of the region’s terrain, culture, and high-altitude conditions, he ensures safe, well-paced, and comfortable treks. His calm guidance, attentiveness, and genuine concern for travelers make each journey in Ladakh both secure and deeply rewarding.",
+      role: "Leader & Operations",
+      imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Phunchok.jpg`,
+      experience: "14+ years"
+    },
   ];
 
   const services = [
@@ -121,7 +122,7 @@ const AboutUsPage = () => {
       title: "Locally Guided Treks",
       description: "Our treks are led by experienced local guides, certified mountaineers, and cultural experts.",
       icon: Compass,
-      color: "bg-blue-500/10 text-blue-500"
+      color: "bg-blue-500/10 text-blue-500 "
     },
     {
       title: "Luxury Camping",
@@ -294,12 +295,17 @@ const AboutUsPage = () => {
                   <div className="flex items-start gap-8">
                     {/* Rectangular portrait image */}
                     <div className="w-36 h-44 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/20 shadow-md">
-                      {member.imageUrl ? (
-                        <img
-                          src={member.imageUrl}
-                          alt={member.name}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
+                     {member.imageUrl ? (
+  <img
+    src={member.imageUrl}
+    alt={member.name}
+    className={
+      member.imageStyle ??
+      "w-full h-full object-cover object-bottom hover:scale-105 transition-transform duration-300 ease-in-out"
+    }
+  />
+) : null}
+
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                           <span className="text-white font-display font-bold text-3xl">

@@ -12,9 +12,10 @@ import {
     MapPin,
     Calendar,
     ArrowRight,
-    Loader2,
     Phone,
-    Mail
+    Mail,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -47,10 +48,56 @@ const CATEGORIES = [
     "Nature"
 ] as const;
 
+// Carousel images from Stays directory
+const HERO_CAROUSEL_IMAGES = [
+    {
+        src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Stays/TAJ CHIA KUTIR 1.jpg.jpeg`,
+        alt: "Taj Chia Kutir Luxury Resort",
+        title: "Taj Chia Kutir"
+    },
+    {
+        src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Stays/TAJ CHIA KUTIR 2.jpg.jpeg`,
+        alt: "Taj Chia Kutir Luxury Experience",
+        title: "Luxury Mountain Retreat"
+    },
+    {
+        src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Stays/TAJ CHIA KUTIR IMAGE.webp`,
+        alt: "Taj Chia Kutir Premium Stay",
+        title: "Premium Himalayan Stay"
+    },
+    {
+        src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Stays/Taj Rishikesh 1.jpg.jpeg`,
+        alt: "Taj Rishikesh Riverside Resort",
+        title: "Taj Rishikesh"
+    },
+    {
+        src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Stays/TAJ RISHIKESH 2ND IMAGEIMAGE.jpg.jpeg`,
+        alt: "Taj Rishikesh Luxury Rooms",
+        title: "Luxury Riverside Experience"
+    },
+    {
+        src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Stays/TAJ RISHIKESH FIRST IMAGE.jpg.jpeg`,
+        alt: "Taj Rishikesh Premium Accommodation",
+        title: "Premium Riverside Retreat"
+    }
+];
+
 export default function ExperientialStays() {
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [stays, setStays] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+
+    // Carousel auto-rotate
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentCarouselIndex((prev) => 
+                prev === HERO_CAROUSEL_IMAGES.length - 1 ? 0 : prev + 1
+            );
+        }, 5000); // Change image every 5 seconds
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         fetchStays();
@@ -92,12 +139,23 @@ export default function ExperientialStays() {
             );
 
             setStays(staysWithImages);
-            console.log("Fetched stays:", staysWithImages); // Debug log
         } catch (error) {
             console.error("Error fetching stays:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handlePrevSlide = () => {
+        setCurrentCarouselIndex((prev) => 
+            prev === 0 ? HERO_CAROUSEL_IMAGES.length - 1 : prev - 1
+        );
+    };
+
+    const handleNextSlide = () => {
+        setCurrentCarouselIndex((prev) => 
+            prev === HERO_CAROUSEL_IMAGES.length - 1 ? 0 : prev + 1
+        );
     };
 
     const filteredStays = selectedCategory === "All"
@@ -121,25 +179,98 @@ export default function ExperientialStays() {
         <div className="min-h-screen bg-background">
             <Header />
 
-            {/* Hero Section */}
-            <section className="pt-32 pb-16 hero-gradient text-white">
-                <div className="container mx-auto px-4">
+            {/* Hero Section with Carousel */}
+            <section className="relative pt-32 pb-16 hero-gradient text-white overflow-hidden">
+                {/* Carousel Background */}
+                <div className="absolute inset-0 z-0">
+                    {HERO_CAROUSEL_IMAGES.map((image, index) => (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                                index === currentCarouselIndex ? 'opacity-100' : 'opacity-0'
+                            }`}
+                        >
+                            <img
+                                src={image.src}
+                                alt={image.alt}
+                                className="w-full h-full object-cover"
+                                style={{
+                                    objectPosition: 'center 30%'
+                                }}
+                            />
+                            {/* Gradient overlay for better text visibility */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
+                            {/* Overlay pattern */}
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/10 to-black/30" />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Carousel Navigation */}
+                <div className="absolute top-1/2 left-4 right-4 z-20 flex justify-between transform -translate-y-1/2">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handlePrevSlide}
+                        className="h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30"
+                    >
+                        <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleNextSlide}
+                        className="h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30"
+                    >
+                        <ChevronRight className="h-6 w-6" />
+                    </Button>
+                </div>
+
+                {/* Carousel Indicators */}
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+                    {HERO_CAROUSEL_IMAGES.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentCarouselIndex(index)}
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                                index === currentCarouselIndex 
+                                    ? 'w-8 bg-white' 
+                                    : 'w-2 bg-white/50 hover:bg-white/70'
+                            }`}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
+                    ))}
+                </div>
+
+                {/* Hero Content */}
+                <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
-                        <Badge className="mb-6 bg-white/20 text-white border-white/30">
-Curated Himalayan Retreats                        </Badge>
-                        <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+                        <div className="mb-6 inline-block">
+                            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                                Curated Himalayan Retreats
+                            </Badge>
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 drop-shadow-lg">
                             Experiential
                             <span className="block text-luxury">Stays</span>
                         </h1>
-                        <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                        Immerse yourself in authentic Himalayan experiences through our carefully curated stays. From luxury eco-lodges to traditional mountain retreats, each offers unique cultural immersion.
+                        <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                            Immerse yourself in authentic Himalayan experiences through our carefully curated stays. 
+                            From luxury eco-lodges to traditional mountain retreats, each offers unique cultural immersion.
                         </p>
+                        
+                        {/* Current Carousel Image Title */}
+                        <div className="mt-8 inline-block bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 border border-white/20">
+                            <p className="text-white font-medium">
+                                {HERO_CAROUSEL_IMAGES[currentCarouselIndex].title}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Category Filter */}
-            <section className="py-8 bg-white/50 backdrop-blur-sm border-y">
+            <section className="py-8 bg-white/80 backdrop-blur-sm border-y relative z-30">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-wrap justify-center gap-2 md:gap-3">
                         {CATEGORIES.map((category) => (
@@ -148,10 +279,11 @@ Curated Himalayan Retreats                        </Badge>
                                 variant={category === selectedCategory ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setSelectedCategory(category)}
-                                className={`gap-2 transition-all duration-300 ${category === selectedCategory
-                                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg"
-                                    : "hover:border-primary/50 hover:text-primary"
-                                    }`}
+                                className={`gap-2 transition-all duration-300 ${
+                                    category === selectedCategory
+                                        ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg"
+                                        : "hover:border-primary/50 hover:text-primary"
+                                }`}
                             >
                                 {category === "All" ? <Sparkles className="w-4 h-4" /> : null}
                                 {category}

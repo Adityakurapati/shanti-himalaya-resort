@@ -28,7 +28,7 @@ const Header = () => {
     experiences: true,
     stays: true
   });
-  
+
   const pathname = usePathname();
   const router = useRouter();
 
@@ -37,6 +37,14 @@ const Header = () => {
 
   // Hide dropdown menus on Our Resort pages
   const showDropdowns = !isResortPage;
+
+  // Check active states for different page groups
+  const isJourneysActive = pathname.startsWith("/journeys");
+  const isDestinationsActive = pathname.startsWith("/destinations");
+  const isExperiencesActive = pathname.startsWith("/experiences");
+  const isStaysActive = pathname.startsWith("/experiential-stays");
+  const isBlogActive = pathname.startsWith("/blog");
+  const isOurResortActive = pathname.startsWith("/our-resort");
 
   const mainNavLinks = [
     { href: "/our-resort", label: "Our Resort", featured: true },
@@ -121,11 +129,11 @@ const Header = () => {
       } catch (error) {
         console.error("Error fetching featured data:", error);
         // Set loading to false even on error
-        setLoading({ 
-          journeys: false, 
-          destinations: false, 
+        setLoading({
+          journeys: false,
+          destinations: false,
           experiences: false,
-          stays: false 
+          stays: false
         });
       }
     };
@@ -135,35 +143,68 @@ const Header = () => {
     }
   }, [showDropdowns]);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      // Store original body overflow
+      const originalOverflow = document.body.style.overflow;
+      // Prevent scroll
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore original overflow
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isMenuOpen]);
+
   const isActive = (path: string) => pathname === path;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <img
-              src={logo.src}
-              alt="Shanti Himalaya - Culture et Adventure"
-              className="h-14 w-auto object-contain"
-            />
-          </Link>
+          <h2 className="text-2xl font-bold text-primary">Shanti Himalaya</h2>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {/* Our Resort Link */}
             <Link
               href="/our-resort"
-              className={`font-medium transition-all duration-300 relative ${
-                isActive("/our-resort")
-                  ? "text-primary font-semibold"
-                  : "text-foreground hover:text-primary"
-              }`}
+              className={`
+                font-medium 
+                transition-all 
+                duration-300 
+                relative
+                group
+                ${isOurResortActive ? "text-primary font-semibold" : "text-foreground"}
+              `}
             >
-              Our Resort
-              {isActive("/our-resort") && (
+              <span className="relative z-10">Our Resort</span>
+              
+              {/* Permanent underline for active page */}
+              {isOurResortActive && (
                 <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+              )}
+              
+              {/* Hover animation underline */}
+              {!isOurResortActive && (
+                <div className="
+                  absolute 
+                  -bottom-1 
+                  left-1/2 
+                  h-0.5 
+                  bg-primary 
+                  rounded-full 
+                  transform 
+                  -translate-x-1/2 
+                  transition-all 
+                  duration-300 
+                  ease-out
+                  w-0 
+                  group-hover:w-full
+                  group-hover:left-0
+                  group-hover:translate-x-0
+                " />
               )}
             </Link>
 
@@ -172,9 +213,34 @@ const Header = () => {
               <button
                 key={link.href}
                 onClick={() => handleResortNavClick(link.href)}
-                className="font-medium transition-all duration-300 text-foreground hover:text-primary"
+                className="
+                  font-medium 
+                  transition-all 
+                  duration-300 
+                  text-foreground 
+                  relative
+                  group
+                  hover:text-primary
+                "
               >
-                {link.label}
+                <span className="relative z-10">{link.label}</span>
+                <div className="
+                  absolute 
+                  -bottom-1 
+                  left-1/2 
+                  h-0.5 
+                  bg-primary 
+                  rounded-full 
+                  transform 
+                  -translate-x-1/2 
+                  transition-all 
+                  duration-300 
+                  ease-out
+                  w-0 
+                  group-hover:w-full
+                  group-hover:left-0
+                  group-hover:translate-x-0
+                " />
               </button>
             ))}
 
@@ -183,9 +249,48 @@ const Header = () => {
               <>
                 {/* Journeys Dropdown */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
-                    <span>Journeys</span>
-                    <ChevronDown className="w-4 h-4" />
+                  <DropdownMenuTrigger
+                    className={`
+                      h-10
+                      flex items-center
+                      font-medium
+                      transition-colors
+                      focus:outline-none
+                      focus:ring-0
+                      data-[state=open]:font-medium
+                      relative
+                      group
+                      ${isJourneysActive ? "text-primary font-semibold" : "text-foreground"}
+                    `}
+                  >
+                    <span className="relative z-10">Journeys</span>
+                    <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
+                    
+                    {/* Permanent underline for active page */}
+                    {isJourneysActive && (
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                    
+                    {/* Hover animation underline */}
+                    {!isJourneysActive && (
+                      <div className="
+                        absolute 
+                        -bottom-1 
+                        left-1/2 
+                        h-0.5 
+                        bg-primary 
+                        rounded-full 
+                        transform 
+                        -translate-x-1/2 
+                        transition-all 
+                        duration-300 
+                        ease-out
+                        w-0 
+                        group-hover:w-full
+                        group-hover:left-0
+                        group-hover:translate-x-0
+                      " />
+                    )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
                     {loading.journeys ? (
@@ -217,9 +322,48 @@ const Header = () => {
 
                 {/* Destinations Dropdown */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
-                    <span>Destinations</span>
-                    <ChevronDown className="w-4 h-4" />
+                  <DropdownMenuTrigger
+                    className={`
+                      h-10
+                      flex items-center
+                      font-medium
+                      transition-colors
+                      focus:outline-none
+                      focus:ring-0
+                      data-[state=open]:font-medium
+                      relative
+                      group
+                      ${isDestinationsActive ? "text-primary font-semibold" : "text-foreground"}
+                    `}
+                  >
+                    <span className="relative z-10">Destinations</span>
+                    <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
+                    
+                    {/* Permanent underline for active page */}
+                    {isDestinationsActive && (
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                    
+                    {/* Hover animation underline */}
+                    {!isDestinationsActive && (
+                      <div className="
+                        absolute 
+                        -bottom-1 
+                        left-1/2 
+                        h-0.5 
+                        bg-primary 
+                        rounded-full 
+                        transform 
+                        -translate-x-1/2 
+                        transition-all 
+                        duration-300 
+                        ease-out
+                        w-0 
+                        group-hover:w-full
+                        group-hover:left-0
+                        group-hover:translate-x-0
+                      " />
+                    )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
                     {loading.destinations ? (
@@ -251,9 +395,48 @@ const Header = () => {
 
                 {/* Experiences Dropdown */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
-                    <span>Experiences</span>
-                    <ChevronDown className="w-4 h-4" />
+                  <DropdownMenuTrigger
+                    className={`
+                      h-10
+                      flex items-center
+                      font-medium
+                      transition-colors
+                      focus:outline-none
+                      focus:ring-0
+                      data-[state=open]:font-medium
+                      relative
+                      group
+                      ${isExperiencesActive ? "text-primary font-semibold" : "text-foreground"}
+                    `}
+                  >
+                    <span className="relative z-10">Experiences</span>
+                    <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
+                    
+                    {/* Permanent underline for active page */}
+                    {isExperiencesActive && (
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                    
+                    {/* Hover animation underline */}
+                    {!isExperiencesActive && (
+                      <div className="
+                        absolute 
+                        -bottom-1 
+                        left-1/2 
+                        h-0.5 
+                        bg-primary 
+                        rounded-full 
+                        transform 
+                        -translate-x-1/2 
+                        transition-all 
+                        duration-300 
+                        ease-out
+                        w-0 
+                        group-hover:w-full
+                        group-hover:left-0
+                        group-hover:translate-x-0
+                      " />
+                    )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
                     {loading.experiences ? (
@@ -285,9 +468,48 @@ const Header = () => {
 
                 {/* Stays Dropdown */}
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="font-medium transition-all duration-300 text-foreground hover:text-primary flex items-center space-x-1">
-                    <span>Stays</span>
-                    <ChevronDown className="w-4 h-4" />
+                  <DropdownMenuTrigger
+                    className={`
+                      h-10
+                      flex items-center
+                      font-medium
+                      transition-colors
+                      focus:outline-none
+                      focus:ring-0
+                      data-[state=open]:font-medium
+                      relative
+                      group
+                      ${isStaysActive ? "text-primary font-semibold" : "text-foreground"}
+                    `}
+                  >
+                    <span className="relative z-10">Stays</span>
+                    <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
+                    
+                    {/* Permanent underline for active page */}
+                    {isStaysActive && (
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                    
+                    {/* Hover animation underline */}
+                    {!isStaysActive && (
+                      <div className="
+                        absolute 
+                        -bottom-1 
+                        left-1/2 
+                        h-0.5 
+                        bg-primary 
+                        rounded-full 
+                        transform 
+                        -translate-x-1/2 
+                        transition-all 
+                        duration-300 
+                        ease-out
+                        w-0 
+                        group-hover:w-full
+                        group-hover:left-0
+                        group-hover:translate-x-0
+                      " />
+                    )}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 bg-background border border-border shadow-lg">
                     {loading.stays ? (
@@ -320,15 +542,41 @@ const Header = () => {
                 {/* Blogs Link */}
                 <Link
                   href="/blog"
-                  className={`font-medium transition-all duration-300 relative ${
-                    isActive("/blog")
-                      ? "text-primary"
-                      : "text-foreground hover:text-primary"
-                  }`}
+                  className={`
+                    font-medium 
+                    transition-all 
+                    duration-300 
+                    relative
+                    group
+                    ${isBlogActive ? "text-primary font-semibold" : "text-foreground"}
+                  `}
                 >
-                  Blogs
-                  {isActive("/blog") && (
+                  <span className="relative z-10">Blogs</span>
+                  
+                  {/* Permanent underline for active page */}
+                  {isBlogActive && (
                     <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                  )}
+                  
+                  {/* Hover animation underline */}
+                  {!isBlogActive && (
+                    <div className="
+                      absolute 
+                      -bottom-1 
+                      left-1/2 
+                      h-0.5 
+                      bg-primary 
+                      rounded-full 
+                      transform 
+                      -translate-x-1/2 
+                      transition-all 
+                      duration-300 
+                      ease-out
+                      w-0 
+                      group-hover:w-full
+                      group-hover:left-0
+                      group-hover:translate-x-0
+                    " />
                   )}
                 </Link>
               </>
@@ -338,8 +586,10 @@ const Header = () => {
           {/* Contact Info & CTA */}
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-lg text-muted-foreground">
-              <Phone className="w-6 h-6" />
-              <span>+91 99107 75073</span>
+              <Link href="tel:+919910775073">
+                
+                <Button className="hero-gradient hover-glow md:text-xl"> <Phone className="w-10 h-10" /> +91 9910775073</Button>
+              </Link>
             </div>
             {/* Admin Shield Button */}
             <Link href="/admin">
@@ -371,13 +621,18 @@ const Header = () => {
               <Link
                 href="/our-resort"
                 onClick={() => setIsMenuOpen(false)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive("/our-resort")
-                    ? "bg-primary text-primary-foreground"
+                className={`
+                  px-4 py-2 
+                  rounded-lg 
+                  font-medium 
+                  transition-colors 
+                  ${isOurResortActive 
+                    ? "bg-primary text-primary-foreground" 
                     : "hover:bg-muted"
-                }`}
+                  }
+                `}
               >
-                Our Resort
+                Our Resort {isOurResortActive && "•"}
               </Link>
 
               {/* Resort Navigation in Mobile */}
@@ -396,7 +651,9 @@ const Header = () => {
                 <>
                   {/* Journeys Section */}
                   <div className="px-4 py-2">
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">Journeys</h4>
+                    <h4 className={`font-semibold text-sm mb-2 ${isJourneysActive ? "text-primary" : "text-muted-foreground"}`}>
+                      Journeys {isJourneysActive && "•"}
+                    </h4>
                     {loading.journeys ? (
                       <p className="text-sm text-muted-foreground py-1">Loading journeys...</p>
                     ) : topJourneys.length > 0 ? (
@@ -426,7 +683,9 @@ const Header = () => {
 
                   {/* Destinations Section */}
                   <div className="px-4 py-2">
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">Destinations</h4>
+                    <h4 className={`font-semibold text-sm mb-2 ${isDestinationsActive ? "text-primary" : "text-muted-foreground"}`}>
+                      Destinations {isDestinationsActive && "•"}
+                    </h4>
                     {loading.destinations ? (
                       <p className="text-sm text-muted-foreground py-1">Loading destinations...</p>
                     ) : topDestinations.length > 0 ? (
@@ -456,7 +715,9 @@ const Header = () => {
 
                   {/* Experiences Section */}
                   <div className="px-4 py-2">
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">Experiences</h4>
+                    <h4 className={`font-semibold text-sm mb-2 ${isExperiencesActive ? "text-primary" : "text-muted-foreground"}`}>
+                      Experiences {isExperiencesActive && "•"}
+                    </h4>
                     {loading.experiences ? (
                       <p className="text-sm text-muted-foreground py-1">Loading experiences...</p>
                     ) : topExperiences.length > 0 ? (
@@ -486,7 +747,9 @@ const Header = () => {
 
                   {/* Stays Section */}
                   <div className="px-4 py-2">
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">Stays</h4>
+                    <h4 className={`font-semibold text-sm mb-2 ${isStaysActive ? "text-primary" : "text-muted-foreground"}`}>
+                      Stays {isStaysActive && "•"}
+                    </h4>
                     {loading.stays ? (
                       <p className="text-sm text-muted-foreground py-1">Loading stays...</p>
                     ) : topStays.length > 0 ? (
@@ -518,13 +781,18 @@ const Header = () => {
                   <Link
                     href="/blog"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isActive("/blog")
-                        ? "bg-primary text-primary-foreground"
+                    className={`
+                      px-4 py-2 
+                      rounded-lg 
+                      font-medium 
+                      transition-colors 
+                      ${isBlogActive 
+                        ? "bg-primary text-primary-foreground" 
                         : "hover:bg-muted"
-                    }`}
+                      }
+                    `}
                   >
-                    Blogs
+                    Blogs {isBlogActive && "•"}
                   </Link>
                 </>
               )}
@@ -532,7 +800,7 @@ const Header = () => {
               <div className="px-4 py-3 border-t border-border">
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
                   <Phone className="w-4 h-4" />
-                  <span>+91 99107 75073</span>
+                  <span className="text-xl">+91 99107 75073</span>
                 </div>
                 <div className="flex gap-2">
                   <Button className="flex-1 hero-gradient">Book Now</Button>

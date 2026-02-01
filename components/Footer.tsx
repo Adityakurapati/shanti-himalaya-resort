@@ -73,13 +73,13 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="w-4 h-4 text-primary-foreground/60 flex-shrink-0" />
-                  <a href="tel:+919910775078" className="text-sm hover:text-white transition-colors">
+                  <a href="tel:+919910775078" className="text-md hover:text-white transition-colors">
                     +91-99107 75078
                   </a>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-primary-foreground/60 flex-shrink-0" />
-                  <a href="mailto:info@shantihimalaya.com" className="text-sm hover:text-white transition-colors">
+                  <a href="mailto:info@shantihimalaya.com" className="text-md hover:text-white transition-colors">
                     info@shantihimalaya.com
                   </a>
                 </div>
@@ -122,30 +122,30 @@ const Footer = () => {
             <h4 className="font-display font-semibold text-lg">Site Map</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <a href="/contact" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/contact" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Contact Us
                 </a>
-                <a href="/about-us-team" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/about-us-team" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   About Us
                 </a>
-                <a href="/our-resort#accommodation" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
-                  Accommodations
-                </a>
-                <a href="/our-resort#gallery" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/our-resort#gallery" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Gallery
+                </a>
+                <a href="/our-resort#accommodation" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                  Accommodation
                 </a>
               </div>
               <div className="space-y-2">
-                <a href="/sustainable-tourism" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
-                  Sustainable Tourism
-                </a>
-                <a href="/about-us-team#team" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/about-us-team#team" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Our Team
                 </a>
-                <a href="/terms" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/sustainable-tourism" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                  Sustainable Tourism
+                </a>
+                <a href="/terms" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Terms & Conditions
                 </a>
-                <a href="/privacy" className="block text-sm text-primary-foreground/80 hover:text-white transition-colors">
+                <a href="/privacy" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Privacy Policy
                 </a>
               </div>

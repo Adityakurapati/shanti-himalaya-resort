@@ -220,3 +220,27 @@
 .read-the-docs {
         color: #888;
 }
+/* Force scrollbar to always be visible - prevents layout shift */
+html {
+  overflow-y: scroll !important;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Override Radix UI's scroll-lock margin with higher specificity */
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Additional override for maximum specificity */
+body[data-scroll-locked][data-scroll-locked] {
+  margin-right: 0 !important;
+}
+
+/* Add to your global.css */
+img {
+  transition: opacity 0.7s ease-in-out;
+}

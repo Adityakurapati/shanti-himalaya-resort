@@ -34,9 +34,9 @@ const AboutUsPage = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const getHeroImagePath = (filename: string) => {
-                const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || '';
-                return `${basePath}/About Us Hero image/${filename}`;
-        };
+    const basePath = process.env.NEXT_PUBLIC_IMAGE_PATH || '';
+    return `${basePath}/About Us Hero image/${filename}`;
+  };
 
   // Hero images array
   const heroImages = aboutHeroImages.map(getHeroImagePath);
@@ -75,15 +75,14 @@ const AboutUsPage = () => {
       description: "The founder of an offbeat Himalayan camp and travel initiative, he specializes in curating cultural hikes and treks across the Himalayas. Driven by a passion for authentic travel, he creates experiences that connect travelers with local traditions, landscapes, and lesser-known trails. His vision blends simplicity, sustainability, and deep cultural immersion, offering journeys that go far beyond conventional Himalayan travel.",
       role: "Founder & Cultural Curator",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Giri.jpg`,
-      experience: "15+ years",
-      imageStyle: "true",
+      experience: "15+ years"
     },
     {
       name: "Ajit Negi",
       description: "An outgoing and deeply rooted explorer of the Himalayas, he specializes in organizing immersive cultural trips and guided hikes across the region. With a strong connection to local communities, he blends adventure with authentic cultural experiences, offering journeys that go beyond the usual trails. His trips are designed for travelers who seek meaningful exploration, breathtaking landscapes, and a true understanding of Himalayan life.",
       role: "Marketing & Experience Curator",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ajit-Negi.jpg`,
-      experience: "12+ years",
+      experience: "20+ years",
       featured: true
     },
     {
@@ -91,7 +90,7 @@ const AboutUsPage = () => {
       description: "A dynamic sales and marketing professional with a natural eye for photography, he specializes in curating and selling meaningful travel & stay experiences. With a deep appreciation for nature and detail, he connects clients to thoughtfully designed trips focused on bird watching and immersive exploration. His blend of storytelling, visual creativity, and client understanding helps travelers choose journeys & stays that are enriching, responsible, and truly memorable.",
       role: "Marketing & PR",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Anuj-Mallik.jpg`,
-      experience: "10+ years",
+      experience: "18+ years",
       featured: true
     },
     {
@@ -99,7 +98,7 @@ const AboutUsPage = () => {
       description: "Deeply connected with the local community, our camp manager brings the hills to life through expertly guided village walks and authentic local experiences. His strong local relationships and intimate knowledge of the region ensure guests enjoy meaningful, immersive encounters with the culture, people, and traditions of this region.",
       role: "Camp Manager",
       imageUrl: `${process.env.NEXT_PUBLIC_IMAGE_PATH}/Team/Ratnesh.jpg`,
-      experience: "14+ years"
+      experience: "6+ years"
     },
     {
       name: "Som Bose",
@@ -167,9 +166,8 @@ const AboutUsPage = () => {
           {heroImages.map((src, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+                }`}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10" />
               <img
@@ -196,7 +194,7 @@ const AboutUsPage = () => {
               experiential stays and expertly guided hikes & treks that connect travelers with the landscapes,
               cultures and spirit of the Himalayas.
             </p>
-            
+
             {/* Carousel Controls */}
             <div className="flex items-center justify-center space-x-8 mb-8">
               <button
@@ -206,23 +204,22 @@ const AboutUsPage = () => {
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
-              
+
               {/* Dots Indicator */}
               <div className="flex space-x-2">
                 {heroImages.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentSlide
+                    className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
                         ? 'bg-luxury w-8'
                         : 'bg-white/50 hover:bg-white/70'
-                    }`}
+                      }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
               </div>
-              
+
               <button
                 onClick={goToNextSlide}
                 className="p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors backdrop-blur-sm"
@@ -232,8 +229,8 @@ const AboutUsPage = () => {
               </button>
             </div>
 
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-luxury text-white hover:bg-luxury/90"
               asChild
             >
@@ -295,23 +292,20 @@ const AboutUsPage = () => {
                   <div className="flex items-start gap-8">
                     {/* Rectangular portrait image */}
                     <div className="w-36 h-44 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/20 shadow-md">
-                     {member.imageUrl ? (
-  <img
-    src={member.imageUrl}
-    alt={member.name}
-    className={
-      member.imageStyle ??
-      "w-full h-full object-cover object-bottom hover:scale-105 transition-transform duration-300 ease-in-out"
-    }
-  />
-) : null}
+                      {member.imageUrl ? (
+                        <img
+                          src={member.imageUrl}
+                          alt={member.name}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : null}
 
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                          <span className="text-white font-display font-bold text-3xl">
-                            {member.name.charAt(0)}
-                          </span>
-                        </div>
+                      <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <span className="text-white font-display font-bold text-3xl">
+                          {member.name.charAt(0)}
+                        </span>
+                      </div>
                       )}
                     </div>
                     <div className="flex-1">

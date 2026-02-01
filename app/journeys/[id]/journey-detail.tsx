@@ -512,6 +512,8 @@ export const JourneyDetail = () => {
           onClose={() => setIsEnquiryModalOpen(false)}
         />
       </div>
+
+      <Footer />
     </>
   );
 };

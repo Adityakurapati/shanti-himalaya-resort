@@ -127,7 +127,7 @@ User question: ${inputMessage}`
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          className="w-10 h-10 rounded-full shadow-lg hero-gradient hover-glow z-50"
+          className="w-14 h-14 rounded-full shadow-lg hero-gradient hover-glow z-50"
           size="sm"
         >
           <MessageCircle className="w-6 h-6" />

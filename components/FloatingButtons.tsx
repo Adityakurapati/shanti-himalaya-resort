@@ -5,7 +5,6 @@ import WhatsAppButton from "@/components/WhatsAppButton"
 import ChatBot from "@/components/ChatBot"
 import EnquiryButton from "./EnqueryButton"
 
-
 const FloatingButtons = () => {
   const pathname = usePathname()
   const isOurResortPage = pathname === "/our-resort" || pathname.startsWith("/our-resort/")

@@ -240,7 +240,3 @@ body[data-scroll-locked][data-scroll-locked] {
   margin-right: 0 !important;
 }
 
-/* Add to your global.css */
-img {
-  transition: opacity 0.7s ease-in-out;
-}

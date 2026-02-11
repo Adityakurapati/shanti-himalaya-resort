@@ -286,57 +286,55 @@ const AboutUsPage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} className="shadow-card hover-lift overflow-hidden bg-white">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-8">
-                    {/* Rectangular portrait image */}
-                    <div className="w-36 h-44 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/20 shadow-md">
-                      {member.imageUrl ? (
-                        <img
-                          src={member.imageUrl}
-                          alt={member.name}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : null}
-
-                      ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                        <span className="text-white font-display font-bold text-3xl">
-                          {member.name.charAt(0)}
-                        </span>
-                      </div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="font-display font-semibold text-2xl mb-2">{member.name}</h3>
-                          <Badge variant="outline" className="text-sm bg-primary/10 text-primary border-primary/30 px-3 py-1">
-                            {member.role}
-                          </Badge>
-                        </div>
-                        {member.featured && (
-                          <Badge className="bg-gold text-white text-sm px-3 py-1">
-                            <Star className="w-4 h-4 mr-1" />
-                            Featured
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-muted-foreground text-base leading-relaxed">
-                        {member.description}
-                      </p>
-                      {member.experience && (
-                        <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                          <Award className="w-4 h-4 mr-2" />
-                          {member.experience} experience
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+           {teamMembers.map((member, index) => (
+  <Card key={index} className="shadow-card hover-lift overflow-hidden bg-white">
+    <CardContent className="p-6">
+      <div className="flex items-start gap-8">
+        {/* Rectangular portrait image */}
+        <div className="w-36 h-44 rounded-xl overflow-hidden flex-shrink-0 border-2 border-primary/20 shadow-md">
+          {member.imageUrl ? (
+            <img
+              src={member.imageUrl}
+              alt={member.name}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <span className="text-white font-display font-bold text-3xl">
+                {member.name.charAt(0)}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="flex-1">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-display font-semibold text-2xl mb-2">{member.name}</h3>
+              <Badge variant="outline" className="text-sm bg-primary/10 text-primary border-primary/30 px-3 py-1">
+                {member.role}
+              </Badge>
+            </div>
+            {member.featured && (
+              <Badge className="bg-gold text-white text-sm px-3 py-1">
+                <Star className="w-4 h-4 mr-1" />
+                Featured
+              </Badge>
+            )}
+          </div>
+          <p className="text-muted-foreground text-base leading-relaxed">
+            {member.description}
+          </p>
+          {member.experience && (
+            <div className="mt-4 flex items-center text-sm text-muted-foreground">
+              <Award className="w-4 h-4 mr-2" />
+              {member.experience} experience
+            </div>
+          )}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+))}
           </div>
 
           {/* Team Image Gallery */}

@@ -163,7 +163,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          <h2 className="text-2xl font-bold text-primary">Shanti Himalaya</h2>
+          <h2 className="text-2xl font-bold text-primary"><a href="/">Shanti Himalaya</a></h2>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">

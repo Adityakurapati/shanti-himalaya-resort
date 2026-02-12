@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import CategoriesManager from "@/components/admin/CategoriesManager";
+import MapPicker from "@/components/admin/MapPicker";
 import { useDestinationAIDetail } from "@/hooks/useDestinationAiDetail";
 
 type Destination = {
@@ -107,6 +108,7 @@ const AdminDestinationEdit = () => {
     places_image_url: "",
     activities_image_url: "",
     itinerary_image_url: "",
+    map_url: "",
     places_to_visit: {} as { [key: string]: any },
     things_to_do: {} as { [key: string]: any },
     how_to_reach: {
@@ -255,12 +257,12 @@ const AdminDestinationEdit = () => {
 
   const fetchDestination = async () => {
     try {
-      console.log("🔄 Fetching destination with slug:", id);
+      console.log("🔄 Fetching destination with id:", id);
 
       const { data, error } = await supabase
         .from("destinations")
         .select("*")
-        .eq("slug", id)
+        .eq("id", id)
         .maybeSingle();
 
       if (error) {
@@ -352,6 +354,7 @@ const AdminDestinationEdit = () => {
           places_image_url: data.places_image_url || "",
           activities_image_url: data.activities_image_url || "",
           itinerary_image_url: data.itinerary_image_url || "",
+          map_url: data.map_url || "",
           places_to_visit: places_to_visit,
           things_to_do: things_to_do,
           how_to_reach: how_to_reach,
@@ -739,6 +742,7 @@ const AdminDestinationEdit = () => {
         places_image_url: formData.places_image_url || null,
         activities_image_url: formData.activities_image_url || null,
         itinerary_image_url: formData.itinerary_image_url || null,
+        map_url: formData.map_url || null,
         places_to_visit: formData.places_to_visit,
         things_to_do: formData.things_to_do,
         how_to_reach: formData.how_to_reach,
@@ -996,6 +1000,7 @@ const AdminDestinationEdit = () => {
 
   const tabs = [
     { id: "basic", label: "Basic Info" },
+    { id: "location", label: "Location" },
     { id: "overview", label: "Overview" },
     { id: "places", label: "Places to Visit" },
     { id: "activities", label: "Things to Do" },
@@ -1221,6 +1226,18 @@ const AdminDestinationEdit = () => {
                 <Label htmlFor="featured">Featured Destination</Label>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* Location Tab */}
+        {activeTab === "location" && (
+          <div className="space-y-4">
+            <MapPicker
+              mapUrl={formData.map_url}
+              onMapUrlChange={(url) =>
+                setFormData({ ...formData, map_url: url })
+              }
+            />
           </div>
         )}
 

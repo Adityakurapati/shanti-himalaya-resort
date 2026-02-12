@@ -39,6 +39,7 @@ import React from "react"
 import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import EnquiryModal from "@/components/EnquiryModal";
+import LocationMapEmbed from "@/components/admin/LocationMapEmbed";
 
 const DestinationDetail = () => {
         const params = useParams();
@@ -388,15 +389,15 @@ const DestinationDetail = () => {
                                         </div>
                                 </section>
 
-<EnquiryModal
-  item={{
-    id: destination.id,
-    title: destination.name,
-    type: 'destination'
-  }}
-  isOpen={isEnquiryModalOpen}
-  onClose={() => setIsEnquiryModalOpen(false)}
-/>
+                                <EnquiryModal
+                                        item={{
+                                                id: destination.id,
+                                                title: destination.name,
+                                                type: 'destination'
+                                        }}
+                                        isOpen={isEnquiryModalOpen}
+                                        onClose={() => setIsEnquiryModalOpen(false)}
+                                />
 
                                 {/* Interactive Tabs Section */}
                                 <section className="py-16 bg-transparent">
@@ -1017,6 +1018,20 @@ const DestinationDetail = () => {
                                                 </div>
                                         </div>
                                 </section>
+
+                                <div className="my-16 max-w-3xl border-b mx-auto mx-4 border-gray-200" />
+                                <>
+                                        {destination.map_url && (
+                                                <LocationMapEmbed
+                                                        mapUrl={destination.map_url}
+                                                        height="400px"
+                                                        showTitle={true}
+                                                        showBadge={true}
+                                                        showAddress={true}
+                                                        showOpenButton={true}
+                                                />
+                                        )}</>
+                                <div />
 
                                 {/* Enhanced CTA Section */}
                                 <FadeInSection>

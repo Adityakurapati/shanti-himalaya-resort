@@ -37,6 +37,7 @@ import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
+import LocationMapEmbed from "@/components/admin/LocationMapEmbed";
 
 // Helper function to properly parse accommodation features
 const parseAccommodationFeatures = (featuresData: any): string[] => {
@@ -45,7 +46,7 @@ const parseAccommodationFeatures = (featuresData: any): string[] => {
   if (Array.isArray(featuresData)) {
     if (featuresData.length > 0) {
       const firstElement = featuresData[0];
-      
+
       if (typeof firstElement === 'string' && firstElement.trim().startsWith('[') && firstElement.trim().endsWith(']')) {
         try {
           const parsed = JSON.parse(firstElement);
@@ -68,14 +69,14 @@ const parseAccommodationFeatures = (featuresData: any): string[] => {
           }
         }
       }
-      
+
       if (featuresData.every(item => typeof item === 'string')) {
         return featuresData;
       }
     }
     return [];
   }
-  
+
   if (typeof featuresData === 'string') {
     try {
       const parsed = JSON.parse(featuresData);
@@ -96,14 +97,14 @@ const parseAccommodationFeatures = (featuresData: any): string[] => {
       return [];
     }
   }
-  
+
   return [];
 };
 
 // Helper function to parse JSON data
 const parseJSON = (data: any, defaultValue: any = null) => {
   if (!data) return defaultValue;
-  
+
   try {
     if (typeof data === 'string') {
       return JSON.parse(data);
@@ -140,14 +141,14 @@ const getImageTypeLabel = (type: string) => {
 };
 
 // Carousel Component for Restaurant Images with proper cyclic behavior
-const RestaurantImageCarousel = ({ 
-  images, 
+const RestaurantImageCarousel = ({
+  images,
   stayName,
-  onImageClick 
-}: { 
-  images: any[], 
+  onImageClick
+}: {
+  images: any[],
   stayName: string,
-  onImageClick: (index: number) => void 
+  onImageClick: (index: number) => void
 }) => {
   const [currentStartIndex, setCurrentStartIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
@@ -177,7 +178,7 @@ const RestaurantImageCarousel = ({
   // Get visible images with cyclic behavior
   const getVisibleImages = useCallback(() => {
     if (totalImages === 0) return [];
-    
+
     const visibleImages = [];
     for (let i = 0; i < slidesToShow; i++) {
       const index = (currentStartIndex + i) % totalImages;
@@ -230,7 +231,7 @@ const RestaurantImageCarousel = ({
   const visibleImages = getVisibleImages();
 
   return (
-    <div 
+    <div
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -261,9 +262,9 @@ const RestaurantImageCarousel = ({
       <div className="overflow-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {visibleImages.map((image, index) => {
-            const isLastSlide = currentStartIndex + slidesToShow > totalImages && 
-                              index >= totalImages - currentStartIndex;
-            
+            const isLastSlide = currentStartIndex + slidesToShow > totalImages &&
+              index >= totalImages - currentStartIndex;
+
             return (
               <div
                 key={`${image.id}-${index}`}
@@ -280,7 +281,7 @@ const RestaurantImageCarousel = ({
                     }}
                   />
                 </div>
-                
+
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                   <div className="flex items-center gap-2 mb-2">
@@ -319,18 +320,17 @@ const RestaurantImageCarousel = ({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          
+
           <div className="flex gap-2">
             {/* Show dots based on total images, not slides */}
             {Array.from({ length: Math.min(5, totalImages) }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentStartIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentStartIndex % Math.min(5, totalImages)
-                    ? "bg-primary w-6" 
+                className={`w-3 h-3 rounded-full transition-all ${index === currentStartIndex % Math.min(5, totalImages)
+                    ? "bg-primary w-6"
                     : "bg-border hover:bg-border/80"
-                }`}
+                  }`}
                 aria-label={`Go to image set starting at ${index + 1}`}
               />
             ))}
@@ -355,7 +355,7 @@ const RestaurantImageCarousel = ({
       {/* Image Counter */}
       {images.length > 0 && (
         <div className="text-center mt-4 text-sm text-muted-foreground">
-          Showing images {currentStartIndex + 1}-{Math.min(currentStartIndex + slidesToShow, totalImages)} 
+          Showing images {currentStartIndex + 1}-{Math.min(currentStartIndex + slidesToShow, totalImages)}
           {currentStartIndex + slidesToShow > totalImages && (
             ` and 1-${(currentStartIndex + slidesToShow) % totalImages}`
           )}
@@ -377,7 +377,7 @@ export default function StayDetail() {
   const [activeImageTab, setActiveImageTab] = useState<"property" | "restaurant">("property");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showFullScreen, setShowFullScreen] = useState(false);
-  
+
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get current images based on active tab
@@ -416,11 +416,11 @@ export default function StayDetail() {
 
     const category = activeImageTab === "property" ? "property" : "restaurant";
     const captions = defaultCaptions[category];
-    
+
     if (image?.image_type) {
       return `${getImageTypeLabel(image.image_type)} view`;
     }
-    
+
     return captions[index] || `${getImageTypeLabel(image?.image_type || 'other')} ${index + 1}`;
   };
 
@@ -555,7 +555,7 @@ export default function StayDetail() {
     if (slideIntervalRef.current) {
       clearInterval(slideIntervalRef.current);
     }
-    
+
     const currentImages = getCurrentImages();
     slideIntervalRef.current = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
@@ -565,12 +565,12 @@ export default function StayDetail() {
   const handleImageTabChange = (tab: "property" | "restaurant") => {
     setActiveImageTab(tab);
     setCurrentImageIndex(0);
-    
+
     // Reset interval for new tab
     if (slideIntervalRef.current) {
       clearInterval(slideIntervalRef.current);
     }
-    
+
     const currentImages = tab === "property" ? propertyImages : restaurantImages;
     if (currentImages.length > 1) {
       slideIntervalRef.current = setInterval(() => {
@@ -595,10 +595,10 @@ export default function StayDetail() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Construct email subject
     const subject = `Query for ${stay.name}`;
-    
+
     // Construct email body with all form data
     const body = `
 Dear Shanti Himalayas Team,
@@ -630,10 +630,10 @@ ${formData.contactNumber} | ${formData.email}
 
     // Create mailto link
     const mailtoLink = `mailto:shantihimalayas@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
+
     // Open email client
     window.location.href = mailtoLink;
-    
+
     // Optional: Reset form after submission
     setFormData({
       checkInDate: "",
@@ -644,7 +644,7 @@ ${formData.contactNumber} | ${formData.email}
       email: "",
       remarks: ""
     });
-    
+
     // Show success message
     toast({
       title: "Email Client Opened",
@@ -656,7 +656,7 @@ ${formData.contactNumber} | ${formData.email}
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!showFullScreen) return;
-      
+
       if (e.key === 'Escape') {
         setShowFullScreen(false);
       } else if (e.key === 'ArrowRight') {
@@ -997,7 +997,7 @@ ${formData.contactNumber} | ${formData.email}
                       <span className="sr-only">Close</span>
                       <span className="text-2xl">×</span>
                     </Button>
-                    
+
                     <Button
                       variant="ghost"
                       size="icon"
@@ -1006,7 +1006,7 @@ ${formData.contactNumber} | ${formData.email}
                     >
                       <ChevronLeft className="h-6 w-6" />
                     </Button>
-                    
+
                     <Button
                       variant="ghost"
                       size="icon"
@@ -1024,9 +1024,9 @@ ${formData.contactNumber} | ${formData.email}
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
                       }}
                     />
-                    
+
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm">
-                      {getImageCaption(currentImage, currentImageIndex)} 
+                      {getImageCaption(currentImage, currentImageIndex)}
                       <span className="ml-2 text-muted-foreground">
                         ({currentImageIndex + 1} of {currentImages.length})
                       </span>
@@ -1042,7 +1042,7 @@ ${formData.contactNumber} | ${formData.email}
                     <Utensils className="w-6 h-6 text-primary" />
                     Restaurant & Dining
                   </h2>
-                  
+
                   {/* Restaurant Images Carousel */}
                   {restaurantImages.length > 0 && (
                     <div className="mb-8">
@@ -1065,6 +1065,18 @@ ${formData.contactNumber} | ${formData.email}
                   )}
                 </div>
               )}
+
+              {stay.map_url && (
+                <LocationMapEmbed
+                  mapUrl={stay.map_url}
+                  address={stay.address}
+                  locationName={stay.name}
+                  height="450px"
+                  showTitle={true}
+                  showBadge={true}
+                  showAddress={true}
+                  showOpenButton={true}
+                /> ) }
 
               {/* Query Form */}
               <div className="mb-16">

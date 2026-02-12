@@ -20,6 +20,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd"
 import ImageUploader from "./ImageUploader"
+import MapPicker from "./MapPicker"
 
 const CATEGORIES = ["Luxury", "Boutique", "Jungle Lodge", "Homestay", "Experience", "Peace & Relaxation", "Family Holiday", "Experiential", "Nature"] as const;
 
@@ -71,6 +72,13 @@ interface FormTabsData {
   };
 }
 
+interface LocationData {
+  map_url: string;
+  latitude: number | null;
+  longitude: number | null;
+  zoom: number;
+}
+
 export default function ExperientialStaysAdmin() {
   const [stays, setStays] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -90,6 +98,14 @@ export default function ExperientialStaysAdmin() {
     image_url: "",
     capacity: "",
     features: "",
+  })
+
+  // Location data state - includes map_url and coordinates
+  const [locationData, setLocationData] = useState<LocationData>({
+    map_url: "",
+    latitude: null,
+    longitude: null,
+    zoom: 13
   })
 
   const [formData, setFormData] = useState<FormTabsData>({
@@ -227,6 +243,14 @@ export default function ExperientialStaysAdmin() {
 
     const connectivity = parseJSON(stay.connectivity, {});
 
+    // Set location data - including map_url and coordinates
+    setLocationData({
+      map_url: stay.map_url || "",
+      latitude: stay.latitude || null,
+      longitude: stay.longitude || null,
+      zoom: stay.map_zoom_level || 13
+    });
+
     setFormData({
       basic: {
         name: stay.name || "",
@@ -261,6 +285,15 @@ export default function ExperientialStaysAdmin() {
     setImagesDialogOpen(true)
   }
 
+  const resetLocationData = () => {
+    setLocationData({
+      map_url: "",
+      latitude: null,
+      longitude: null,
+      zoom: 13
+    });
+  }
+
   const handleCancelEdit = () => {
     setEditingStay(null)
     setIsCreating(false)
@@ -270,6 +303,7 @@ export default function ExperientialStaysAdmin() {
     setAccommodations([])
     resetForm()
     resetAccommodationForm()
+    resetLocationData()
   }
 
   const resetForm = () => {
@@ -440,6 +474,11 @@ export default function ExperientialStaysAdmin() {
         categories: selectedCategories,
         location: formData.details.location,
         address: formData.details.address,
+        // IMPORTANT: Save the map_url
+        map_url: locationData.map_url || null,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        map_zoom_level: locationData.zoom,
         connectivity: {
           airport: formData.details.connectivity_airport,
           railway: formData.details.connectivity_railway,
@@ -448,6 +487,8 @@ export default function ExperientialStaysAdmin() {
         restaurant_description: formData.restaurant.restaurant_description,
         updated_at: new Date().toISOString()
       }
+
+      console.log("Saving stay with map_url:", stayData.map_url); // Debug log
 
       let savedStayId: string;
 
@@ -647,6 +688,23 @@ export default function ExperientialStaysAdmin() {
           });
         }
 
+        // Handle AI-generated location data if available
+        if (content.details?.map_url) {
+          setLocationData(prev => ({
+            ...prev,
+            map_url: content.details.map_url
+          }));
+        }
+        
+        if (content.details?.latitude && content.details?.longitude) {
+          setLocationData(prev => ({
+            ...prev,
+            latitude: content.details.latitude,
+            longitude: content.details.longitude,
+            zoom: content.details.zoom || 13
+          }));
+        }
+
         toast({
           title: "AI Content Loaded",
           description: "All fields have been populated with AI-generated content",
@@ -722,6 +780,10 @@ export default function ExperientialStaysAdmin() {
     totalFields++;
 
     if (accommodations.length > 0) completedFields++;
+    totalFields++;
+
+    // Add map_url to completion calculation
+    if (locationData.map_url) completedFields++;
     totalFields++;
 
     return Math.round((completedFields / totalFields) * 100);
@@ -958,6 +1020,53 @@ export default function ExperientialStaysAdmin() {
                       placeholder="Srinagar City Center"
                     />
                   </div>
+                </div>
+
+                {/* Location Map Picker - NOW WITH map_url SUPPORT */}
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold">Location on Map</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Set the exact location of your property on the map
+                      </p>
+                    </div>
+                    {locationData.map_url && (
+                      <Badge variant="outline" className="bg-green-50">
+                        <Check className="h-3 w-3 mr-1 text-green-600" />
+                        Map URL Set
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <MapPicker
+                    mapUrl={locationData.map_url}
+                    latitude={locationData.latitude}
+                    longitude={locationData.longitude}
+                    zoom={locationData.zoom}
+                    address={formData.details.address}
+                    onMapUrlChange={(url) => {
+                      console.log("Map URL updated:", url);
+                      setLocationData(prev => ({
+                        ...prev,
+                        map_url: url
+                      }));
+                    }}
+                    onLocationSelect={(lat, lng, zoom) => {
+                      setLocationData(prev => ({
+                        ...prev,
+                        latitude: lat,
+                        longitude: lng,
+                        zoom: zoom
+                      }));
+                      
+                      toast({
+                        title: "Location Updated",
+                        description: "Property location has been set on the map.",
+                        duration: 2000,
+                      });
+                    }}
+                  />
                 </div>
 
                 {/* Stay Images Manager Section */}
@@ -1269,6 +1378,14 @@ export default function ExperientialStaysAdmin() {
                   )}
                 </Button>
               </div>
+              
+              {/* Map URL Status Indicator */}
+              {locationData.map_url && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-green-600" />
+                  <span>Map URL saved</span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -1285,20 +1402,21 @@ export default function ExperientialStaysAdmin() {
                   <TableHead>Location</TableHead>
                   <TableHead>Duration</TableHead>
                   <TableHead>Badge</TableHead>
+                  <TableHead>Map</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {stays.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       No experiential stays found. Create your first one!
                     </TableCell>
                   </TableRow>
                 ) : (
                   stays.map((stay) => {
                     const categories = parseJSON(stay.categories, []);
-
+                    
                     return (
                       <TableRow key={stay.id} className="hover:bg-muted/50">
                         <TableCell>
@@ -1331,8 +1449,25 @@ export default function ExperientialStaysAdmin() {
                           </Badge>
                         </TableCell>
                         <TableCell>
+                          {stay.map_url ? (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              <Check className="h-3 w-3 mr-1" />
+                              Map Set
+                            </Badge>
+                          ) : stay.latitude && stay.longitude ? (
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              <MapPin className="h-3 w-3 mr-1" />
+                              Coordinates
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-gray-50 text-gray-500">
+                              No map
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
                           <div className="flex justify-end space-x-2">
-                            <Link href={`/experiential-stays/${stay.id}`} target="_blank">
+                            <Link href={`/experiential-stays/${stay.slug || stay.id}`} target="_blank">
                               <Button
                                 size="sm"
                                 variant="ghost"

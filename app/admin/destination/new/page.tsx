@@ -23,6 +23,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import CategoriesManager from "@/components/admin/CategoriesManager";
+import MapPicker from "@/components/admin/MapPicker";
 import { useDestinationAI } from "@/hooks/useDestinationAI";
 
 const AdminDestinationNew = () => {
@@ -58,6 +59,11 @@ const AdminDestinationNew = () => {
     places_image_url: "",
     activities_image_url: "",
     itinerary_image_url: "",
+    map_url: "",
+    latitude: null as number | null,
+    longitude: null as number | null,
+    zoom: 13,
+    address: "",
     places_to_visit: {} as { [key: string]: any },
     things_to_do: {} as { [key: string]: any },
     how_to_reach: {
@@ -247,6 +253,11 @@ const AdminDestinationNew = () => {
         places_image_url: formData.places_image_url || null,
         activities_image_url: formData.activities_image_url || null,
         itinerary_image_url: formData.itinerary_image_url || null,
+        map_url: formData.map_url || null,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        zoom: formData.zoom,
+        address: formData.address || null,
         places_to_visit: formData.places_to_visit,
         things_to_do: formData.things_to_do,
         how_to_reach: formData.how_to_reach,
@@ -591,6 +602,7 @@ const AdminDestinationNew = () => {
 
   const tabs = [
     { id: "basic", label: "Basic Info", icon: Mountain },
+    { id: "location", label: "Location", icon: MapPin },
     { id: "overview", label: "Overview", icon: MapPin },
     { id: "places", label: "Places to Visit", icon: MapPin },
     { id: "activities", label: "Things to Do", icon: Route },
@@ -879,6 +891,42 @@ const AdminDestinationNew = () => {
                 <Label htmlFor="featured">Featured Destination</Label>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* Location Tab */}
+        {activeTab === "location" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Location on Map</h3>
+            <p className="text-sm text-muted-foreground">
+              Add a Google Maps location to your destination. This will help visitors understand where the destination is located.
+            </p>
+            <MapPicker
+              mapUrl={formData.map_url}
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              zoom={formData.zoom}
+              address={formData.address}
+              onMapUrlChange={(url) =>
+                setFormData({ ...formData, map_url: url })
+              }
+              onLocationSelect={(lat, lng, zoom) =>
+                setFormData({ ...formData, latitude: lat, longitude: lng, zoom })
+              }
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div>
+                <Label htmlFor="address">Address (optional)</Label>
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  placeholder="Enter the address or search query"
+                />
+              </div>
+            </div>
           </div>
         )}
 

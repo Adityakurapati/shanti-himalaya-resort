@@ -60,8 +60,6 @@ const AdminDestinationNew = () => {
     activities_image_url: "",
     itinerary_image_url: "",
     map_url: "",
-    latitude: null as number | null,
-    longitude: null as number | null,
     zoom: 13,
     address: "",
     places_to_visit: {} as { [key: string]: any },
@@ -254,8 +252,6 @@ const AdminDestinationNew = () => {
         activities_image_url: formData.activities_image_url || null,
         itinerary_image_url: formData.itinerary_image_url || null,
         map_url: formData.map_url || null,
-        latitude: formData.latitude,
-        longitude: formData.longitude,
         zoom: formData.zoom,
         address: formData.address || null,
         places_to_visit: formData.places_to_visit,
@@ -737,7 +733,7 @@ const AdminDestinationNew = () => {
 
 
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-       
+
         <div className="text-sm text-blue-800 grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
             Places to Visit:{" "}
@@ -755,7 +751,7 @@ const AdminDestinationNew = () => {
             FAQs: <strong>{Object.keys(formData.faqs).length}</strong>
           </div>
         </div>
-       
+
       </div>
 
       <div>
@@ -941,15 +937,13 @@ const AdminDestinationNew = () => {
             </p>
             <MapPicker
               mapUrl={formData.map_url}
-              latitude={formData.latitude}
-              longitude={formData.longitude}
               zoom={formData.zoom}
               address={formData.address}
               onMapUrlChange={(url) =>
                 setFormData({ ...formData, map_url: url })
               }
               onLocationSelect={(lat, lng, zoom) =>
-                setFormData({ ...formData, latitude: lat, longitude: lng, zoom })
+                setFormData({ ...formData, zoom })
               }
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -1028,91 +1022,84 @@ const AdminDestinationNew = () => {
             </div>
 
             <div className="space-y-3">
-              {Object.entries(formData.places_to_visit).map(([key, place]) => (
-                <Card key={key}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
+              {Object.entries(formData.itinerary)
+                .sort(([keyA, dayA], [keyB, dayB]) => {
+                  // Sort by day number in ascending order
+                  const dayNumA = dayA.day || 0;
+                  const dayNumB = dayB.day || 0;
+                  return dayNumA - dayNumB;
+                })
+                .map(([key, day]) => (
+                  <Card key={key}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
                           <h4 className="font-semibold text-lg">
-                            {place.name}
+                            Day {day.day}: {day.title}
                           </h4>
-                          <Button 
-                            variant="outline" 
+                        </div>
+                        <div className="flex gap-1 ml-2">
+                          <Button
+                            variant="outline"
                             size="sm"
-                            onClick={() => handleOpenPlaceDialog(key)}
+                            onClick={() => handleOpenItineraryDialog(key)}
                           >
                             <Edit className="w-4 h-4 mr-1" />
                             Edit
                           </Button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="md:col-span-2">
-                            <p className="text-muted-foreground mb-3">
-                              {place.description}
-                            </p>
-                            {place.highlights &&
-                              place.highlights.length > 0 && (
-                                <div className="mt-2">
-                                  <p className="font-medium text-sm mb-1">
-                                    Highlights:
-                                  </p>
-                                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                                    {place.highlights.map(
-                                      (h: string, i: number) => (
-                                        <li key={i}>{h}</li>
-                                      )
-                                    )}
-                                  </ul>
-                                </div>
-                              )}
-                          </div>
-
-                          <div className="md:col-span-1">
-                            {place.image_url ? (
-                              <div className="h-32 rounded-lg overflow-hidden">
-                                <img
-                                  src={place.image_url}
-                                  alt={place.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
-                                <p className="text-sm text-muted-foreground">
-                                  No image
-                                </p>
-                              </div>
-                            )}
-                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteDay(key)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeletePlace(key)}
-                        className="ml-2"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {Object.keys(formData.places_to_visit).length === 0 && (
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            {day.activities?.map((activity: string, i: number) => (
+                              <li key={i}>• {activity}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="md:col-span-1">
+                          {day.image_url ? (
+                            <div className="h-32 rounded-lg overflow-hidden">
+                              <img
+                                src={day.image_url}
+                                alt={`Day ${day.day}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
+                              <p className="text-sm text-muted-foreground">
+                                No image
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              {Object.keys(formData.itinerary).length === 0 && (
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
-                  <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No places added yet. Use "Generate All Content" or add manually.
+                    No itinerary days added yet. Use "Generate All Content" or add manually.
                   </p>
                 </div>
               )}
             </div>
 
             {/* Place Dialog */}
-            <Dialog 
-              open={dialogState.place.isOpen} 
+            <Dialog
+              open={dialogState.place.isOpen}
               onOpenChange={(open) => {
                 if (!open) handleClosePlaceDialog();
               }}
@@ -1123,12 +1110,12 @@ const AdminDestinationNew = () => {
                     {dialogState.place.editId ? "Edit Place" : "Add Place to Visit"}
                   </DialogTitle>
                   <DialogDescription>
-                    {dialogState.place.editId 
-                      ? "Edit the details of this place." 
+                    {dialogState.place.editId
+                      ? "Edit the details of this place."
                       : "Add a new place that visitors should see at this destination."}
                   </DialogDescription>
                 </DialogHeader>
-                <PlaceForm 
+                <PlaceForm
                   key={dialogState.place.editId || 'new-place'}
                   initialData={dialogState.place.editId ? formData.places_to_visit[dialogState.place.editId] : undefined}
                   onSubmit={(placeData) => {
@@ -1207,8 +1194,8 @@ const AdminDestinationNew = () => {
                           {activity.title}
                         </h4>
                         <div className="flex gap-1 ml-2 flex-shrink-0">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => handleOpenActivityDialog(key)}
                           >
@@ -1258,8 +1245,8 @@ const AdminDestinationNew = () => {
             </div>
 
             {/* Activity Dialog */}
-            <Dialog 
-              open={dialogState.activity.isOpen} 
+            <Dialog
+              open={dialogState.activity.isOpen}
               onOpenChange={(open) => {
                 if (!open) handleCloseActivityDialog();
               }}
@@ -1270,12 +1257,12 @@ const AdminDestinationNew = () => {
                     {dialogState.activity.editId ? "Edit Activity" : "Add Activity"}
                   </DialogTitle>
                   <DialogDescription>
-                    {dialogState.activity.editId 
-                      ? "Edit the details of this activity." 
+                    {dialogState.activity.editId
+                      ? "Edit the details of this activity."
                       : "Add a new activity that visitors can enjoy at this destination."}
                   </DialogDescription>
                 </DialogHeader>
-                <ActivityForm 
+                <ActivityForm
                   key={dialogState.activity.editId || 'new-activity'}
                   initialData={dialogState.activity.editId ? formData.things_to_do[dialogState.activity.editId] : undefined}
                   onSubmit={(activityData) => {
@@ -1598,8 +1585,8 @@ const AdminDestinationNew = () => {
                         </h4>
                       </div>
                       <div className="flex gap-1 ml-2">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleOpenItineraryDialog(key)}
                         >
@@ -1657,8 +1644,8 @@ const AdminDestinationNew = () => {
             </div>
 
             {/* Itinerary Dialog */}
-            <Dialog 
-              open={dialogState.itinerary.isOpen} 
+            <Dialog
+              open={dialogState.itinerary.isOpen}
               onOpenChange={(open) => {
                 if (!open) handleCloseItineraryDialog();
               }}
@@ -1669,12 +1656,12 @@ const AdminDestinationNew = () => {
                     {dialogState.itinerary.editId ? "Edit Itinerary Day" : "Add Itinerary Day"}
                   </DialogTitle>
                   <DialogDescription>
-                    {dialogState.itinerary.editId 
-                      ? "Edit the details of this day." 
+                    {dialogState.itinerary.editId
+                      ? "Edit the details of this day."
                       : "Add a new day to the travel itinerary for this destination."}
                   </DialogDescription>
                 </DialogHeader>
-                <ItineraryForm 
+                <ItineraryForm
                   key={dialogState.itinerary.editId || 'new-itinerary'}
                   initialData={dialogState.itinerary.editId ? formData.itinerary[dialogState.itinerary.editId] : undefined}
                   onSubmit={(dayData) => {
@@ -1751,8 +1738,8 @@ const AdminDestinationNew = () => {
                         </p>
                       </div>
                       <div className="flex gap-1">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleOpenFAQDialog(key)}
                         >
@@ -1782,8 +1769,8 @@ const AdminDestinationNew = () => {
             </div>
 
             {/* FAQ Dialog */}
-            <Dialog 
-              open={dialogState.faq.isOpen} 
+            <Dialog
+              open={dialogState.faq.isOpen}
               onOpenChange={(open) => {
                 if (!open) handleCloseFAQDialog();
               }}
@@ -1794,12 +1781,12 @@ const AdminDestinationNew = () => {
                     {dialogState.faq.editId ? "Edit FAQ" : "Add FAQ"}
                   </DialogTitle>
                   <DialogDescription>
-                    {dialogState.faq.editId 
-                      ? "Edit the question and answer." 
+                    {dialogState.faq.editId
+                      ? "Edit the question and answer."
                       : "Add a new frequently asked question and its answer."}
                   </DialogDescription>
                 </DialogHeader>
-                <FAQForm 
+                <FAQForm
                   key={dialogState.faq.editId || 'new-faq'}
                   initialData={dialogState.faq.editId ? formData.faqs[dialogState.faq.editId] : undefined}
                   onSubmit={(faqData) => {
@@ -1822,11 +1809,11 @@ const AdminDestinationNew = () => {
 };
 
 // Sub-components (PlaceForm, ActivityForm, ItineraryForm, FAQForm) with DialogClose removed
-function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
-  onSubmit: (place: any) => void; 
-  initialData?: any; 
+function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+  onSubmit: (place: any) => void;
+  initialData?: any;
   onCancel: () => void;
-  isEdit?: boolean 
+  isEdit?: boolean
 }) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
@@ -1903,11 +1890,11 @@ function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: {
   );
 }
 
-function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
-  onSubmit: (activity: any) => void; 
-  initialData?: any; 
+function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+  onSubmit: (activity: any) => void;
+  initialData?: any;
   onCancel: () => void;
-  isEdit?: boolean 
+  isEdit?: boolean
 }) {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
@@ -1968,11 +1955,11 @@ function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: {
   );
 }
 
-function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
-  onSubmit: (day: any) => void; 
-  initialData?: any; 
+function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+  onSubmit: (day: any) => void;
+  initialData?: any;
   onCancel: () => void;
-  isEdit?: boolean 
+  isEdit?: boolean
 }) {
   const [formData, setFormData] = useState({
     day: initialData?.day || 1,
@@ -2051,11 +2038,11 @@ function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: {
   );
 }
 
-function FAQForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
-  onSubmit: (faq: any) => void; 
-  initialData?: any; 
+function FAQForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+  onSubmit: (faq: any) => void;
+  initialData?: any;
   onCancel: () => void;
-  isEdit?: boolean 
+  isEdit?: boolean
 }) {
   const [formData, setFormData] = useState({
     question: initialData?.question || "",

@@ -1053,8 +1053,8 @@ const AdminDestinationEdit = () => {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`px-3 py-2 font-medium text-sm transition-colors ${activeTab === tab.id
-                  ? "border-b-2 border-primary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "border-b-2 border-primary text-primary"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
             >
               {tab.label}
@@ -1187,8 +1187,8 @@ const AdminDestinationEdit = () => {
                     <div
                       key={category}
                       className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${formData.category === category
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border hover:border-primary/50"
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border hover:border-primary/50"
                         }`}
                       onClick={() => setFormData({ ...formData, category })}
                     >
@@ -1961,64 +1961,71 @@ const AdminDestinationEdit = () => {
             </div>
 
             <div className="space-y-3">
-              {Object.entries(formData.itinerary).map(([key, day]) => (
-                <Card key={key}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-lg">
-                          Day {day.day}: {day.title}
-                        </h4>
-                      </div>
-                      <div className="flex gap-1 ml-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditItem(key, "itinerary")}
-                        >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteDay(key)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="md:col-span-2">
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          {day.activities?.map((activity: any, i: number) => (
-                            <li key={i}>• {activity}</li>
-                          ))}
-                        </ul>
+              {Object.entries(formData.itinerary)
+                .sort(([keyA, dayA], [keyB, dayB]) => {
+                  // Sort by day number in ascending order
+                  const dayNumA = dayA.day || 0;
+                  const dayNumB = dayB.day || 0;
+                  return dayNumA - dayNumB;
+                })
+                .map(([key, day]) => (
+                  <Card key={key}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-lg">
+                            Day {day.day}: {day.title}
+                          </h4>
+                        </div>
+                        <div className="flex gap-1 ml-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditItem(key, "itinerary")}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteDay(key)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
 
-                      <div className="md:col-span-1">
-                        {day.image_url ? (
-                          <div className="h-32 rounded-lg overflow-hidden">
-                            <img
-                              src={day.image_url || "/placeholder.svg"}
-                              alt={`Day ${day.day}`}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
-                            <p className="text-sm text-muted-foreground">
-                              No image
-                            </p>
-                          </div>
-                        )}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            {day.activities?.map((activity: any, i: number) => (
+                              <li key={i}>• {activity}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="md:col-span-1">
+                          {day.image_url ? (
+                            <div className="h-32 rounded-lg overflow-hidden">
+                              <img
+                                src={day.image_url || "/placeholder.svg"}
+                                alt={`Day ${day.day}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
+                              <p className="text-sm text-muted-foreground">
+                                No image
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
               {Object.keys(formData.itinerary).length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   No itinerary days added yet.

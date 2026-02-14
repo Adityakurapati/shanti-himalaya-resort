@@ -18,7 +18,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -35,11 +34,12 @@ const AdminDestinationNew = () => {
 
   const { loading: aiLoading, generateAllDestinationContent } = useDestinationAI();
 
-  const [openDialogs, setOpenDialogs] = useState({
-    place: false,
-    activity: false,
-    itinerary: false,
-    faq: false,
+  // Track which dialog is open and which item is being edited
+  const [dialogState, setDialogState] = useState({
+    place: { isOpen: false, editId: null as string | null },
+    activity: { isOpen: false, editId: null as string | null },
+    itinerary: { isOpen: false, editId: null as string | null },
+    faq: { isOpen: false, editId: null as string | null },
   });
 
   const [formData, setFormData] = useState({
@@ -476,6 +476,21 @@ const AdminDestinationNew = () => {
     });
   };
 
+  // Dialog handlers for Places
+  const handleOpenPlaceDialog = (editId: string | null = null) => {
+    setDialogState({
+      ...dialogState,
+      place: { isOpen: true, editId }
+    });
+  };
+
+  const handleClosePlaceDialog = () => {
+    setDialogState({
+      ...dialogState,
+      place: { isOpen: false, editId: null }
+    });
+  };
+
   const handleAddPlace = (place: any) => {
     const id = generateId();
     const updated = {
@@ -486,7 +501,7 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, places_to_visit: updated });
-    setOpenDialogs({ ...openDialogs, place: false });
+    handleClosePlaceDialog();
   };
 
   const handleUpdatePlace = (key: string, updatedPlace: any) => {
@@ -498,13 +513,28 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, places_to_visit: updated });
-    setOpenDialogs({ ...openDialogs, place: false });
+    handleClosePlaceDialog();
   };
 
   const handleDeletePlace = (key: string) => {
     const updated = { ...formData.places_to_visit };
     delete updated[key];
     setFormData({ ...formData, places_to_visit: updated });
+  };
+
+  // Dialog handlers for Activities
+  const handleOpenActivityDialog = (editId: string | null = null) => {
+    setDialogState({
+      ...dialogState,
+      activity: { isOpen: true, editId }
+    });
+  };
+
+  const handleCloseActivityDialog = () => {
+    setDialogState({
+      ...dialogState,
+      activity: { isOpen: false, editId: null }
+    });
   };
 
   const handleAddActivity = (activity: any) => {
@@ -517,7 +547,7 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, things_to_do: updated });
-    setOpenDialogs({ ...openDialogs, activity: false });
+    handleCloseActivityDialog();
   };
 
   const handleUpdateActivity = (key: string, updatedActivity: any) => {
@@ -529,13 +559,28 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, things_to_do: updated });
-    setOpenDialogs({ ...openDialogs, activity: false });
+    handleCloseActivityDialog();
   };
 
   const handleDeleteActivity = (key: string) => {
     const updated = { ...formData.things_to_do };
     delete updated[key];
     setFormData({ ...formData, things_to_do: updated });
+  };
+
+  // Dialog handlers for Itinerary
+  const handleOpenItineraryDialog = (editId: string | null = null) => {
+    setDialogState({
+      ...dialogState,
+      itinerary: { isOpen: true, editId }
+    });
+  };
+
+  const handleCloseItineraryDialog = () => {
+    setDialogState({
+      ...dialogState,
+      itinerary: { isOpen: false, editId: null }
+    });
   };
 
   const handleAddDay = (day: any) => {
@@ -548,7 +593,7 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, itinerary: updated });
-    setOpenDialogs({ ...openDialogs, itinerary: false });
+    handleCloseItineraryDialog();
   };
 
   const handleUpdateDay = (key: string, updatedDay: any) => {
@@ -560,13 +605,28 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, itinerary: updated });
-    setOpenDialogs({ ...openDialogs, itinerary: false });
+    handleCloseItineraryDialog();
   };
 
   const handleDeleteDay = (key: string) => {
     const updated = { ...formData.itinerary };
     delete updated[key];
     setFormData({ ...formData, itinerary: updated });
+  };
+
+  // Dialog handlers for FAQs
+  const handleOpenFAQDialog = (editId: string | null = null) => {
+    setDialogState({
+      ...dialogState,
+      faq: { isOpen: true, editId }
+    });
+  };
+
+  const handleCloseFAQDialog = () => {
+    setDialogState({
+      ...dialogState,
+      faq: { isOpen: false, editId: null }
+    });
   };
 
   const handleAddFAQ = (faq: any) => {
@@ -579,7 +639,7 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, faqs: updated });
-    setOpenDialogs({ ...openDialogs, faq: false });
+    handleCloseFAQDialog();
   };
 
   const handleUpdateFAQ = (key: string, updatedFAQ: any) => {
@@ -591,7 +651,7 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, faqs: updated });
-    setOpenDialogs({ ...openDialogs, faq: false });
+    handleCloseFAQDialog();
   };
 
   const handleDeleteFAQ = (key: string) => {
@@ -675,29 +735,9 @@ const AdminDestinationNew = () => {
         </div>
       </div>
 
-      <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-purple-900">
-              ✨ AI Content Generator
-            </h3>
-            <p className="text-sm text-purple-700">
-              Generate all destination content at once with AI. Enter a destination name above first.
-            </p>
-          </div>
-          <AIGenerateButton
-            onClick={handleGenerateAllContent}
-            loading={aiLoading}
-            label="Generate Everything"
-            size="default"
-          />
-        </div>
-      </div>
 
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="font-semibold mb-2 text-blue-900">
-          Data Status (Object Format - Manual Save):
-        </h3>
+       
         <div className="text-sm text-blue-800 grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
             Places to Visit:{" "}
@@ -715,9 +755,7 @@ const AdminDestinationNew = () => {
             FAQs: <strong>{Object.keys(formData.faqs).length}</strong>
           </div>
         </div>
-        <p className="text-xs text-blue-600 mt-2">
-          Data stored as objects. Use Create Destination to save your new destination.
-        </p>
+       
       </div>
 
       <div>
@@ -972,26 +1010,10 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Dialog
-                  open={openDialogs.place}
-                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, place: open })}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Manually
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Add Place to Visit</DialogTitle>
-                      <DialogDescription>
-                        Add a new place that visitors should see at this destination.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <PlaceForm onSubmit={handleAddPlace} />
-                  </DialogContent>
-                </Dialog>
+                <Button size="sm" onClick={() => handleOpenPlaceDialog()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Manually
+                </Button>
               </div>
             </div>
 
@@ -1015,31 +1037,14 @@ const AdminDestinationNew = () => {
                           <h4 className="font-semibold text-lg">
                             {place.name}
                           </h4>
-                          <Dialog
-                            open={openDialogs.place && key === place.id}
-                            onOpenChange={(open) => setOpenDialogs({ ...openDialogs, place: open })}
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenPlaceDialog(key)}
                           >
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-4 h-4 mr-1" />
-                                Edit
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Edit Place: {place.name}
-                                </DialogTitle>
-                              </DialogHeader>
-                              <PlaceForm
-                                initialData={place}
-                                onSubmit={(updatedPlace) =>
-                                  handleUpdatePlace(key, updatedPlace)
-                                }
-                                isEdit={true}
-                              />
-                            </DialogContent>
-                          </Dialog>
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1104,6 +1109,40 @@ const AdminDestinationNew = () => {
                 </div>
               )}
             </div>
+
+            {/* Place Dialog */}
+            <Dialog 
+              open={dialogState.place.isOpen} 
+              onOpenChange={(open) => {
+                if (!open) handleClosePlaceDialog();
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {dialogState.place.editId ? "Edit Place" : "Add Place to Visit"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {dialogState.place.editId 
+                      ? "Edit the details of this place." 
+                      : "Add a new place that visitors should see at this destination."}
+                  </DialogDescription>
+                </DialogHeader>
+                <PlaceForm 
+                  key={dialogState.place.editId || 'new-place'}
+                  initialData={dialogState.place.editId ? formData.places_to_visit[dialogState.place.editId] : undefined}
+                  onSubmit={(placeData) => {
+                    if (dialogState.place.editId) {
+                      handleUpdatePlace(dialogState.place.editId, placeData);
+                    } else {
+                      handleAddPlace(placeData);
+                    }
+                  }}
+                  onCancel={handleClosePlaceDialog}
+                  isEdit={!!dialogState.place.editId}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
@@ -1120,26 +1159,10 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Dialog
-                  open={openDialogs.activity}
-                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, activity: open })}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Manually
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Add Activity</DialogTitle>
-                      <DialogDescription>
-                        Add a new activity that visitors can enjoy at this destination.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <ActivityForm onSubmit={handleAddActivity} />
-                  </DialogContent>
-                </Dialog>
+                <Button size="sm" onClick={() => handleOpenActivityDialog()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Manually
+                </Button>
               </div>
             </div>
 
@@ -1184,30 +1207,13 @@ const AdminDestinationNew = () => {
                           {activity.title}
                         </h4>
                         <div className="flex gap-1 ml-2 flex-shrink-0">
-                          <Dialog
-                            open={openDialogs.activity && key === activity.id}
-                            onOpenChange={(open) => setOpenDialogs({ ...openDialogs, activity: open })}
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenActivityDialog(key)}
                           >
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Edit Activity: {activity.title}
-                                </DialogTitle>
-                              </DialogHeader>
-                              <ActivityForm
-                                initialData={activity}
-                                onSubmit={(updatedActivity) =>
-                                  handleUpdateActivity(key, updatedActivity)
-                                }
-                                isEdit={true}
-                              />
-                            </DialogContent>
-                          </Dialog>
+                            <Edit className="w-3 h-3" />
+                          </Button>
                           <Button
                             variant="destructive"
                             size="sm"
@@ -1250,6 +1256,40 @@ const AdminDestinationNew = () => {
                 </div>
               )}
             </div>
+
+            {/* Activity Dialog */}
+            <Dialog 
+              open={dialogState.activity.isOpen} 
+              onOpenChange={(open) => {
+                if (!open) handleCloseActivityDialog();
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {dialogState.activity.editId ? "Edit Activity" : "Add Activity"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {dialogState.activity.editId 
+                      ? "Edit the details of this activity." 
+                      : "Add a new activity that visitors can enjoy at this destination."}
+                  </DialogDescription>
+                </DialogHeader>
+                <ActivityForm 
+                  key={dialogState.activity.editId || 'new-activity'}
+                  initialData={dialogState.activity.editId ? formData.things_to_do[dialogState.activity.editId] : undefined}
+                  onSubmit={(activityData) => {
+                    if (dialogState.activity.editId) {
+                      handleUpdateActivity(dialogState.activity.editId, activityData);
+                    } else {
+                      handleAddActivity(activityData);
+                    }
+                  }}
+                  onCancel={handleCloseActivityDialog}
+                  isEdit={!!dialogState.activity.editId}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
@@ -1528,26 +1568,10 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Dialog
-                  open={openDialogs.itinerary}
-                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, itinerary: open })}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Day
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Add Itinerary Day</DialogTitle>
-                      <DialogDescription>
-                        Add a new day to the travel itinerary for this destination.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <ItineraryForm onSubmit={handleAddDay} />
-                  </DialogContent>
-                </Dialog>
+                <Button size="sm" onClick={() => handleOpenItineraryDialog()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Day
+                </Button>
               </div>
             </div>
 
@@ -1574,31 +1598,14 @@ const AdminDestinationNew = () => {
                         </h4>
                       </div>
                       <div className="flex gap-1 ml-2">
-                        <Dialog
-                          open={openDialogs.itinerary && key === day.id}
-                          onOpenChange={(open) => setOpenDialogs({ ...openDialogs, itinerary: open })}
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleOpenItineraryDialog(key)}
                         >
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
-                            <DialogHeader>
-                              <DialogTitle>
-                                Edit Day {day.day}: {day.title}
-                              </DialogTitle>
-                            </DialogHeader>
-                            <ItineraryForm
-                              initialData={day}
-                              onSubmit={(updatedDay) =>
-                                handleUpdateDay(key, updatedDay)
-                              }
-                              isEdit={true}
-                            />
-                          </DialogContent>
-                        </Dialog>
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
@@ -1648,6 +1655,40 @@ const AdminDestinationNew = () => {
                 </div>
               )}
             </div>
+
+            {/* Itinerary Dialog */}
+            <Dialog 
+              open={dialogState.itinerary.isOpen} 
+              onOpenChange={(open) => {
+                if (!open) handleCloseItineraryDialog();
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {dialogState.itinerary.editId ? "Edit Itinerary Day" : "Add Itinerary Day"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {dialogState.itinerary.editId 
+                      ? "Edit the details of this day." 
+                      : "Add a new day to the travel itinerary for this destination."}
+                  </DialogDescription>
+                </DialogHeader>
+                <ItineraryForm 
+                  key={dialogState.itinerary.editId || 'new-itinerary'}
+                  initialData={dialogState.itinerary.editId ? formData.itinerary[dialogState.itinerary.editId] : undefined}
+                  onSubmit={(dayData) => {
+                    if (dialogState.itinerary.editId) {
+                      handleUpdateDay(dialogState.itinerary.editId, dayData);
+                    } else {
+                      handleAddDay(dayData);
+                    }
+                  }}
+                  onCancel={handleCloseItineraryDialog}
+                  isEdit={!!dialogState.itinerary.editId}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
@@ -1689,26 +1730,10 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Dialog
-                  open={openDialogs.faq}
-                  onOpenChange={(open) => setOpenDialogs({ ...openDialogs, faq: open })}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Manually
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add FAQ</DialogTitle>
-                      <DialogDescription>
-                        Add a new frequently asked question and its answer.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <FAQForm onSubmit={handleAddFAQ} />
-                  </DialogContent>
-                </Dialog>
+                <Button size="sm" onClick={() => handleOpenFAQDialog()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Manually
+                </Button>
               </div>
             </div>
 
@@ -1726,29 +1751,14 @@ const AdminDestinationNew = () => {
                         </p>
                       </div>
                       <div className="flex gap-1">
-                        <Dialog
-                          open={openDialogs.faq && key === faq.id}
-                          onOpenChange={(open) => setOpenDialogs({ ...openDialogs, faq: open })}
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleOpenFAQDialog(key)}
                         >
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Edit FAQ</DialogTitle>
-                            </DialogHeader>
-                            <FAQForm
-                              initialData={faq}
-                              onSubmit={(updatedFAQ) =>
-                                handleUpdateFAQ(key, updatedFAQ)
-                              }
-                              isEdit={true}
-                            />
-                          </DialogContent>
-                        </Dialog>
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
@@ -1770,6 +1780,40 @@ const AdminDestinationNew = () => {
                 </div>
               )}
             </div>
+
+            {/* FAQ Dialog */}
+            <Dialog 
+              open={dialogState.faq.isOpen} 
+              onOpenChange={(open) => {
+                if (!open) handleCloseFAQDialog();
+              }}
+            >
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {dialogState.faq.editId ? "Edit FAQ" : "Add FAQ"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {dialogState.faq.editId 
+                      ? "Edit the question and answer." 
+                      : "Add a new frequently asked question and its answer."}
+                  </DialogDescription>
+                </DialogHeader>
+                <FAQForm 
+                  key={dialogState.faq.editId || 'new-faq'}
+                  initialData={dialogState.faq.editId ? formData.faqs[dialogState.faq.editId] : undefined}
+                  onSubmit={(faqData) => {
+                    if (dialogState.faq.editId) {
+                      handleUpdateFAQ(dialogState.faq.editId, faqData);
+                    } else {
+                      handleAddFAQ(faqData);
+                    }
+                  }}
+                  onCancel={handleCloseFAQDialog}
+                  isEdit={!!dialogState.faq.editId}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>
@@ -1777,10 +1821,13 @@ const AdminDestinationNew = () => {
   );
 };
 
-// Sub-components (PlaceForm, ActivityForm, ItineraryForm, FAQForm) remain exactly the same
-// [Keep all the sub-component functions as they were in your original code]
-
-function PlaceForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (place: any) => void; initialData?: any; isEdit?: boolean }) {
+// Sub-components (PlaceForm, ActivityForm, ItineraryForm, FAQForm) with DialogClose removed
+function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
+  onSubmit: (place: any) => void; 
+  initialData?: any; 
+  onCancel: () => void;
+  isEdit?: boolean 
+}) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
@@ -1800,9 +1847,6 @@ function PlaceForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (place
     };
     console.log("🎯 Submitting place:", placeData);
     onSubmit(placeData);
-    if (!isEdit) {
-      setFormData({ name: "", description: "", highlights: "", image_url: "" });
-    }
   };
 
   return (
@@ -1848,11 +1892,9 @@ function PlaceForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (place
         />
       </div>
       <div className="flex gap-2">
-        <DialogClose asChild>
-          <Button type="button" variant="outline" className="flex-1">
-            Cancel
-          </Button>
-        </DialogClose>
+        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update Place" : "Add Place"}
         </Button>
@@ -1861,7 +1903,12 @@ function PlaceForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (place
   );
 }
 
-function ActivityForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (activity: any) => void; initialData?: any; isEdit?: boolean }) {
+function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
+  onSubmit: (activity: any) => void; 
+  initialData?: any; 
+  onCancel: () => void;
+  isEdit?: boolean 
+}) {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
@@ -1877,9 +1924,6 @@ function ActivityForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (ac
     };
     console.log("🎯 Submitting activity:", activityData);
     onSubmit(activityData);
-    if (!isEdit) {
-      setFormData({ title: "", description: "", image_url: "" });
-    }
   };
 
   return (
@@ -1913,11 +1957,9 @@ function ActivityForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (ac
         />
       </div>
       <div className="flex gap-2">
-        <DialogClose asChild>
-          <Button type="button" variant="outline" className="flex-1">
-            Cancel
-          </Button>
-        </DialogClose>
+        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update Activity" : "Add Activity"}
         </Button>
@@ -1926,7 +1968,12 @@ function ActivityForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (ac
   );
 }
 
-function ItineraryForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (day: any) => void; initialData?: any; isEdit?: boolean }) {
+function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
+  onSubmit: (day: any) => void; 
+  initialData?: any; 
+  onCancel: () => void;
+  isEdit?: boolean 
+}) {
   const [formData, setFormData] = useState({
     day: initialData?.day || 1,
     title: initialData?.title || "",
@@ -1946,14 +1993,6 @@ function ItineraryForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (d
     };
     console.log("🎯 Submitting itinerary day:", dayData);
     onSubmit(dayData);
-    if (!isEdit) {
-      setFormData({
-        day: formData.day + 1,
-        title: "",
-        activities: "",
-        image_url: "",
-      });
-    }
   };
 
   return (
@@ -1963,9 +2002,10 @@ function ItineraryForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (d
         <Input
           id="day-num"
           type="number"
+          min="1"
           value={formData.day}
           onChange={(e) =>
-            setFormData({ ...formData, day: Number.parseInt(e.target.value) })
+            setFormData({ ...formData, day: Number.parseInt(e.target.value) || 1 })
           }
           required
         />
@@ -2000,11 +2040,9 @@ function ItineraryForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (d
         />
       </div>
       <div className="flex gap-2">
-        <DialogClose asChild>
-          <Button type="button" variant="outline" className="flex-1">
-            Cancel
-          </Button>
-        </DialogClose>
+        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update Day" : "Add Day"}
         </Button>
@@ -2013,7 +2051,12 @@ function ItineraryForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (d
   );
 }
 
-function FAQForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (faq: any) => void; initialData?: any; isEdit?: boolean }) {
+function FAQForm({ onSubmit, initialData, onCancel, isEdit = false }: { 
+  onSubmit: (faq: any) => void; 
+  initialData?: any; 
+  onCancel: () => void;
+  isEdit?: boolean 
+}) {
   const [formData, setFormData] = useState({
     question: initialData?.question || "",
     answer: initialData?.answer || "",
@@ -2027,9 +2070,6 @@ function FAQForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (faq: an
     };
     console.log("🎯 Submitting FAQ:", faqData);
     onSubmit(faqData);
-    if (!isEdit) {
-      setFormData({ question: "", answer: "" });
-    }
   };
 
   return (
@@ -2055,11 +2095,9 @@ function FAQForm({ onSubmit, initialData, isEdit = false }: { onSubmit: (faq: an
         />
       </div>
       <div className="flex gap-2">
-        <DialogClose asChild>
-          <Button type="button" variant="outline" className="flex-1">
-            Cancel
-          </Button>
-        </DialogClose>
+        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update FAQ" : "Add FAQ"}
         </Button>

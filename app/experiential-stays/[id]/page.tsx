@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +29,19 @@ import {
   Send,
   Check,
   Clock,
-  Maximize2
+  Maximize2,
+  Wifi,
+  Coffee,
+  Car,
+  Thermometer,
+  Shield,
+  Bike,
+  Navigation,
+  Calendar,
+  Compass,
+  Award,
+  Heart,
+  Info
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -116,6 +127,20 @@ const parseJSON = (data: any, defaultValue: any = null) => {
   }
 };
 
+// Helper function to get connectivity icon
+const getConnectivityIcon = (type: string) => {
+  switch (type) {
+    case 'airport':
+      return <Plane className="w-5 h-5" />;
+    case 'railway':
+      return <Train className="w-5 h-5" />;
+    case 'city':
+      return <Building className="w-5 h-5" />;
+    default:
+      return <Navigation className="w-5 h-5" />;
+  }
+};
+
 // Helper function to get image type badge
 const getImageTypeBadge = (type: string) => {
   const badges: Record<string, string> = {
@@ -123,6 +148,10 @@ const getImageTypeBadge = (type: string) => {
     dining_area: "bg-purple-100 text-purple-800",
     food: "bg-amber-100 text-amber-800",
     ambiance: "bg-green-100 text-green-800",
+    property: "bg-indigo-100 text-indigo-800",
+    room: "bg-pink-100 text-pink-800",
+    view: "bg-teal-100 text-teal-800",
+    activity: "bg-orange-100 text-orange-800",
     other: "bg-gray-100 text-gray-800"
   };
   return badges[type] || badges.other;
@@ -135,20 +164,26 @@ const getImageTypeLabel = (type: string) => {
     dining_area: "Dining Area",
     food: "Food",
     ambiance: "Ambiance",
+    property: "Property",
+    room: "Room",
+    view: "View",
+    activity: "Activity",
     other: "Other"
   };
   return labels[type] || "Other";
 };
 
-// Carousel Component for Restaurant Images with proper cyclic behavior
-const RestaurantImageCarousel = ({
+// Carousel Component for Images
+const ImageCarousel = ({
   images,
   stayName,
-  onImageClick
+  onImageClick,
+  title = "Gallery"
 }: {
   images: any[],
   stayName: string,
-  onImageClick: (index: number) => void
+  onImageClick: (index: number) => void,
+  title?: string
 }) => {
   const [currentStartIndex, setCurrentStartIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
@@ -159,10 +194,8 @@ const RestaurantImageCarousel = ({
 
   const nextSlide = useCallback(() => {
     if (totalImages <= slidesToShow) {
-      // If total images <= slidesToShow, just rotate through images
       setCurrentStartIndex((prev) => (prev + 1) % totalImages);
     } else {
-      // Normal sliding
       setCurrentStartIndex((prev) => (prev + 1) % totalImages);
     }
   }, [totalImages, slidesToShow]);
@@ -184,7 +217,7 @@ const RestaurantImageCarousel = ({
       const index = (currentStartIndex + i) % totalImages;
       visibleImages.push({
         ...images[index],
-        originalIndex: index // Store original index for click handling
+        originalIndex: index
       });
     }
     return visibleImages;
@@ -221,8 +254,8 @@ const RestaurantImageCarousel = ({
     return (
       <div className="rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 h-[200px] flex items-center justify-center">
         <div className="text-center">
-          <Utensils className="w-12 h-12 text-primary/30 mx-auto mb-4" />
-          <p className="text-muted-foreground">No restaurant images available</p>
+          <Home className="w-12 h-12 text-primary/30 mx-auto mb-4" />
+          <p className="text-muted-foreground">No images available</p>
         </div>
       </div>
     );
@@ -236,8 +269,8 @@ const RestaurantImageCarousel = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Carousel Navigation Buttons - Always show if we have more than 3 images total */}
-      {images.length > 0 && (
+      {/* Carousel Navigation Buttons */}
+      {images.length > slidesToShow && (
         <>
           <Button
             variant="outline"
@@ -261,56 +294,53 @@ const RestaurantImageCarousel = ({
       {/* Carousel Container */}
       <div className="overflow-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {visibleImages.map((image, index) => {
-            const isLastSlide = currentStartIndex + slidesToShow > totalImages &&
-              index >= totalImages - currentStartIndex;
+          {visibleImages.map((image, index) => (
+            <div
+              key={`${image.id}-${index}`}
+              className="relative rounded-lg overflow-hidden cursor-pointer group h-[200px]"
+              onClick={() => onImageClick(image.originalIndex)}
+            >
+              <div className="absolute inset-0">
+                <img
+                  src={image.image_url || "/placeholder.svg"}
+                  alt={image.caption || `${title} image ${image.originalIndex + 1}`}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+              </div>
 
-            return (
-              <div
-                key={`${image.id}-${index}`}
-                className="relative rounded-lg overflow-hidden cursor-pointer group h-[200px]"
-                onClick={() => onImageClick(image.originalIndex)}
-              >
-                <div className="absolute inset-0">
-                  <img
-                    src={image.image_url || "/placeholder.svg"}
-                    alt={image.caption || `Restaurant image ${image.originalIndex + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/placeholder.svg";
-                    }}
-                  />
-                </div>
-
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <div className="flex items-center gap-2 mb-2">
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  {image.image_type && (
                     <Badge className={getImageTypeBadge(image.image_type)} >
                       {getImageTypeLabel(image.image_type)}
                     </Badge>
-                    {image.is_featured && (
-                      <Badge className="bg-amber-500">
-                        <Star className="w-3 h-3 mr-1" />
-                        Featured
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-white text-sm font-medium truncate">
-                    {image.caption || `${getImageTypeLabel(image.image_type)} view`}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Maximize2 className="w-4 h-4 text-white/80" />
-                    <span className="text-white/80 text-xs">Click to view larger</span>
-                  </div>
+                  )}
+                  {image.is_featured && (
+                    <Badge className="bg-amber-500">
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      Featured
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-white text-sm font-medium truncate">
+                  {image.caption || `${getImageTypeLabel(image.image_type || 'other')} view`}
+                </p>
+                <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Maximize2 className="w-4 h-4 text-white/80" />
+                  <span className="text-white/80 text-xs">Click to view larger</span>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Carousel Dots - Show if we have images */}
-      {images.length > 0 && (
+      {/* Carousel Dots */}
+      {images.length > slidesToShow && (
         <div className="flex justify-center items-center gap-2 mt-6">
           <Button
             variant="ghost"
@@ -322,7 +352,6 @@ const RestaurantImageCarousel = ({
           </Button>
 
           <div className="flex gap-2">
-            {/* Show dots based on total images, not slides */}
             {Array.from({ length: Math.min(5, totalImages) }).map((_, index) => (
               <button
                 key={index}
@@ -353,13 +382,13 @@ const RestaurantImageCarousel = ({
       )}
 
       {/* Image Counter */}
-      {images.length > 0 && (
+      {images.length > slidesToShow && (
         <div className="text-center mt-4 text-sm text-muted-foreground">
           Showing images {currentStartIndex + 1}-{Math.min(currentStartIndex + slidesToShow, totalImages)}
           {currentStartIndex + slidesToShow > totalImages && (
             ` and 1-${(currentStartIndex + slidesToShow) % totalImages}`
           )}
-          {' '}of {totalImages} restaurant images
+          {' '}of {totalImages} images
         </div>
       )}
     </div>
@@ -377,8 +406,10 @@ export default function StayDetail() {
   const [activeImageTab, setActiveImageTab] = useState<"property" | "restaurant">("property");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showFullScreen, setShowFullScreen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("overview");
 
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   // Get current images based on active tab
   const getCurrentImages = () => {
@@ -393,24 +424,21 @@ export default function StayDetail() {
 
     const defaultCaptions = {
       property: [
-        "Property exterior/landscape view",
-        "Interior/Room view",
+        "Property exterior view",
+        "Interior view",
         "Common areas",
-        "Activity/Experience shot",
-        "Amenities/Facilities",
         "Scenic views",
-        "Guest areas",
+        "Amenities",
+        "Guest rooms",
         "Local experiences"
       ],
       restaurant: [
-        "Main dining hall",
-        "Cuisine showcase",
-        "Evening ambiance",
-        "Signature dishes",
         "Dining area",
+        "Cuisine showcase",
+        "Ambiance",
+        "Signature dishes",
         "Food presentation",
-        "Restaurant interior",
-        "Culinary experience"
+        "Restaurant interior"
       ]
     };
 
@@ -421,7 +449,7 @@ export default function StayDetail() {
       return `${getImageTypeLabel(image.image_type)} view`;
     }
 
-    return captions[index] || `${getImageTypeLabel(image?.image_type || 'other')} ${index + 1}`;
+    return captions[index % captions.length] || `${getImageTypeLabel(image?.image_type || 'other')} ${index + 1}`;
   };
 
   const getRightImage = (offset: number) => {
@@ -447,14 +475,14 @@ export default function StayDetail() {
 
     slideIntervalRef.current = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
-    }, 1500);
+    }, 3000);
 
     return () => {
       if (slideIntervalRef.current) {
         clearInterval(slideIntervalRef.current);
       }
     };
-  }, [propertyImages.length, restaurantImages.length, currentImageIndex, activeImageTab]);
+  }, [propertyImages.length, restaurantImages.length, activeImageTab]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -585,6 +613,12 @@ export default function StayDetail() {
     setShowFullScreen(true);
   };
 
+  const handlePropertyImageClick = (index: number) => {
+    handleImageTabChange("property");
+    handleImageSelect(index);
+    setShowFullScreen(true);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -634,22 +668,13 @@ ${formData.contactNumber} | ${formData.email}
     // Open email client
     window.location.href = mailtoLink;
 
-    // Optional: Reset form after submission
-    setFormData({
-      checkInDate: "",
-      checkOutDate: "",
-      adults: "2",
-      children: "0",
-      contactNumber: "",
-      email: "",
-      remarks: ""
-    });
-
     // Show success message
     toast({
       title: "Email Client Opened",
       description: "Please send the email to complete your query submission.",
     });
+
+    setIsSubmitted(true);
   };
 
   // Handle keyboard navigation for fullscreen view
@@ -669,6 +694,34 @@ ${formData.contactNumber} | ${formData.email}
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showFullScreen]);
+
+  // Scroll spy for navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["overview", "accommodations", "dining", "location", "connectivity", "query"];
+      
+      for (const section of sections) {
+        const element = sectionRefs.current[section];
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = sectionRefs.current[sectionId];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   useEffect(() => {
     return () => {
@@ -716,6 +769,9 @@ ${formData.contactNumber} | ${formData.email}
     );
   }
 
+  // Parse connectivity data
+  const connectivity = stay.connectivity || {};
+
   // Generate JSON-LD structured data
   const stayJSONLD = generateJSONLD(stay, "Stay");
   const breadcrumbStructuredData = generateBreadcrumbJSONLD([
@@ -741,42 +797,37 @@ ${formData.contactNumber} | ${formData.email}
         <Header />
         <Breadcrumbs />
 
-        <section className="pt-24 pb-8 relative">
+        {/* Hero Section */}
+        <section className="relative pt-24 pb-8 bg-gradient-to-b from-primary/5 to-transparent">
           <div className="container mx-auto px-4">
             <Link
               href="/experiential-stays"
-              className="inline-flex items-center mb-8 text-primary hover:text-primary/80 transition-colors group"
+              className="inline-flex items-center mb-6 text-primary hover:text-primary/80 transition-colors group"
             >
               <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back to All Stays
             </Link>
-          </div>
-        </section>
 
-        <section className="py-8">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              {/* Stay Name and Badge */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                      {stay.name}
-                    </h1>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="w-5 h-5" />
-                      <span className="text-lg">{stay.location || "Location not specified"}</span>
-                    </div>
-                  </div>
-                  <Badge className="bg-primary text-primary-foreground px-4 py-2 text-lg">
-                    {stay.badge}
-                  </Badge>
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
+                    {stay.name}
+                  </h1>
+                  {stay.badge && (
+                    <Badge className="bg-primary text-primary-foreground px-4 py-2 text-lg">
+                      {stay.badge}
+                    </Badge>
+                  )}
                 </div>
-              </div>
+                
+                <div className="flex items-center gap-2 text-muted-foreground mb-3">
+                  <MapPin className="w-5 h-5" />
+                  <span className="text-lg">{stay.location || "Location not specified"}</span>
+                </div>
 
-              {/* Categories */}
-              {stay.categories && stay.categories.length > 0 && (
-                <div className="mb-8">
+                {/* Categories */}
+                {stay.categories && stay.categories.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {stay.categories.map((category: string, index: number) => (
                       <Badge key={index} variant="secondary" className="text-sm px-3 py-1">
@@ -784,15 +835,97 @@ ${formData.contactNumber} | ${formData.email}
                       </Badge>
                     ))}
                   </div>
+                )}
+              </div>
+
+              {stay.duration && (
+                <div className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 shadow-sm">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <span className="font-medium">Duration: {stay.duration}</span>
                 </div>
               )}
+            </div>
+          </div>
+        </section>
 
-              <div className="border-t border-border my-8"></div>
+        {/* Sticky Navigation */}
+        <div className="sticky top-20 z-30 bg-background/80 backdrop-blur-md border-y border-border">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center overflow-x-auto py-3 gap-2 no-scrollbar">
+              <Button
+                variant={activeSection === "overview" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => scrollToSection("overview")}
+                className="whitespace-nowrap"
+              >
+                <Info className="w-4 h-4 mr-2" />
+                Overview
+              </Button>
+              {accommodations.length > 0 && (
+                <Button
+                  variant={activeSection === "accommodations" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => scrollToSection("accommodations")}
+                  className="whitespace-nowrap"
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  Accommodations ({accommodations.length})
+                </Button>
+              )}
+              {(stay.restaurant_description || restaurantImages.length > 0) && (
+                <Button
+                  variant={activeSection === "dining" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => scrollToSection("dining")}
+                  className="whitespace-nowrap"
+                >
+                  <Utensils className="w-4 h-4 mr-2" />
+                  Dining
+                </Button>
+              )}
+              <Button
+                variant={activeSection === "location" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => scrollToSection("location")}
+                className="whitespace-nowrap"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                Location
+              </Button>
+              {(connectivity.airport || connectivity.railway || connectivity.city) && (
+                <Button
+                  variant={activeSection === "connectivity" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => scrollToSection("connectivity")}
+                  className="whitespace-nowrap"
+                >
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Connectivity
+                </Button>
+              )}
+              <Button
+                variant={activeSection === "query" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => scrollToSection("query")}
+                className="whitespace-nowrap"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Book Now
+              </Button>
+            </div>
+          </div>
+        </div>
 
+        <section className="py-8">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
               {/* Image Gallery Section */}
-              <div className="mb-12">
+              <div ref={(el) => { sectionRefs.current["overview"] = el; }} className="mb-12 scroll-mt-32">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-foreground">Gallery</h2>
+                  <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <Home className="w-6 h-6 text-primary" />
+                    Gallery
+                  </h2>
                   <div className="flex gap-2">
                     <Button
                       variant={activeImageTab === "property" ? "default" : "outline"}
@@ -820,11 +953,11 @@ ${formData.contactNumber} | ${formData.email}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {/* Main Image */}
                     <div className="lg:col-span-2">
-                      <div className="relative h-[400px] rounded-xl overflow-hidden">
+                      <div className="relative h-[400px] rounded-xl overflow-hidden group">
                         <img
                           src={currentImage?.image_url || "/placeholder.svg"}
                           alt={`${stay.name} - ${getImageCaption(currentImage, currentImageIndex)}`}
-                          className="w-full h-full object-cover transition-opacity duration-500 ease-in-out cursor-pointer"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           onClick={() => setShowFullScreen(true)}
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = "/placeholder.svg";
@@ -849,7 +982,7 @@ ${formData.contactNumber} | ${formData.email}
                         <Button
                           variant="outline"
                           size="sm"
-                          className="absolute bottom-4 right-4 bg-black/60 text-white hover:bg-black/80 border-none"
+                          className="absolute bottom-4 right-4 bg-black/60 text-white hover:bg-black/80 border-none opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => setShowFullScreen(true)}
                         >
                           <Maximize2 className="w-4 h-4 mr-2" />
@@ -862,7 +995,7 @@ ${formData.contactNumber} | ${formData.email}
                     <div className="space-y-4">
                       {getRightImage(1) && (
                         <div
-                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity group"
                           onClick={() => handleImageSelect((currentImageIndex + 1) % currentImages.length)}
                         >
                           <img
@@ -873,6 +1006,9 @@ ${formData.contactNumber} | ${formData.email}
                               (e.target as HTMLImageElement).src = "/placeholder.svg";
                             }}
                           />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Maximize2 className="w-6 h-6 text-white" />
+                          </div>
                           <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
                             {getThumbnailCaption(1)}
                           </div>
@@ -881,7 +1017,7 @@ ${formData.contactNumber} | ${formData.email}
 
                       {getRightImage(2) && (
                         <div
-                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity group"
                           onClick={() => handleImageSelect((currentImageIndex + 2) % currentImages.length)}
                         >
                           <img
@@ -892,6 +1028,9 @@ ${formData.contactNumber} | ${formData.email}
                               (e.target as HTMLImageElement).src = "/placeholder.svg";
                             }}
                           />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Maximize2 className="w-6 h-6 text-white" />
+                          </div>
                           <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
                             {getThumbnailCaption(2)}
                           </div>
@@ -900,7 +1039,7 @@ ${formData.contactNumber} | ${formData.email}
 
                       {getRightImage(3) && (
                         <div
-                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          className="relative h-[128px] rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity group"
                           onClick={() => handleImageSelect((currentImageIndex + 3) % currentImages.length)}
                         >
                           <img
@@ -911,6 +1050,9 @@ ${formData.contactNumber} | ${formData.email}
                               (e.target as HTMLImageElement).src = "/placeholder.svg";
                             }}
                           />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Maximize2 className="w-6 h-6 text-white" />
+                          </div>
                           <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
                             {getThumbnailCaption(3)}
                           </div>
@@ -984,80 +1126,109 @@ ${formData.contactNumber} | ${formData.email}
                 )}
               </div>
 
-              {/* Fullscreen Image Modal */}
-              {showFullScreen && currentImage && (
-                <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-                  <div className="relative w-full max-w-6xl max-h-[90vh]">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70"
-                      onClick={() => setShowFullScreen(false)}
-                    >
-                      <span className="sr-only">Close</span>
-                      <span className="text-2xl">×</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70"
-                      onClick={prevImage}
-                    >
-                      <ChevronLeft className="h-6 w-6" />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70"
-                      onClick={nextImage}
-                    >
-                      <ChevronRight className="h-6 w-6" />
-                    </Button>
-
-                    <img
-                      src={currentImage.image_url || "/placeholder.svg"}
-                      alt={getImageCaption(currentImage, currentImageIndex)}
-                      className="w-full h-full object-contain max-h-[80vh] rounded-lg"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder.svg";
-                      }}
-                    />
-
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-lg text-sm">
-                      {getImageCaption(currentImage, currentImageIndex)}
-                      <span className="ml-2 text-muted-foreground">
-                        ({currentImageIndex + 1} of {currentImages.length})
-                      </span>
-                    </div>
+              {/* Overview Section */}
+              {stay.overview && (
+                <div className="mb-12">
+                  <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Info className="w-6 h-6 text-primary" />
+                    Overview
+                  </h2>
+                  <div className="prose prose-lg max-w-none">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {stay.overview}
+                    </p>
                   </div>
                 </div>
               )}
 
-              {/* Restaurant Section with Carousel */}
-              {(stay.restaurant_description || restaurantImages.length > 0) && (
+              {/* Description Section */}
+              {stay.description && (
                 <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+                  <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Compass className="w-6 h-6 text-primary" />
+                    About the Stay
+                  </h2>
+                  <div className="bg-gradient-to-r from-primary/5 to-transparent rounded-xl p-6">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {stay.description}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Accommodations Section */}
+              {accommodations.length > 0 && (
+                <div ref={(el) => { sectionRefs.current["accommodations"] = el; }} className="mb-12 scroll-mt-32">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                    <Home className="w-6 h-6 text-primary" />
+                    Accommodation Options
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {accommodations.map((acc) => (
+                      <Card key={acc.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                        {acc.image_url && (
+                          <div className="h-48 overflow-hidden">
+                            <img
+                              src={acc.image_url}
+                              alt={acc.name}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/placeholder.svg";
+                              }}
+                            />
+                          </div>
+                        )}
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-semibold mb-2">{acc.name}</h3>
+                          {acc.capacity && (
+                            <div className="flex items-center gap-2 text-muted-foreground mb-3">
+                              <Users className="w-4 h-4" />
+                              <span>Capacity: {acc.capacity}</span>
+                            </div>
+                          )}
+                          {acc.features && acc.features.length > 0 && (
+                            <div className="space-y-2">
+                              <h4 className="font-medium text-sm text-muted-foreground">Features:</h4>
+                              <div className="grid grid-cols-2 gap-2">
+                                {acc.features.map((feature: string, idx: number) => (
+                                  <div key={idx} className="flex items-center gap-2 text-sm">
+                                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                    <span>{feature}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Dining Section */}
+              {(stay.restaurant_description || restaurantImages.length > 0) && (
+                <div ref={(el) => { sectionRefs.current["dining"] = el; }} className="mb-12 scroll-mt-32">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Utensils className="w-6 h-6 text-primary" />
-                    Restaurant & Dining
+                    Dining Experience
                   </h2>
 
                   {/* Restaurant Images Carousel */}
                   {restaurantImages.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="text-xl font-semibold text-foreground mb-4">Restaurant Gallery</h3>
-                      <RestaurantImageCarousel
+                      <ImageCarousel
                         images={restaurantImages}
                         stayName={stay.name}
                         onImageClick={handleRestaurantImageClick}
+                        title="Restaurant"
                       />
                     </div>
                   )}
 
                   {/* Restaurant Description */}
                   {stay.restaurant_description && (
-                    <div className="bg-gradient-to-r from-primary/5 to-transparent rounded-xl p-6 mt-6">
+                    <div className="bg-gradient-to-r from-primary/5 to-transparent rounded-xl p-6">
                       <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                         {stay.restaurant_description}
                       </p>
@@ -1066,25 +1237,86 @@ ${formData.contactNumber} | ${formData.email}
                 </div>
               )}
 
-              {stay.map_url && (
-                <LocationMapEmbed
-                  mapUrl={stay.map_url}
-                  address={stay.address}
-                  locationName={stay.name}
-                  height="450px"
-                  showTitle={true}
-                  showBadge={true}
-                  showAddress={true}
-                  showOpenButton={true}
-                /> ) }
+              {/* Location & Address Section */}
+              <div ref={(el) => { sectionRefs.current["location"] = el; }} className="mb-12 scroll-mt-32">
+                <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                  <MapPin className="w-6 h-6 text-primary" />
+                  Location
+                </h2>
+                
+                {stay.address && (
+                  <div className="mb-4 p-4 bg-primary/5 rounded-lg">
+                    <h3 className="font-semibold mb-2">Address:</h3>
+                    <p className="text-muted-foreground">{stay.address}</p>
+                  </div>
+                )}
+
+                {stay.map_url && (
+                  <LocationMapEmbed
+                    mapUrl={stay.map_url}
+                    address={stay.address}
+                    locationName={stay.name}
+                    height="450px"
+                    showTitle={false}
+                    showBadge={true}
+                    showAddress={true}
+                    showOpenButton={true}
+                  />
+                )}
+              </div>
+
+              {/* Connectivity Section */}
+              {(connectivity.airport || connectivity.railway || connectivity.city) && (
+                <div ref={(el) => { sectionRefs.current["connectivity"] = el; }} className="mb-12 scroll-mt-32">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                    <Navigation className="w-6 h-6 text-primary" />
+                    How to Reach
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {connectivity.airport && (
+                      <Card>
+                        <CardContent className="p-4 flex items-start gap-3">
+                          <Plane className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <h3 className="font-semibold mb-1">Nearest Airport</h3>
+                            <p className="text-sm text-muted-foreground">{connectivity.airport}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                    {connectivity.railway && (
+                      <Card>
+                        <CardContent className="p-4 flex items-start gap-3">
+                          <Train className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <h3 className="font-semibold mb-1">Nearest Railway Station</h3>
+                            <p className="text-sm text-muted-foreground">{connectivity.railway}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                    {connectivity.city && (
+                      <Card>
+                        <CardContent className="p-4 flex items-start gap-3">
+                          <Building className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                          <div>
+                            <h3 className="font-semibold mb-1">Nearest City</h3>
+                            <p className="text-sm text-muted-foreground">{connectivity.city}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Query Form */}
-              <div className="mb-16">
-                <Card>
-                  <CardContent className="p-6">
+              <div ref={(el) => { sectionRefs.current["query"] = el; }} className="mb-16 scroll-mt-32">
+                <Card className="border-2 border-primary/10">
+                  <CardContent className="p-8">
                     <form onSubmit={handleSubmit}>
-                      <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-foreground mb-2">Your Query</h2>
+                      <div className="mb-8 text-center">
+                        <h2 className="text-3xl font-bold text-foreground mb-2">Book Your Stay</h2>
                         <p className="text-muted-foreground">Fill in the details below and we'll get back to you within 24 hours.</p>
                       </div>
 
@@ -1181,27 +1413,27 @@ ${formData.contactNumber} | ${formData.email}
                         />
                       </div>
 
-                      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                      <div className="flex flex-col items-center gap-4">
                         <Button
                           type="submit"
-                          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-8"
+                          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-12 py-6 text-lg"
                           disabled={isSubmitted}
                         >
                           {isSubmitted ? (
                             <>
-                              <Check className="mr-2 h-4 w-4" />
+                              <Check className="mr-2 h-5 w-5" />
                               Query Submitted
                             </>
                           ) : (
                             <>
-                              <Send className="mr-2 h-4 w-4" />
+                              <Send className="mr-2 h-5 w-5" />
                               Submit Query
                             </>
                           )}
                         </Button>
 
                         {isSubmitted && (
-                          <div className="text-green-600 text-sm flex items-center gap-2">
+                          <div className="text-green-600 text-sm flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg">
                             <Clock className="h-4 w-4" />
                             Thanks for your query. We shall check the availability & reply back within 24 Hours.
                           </div>
@@ -1214,6 +1446,57 @@ ${formData.contactNumber} | ${formData.email}
             </div>
           </div>
         </section>
+
+        {/* Fullscreen Image Modal */}
+        {showFullScreen && currentImage && (
+          <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+            <div className="relative w-full max-w-7xl max-h-[90vh]">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70 rounded-full"
+                onClick={() => setShowFullScreen(false)}
+              >
+                <span className="sr-only">Close</span>
+                <span className="text-2xl">×</span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70 rounded-full"
+                onClick={prevImage}
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white hover:bg-black/70 rounded-full"
+                onClick={nextImage}
+              >
+                <ChevronRight className="h-8 w-8" />
+              </Button>
+
+              <img
+                src={currentImage.image_url || "/placeholder.svg"}
+                alt={getImageCaption(currentImage, currentImageIndex)}
+                className="w-full h-full object-contain max-h-[80vh] rounded-lg"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/placeholder.svg";
+                }}
+              />
+
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-6 py-3 rounded-lg text-sm">
+                {getImageCaption(currentImage, currentImageIndex)}
+                <span className="ml-2 text-muted-foreground">
+                  ({currentImageIndex + 1} of {currentImages.length})
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <Footer />
       </div>

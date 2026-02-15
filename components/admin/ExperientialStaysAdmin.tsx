@@ -74,8 +74,6 @@ interface FormTabsData {
 
 interface LocationData {
   map_url: string;
-  latitude: number | null;
-  longitude: number | null;
   zoom: number;
 }
 
@@ -103,8 +101,6 @@ export default function ExperientialStaysAdmin() {
   // Location data state - includes map_url and coordinates
   const [locationData, setLocationData] = useState<LocationData>({
     map_url: "",
-    latitude: null,
-    longitude: null,
     zoom: 13
   })
 
@@ -246,8 +242,6 @@ export default function ExperientialStaysAdmin() {
     // Set location data - including map_url and coordinates
     setLocationData({
       map_url: stay.map_url || "",
-      latitude: stay.latitude || null,
-      longitude: stay.longitude || null,
       zoom: stay.map_zoom_level || 13
     });
 
@@ -288,8 +282,6 @@ export default function ExperientialStaysAdmin() {
   const resetLocationData = () => {
     setLocationData({
       map_url: "",
-      latitude: null,
-      longitude: null,
       zoom: 13
     });
   }
@@ -472,12 +464,7 @@ export default function ExperientialStaysAdmin() {
         description: formData.basic.description,
         overview: formData.basic.overview,
         categories: selectedCategories,
-        location: formData.details.location,
-        address: formData.details.address,
-        // IMPORTANT: Save the map_url
         map_url: locationData.map_url || null,
-        latitude: locationData.latitude,
-        longitude: locationData.longitude,
         map_zoom_level: locationData.zoom,
         connectivity: {
           airport: formData.details.connectivity_airport,
@@ -696,14 +683,7 @@ export default function ExperientialStaysAdmin() {
           }));
         }
         
-        if (content.details?.latitude && content.details?.longitude) {
-          setLocationData(prev => ({
-            ...prev,
-            latitude: content.details.latitude,
-            longitude: content.details.longitude,
-            zoom: content.details.zoom || 13
-          }));
-        }
+       
 
         toast({
           title: "AI Content Loaded",
@@ -1041,8 +1021,6 @@ export default function ExperientialStaysAdmin() {
                   
                   <MapPicker
                     mapUrl={locationData.map_url}
-                    latitude={locationData.latitude}
-                    longitude={locationData.longitude}
                     zoom={locationData.zoom}
                     address={formData.details.address}
                     onMapUrlChange={(url) => {
@@ -1055,8 +1033,6 @@ export default function ExperientialStaysAdmin() {
                     onLocationSelect={(lat, lng, zoom) => {
                       setLocationData(prev => ({
                         ...prev,
-                        latitude: lat,
-                        longitude: lng,
                         zoom: zoom
                       }));
                       
@@ -1454,12 +1430,7 @@ export default function ExperientialStaysAdmin() {
                               <Check className="h-3 w-3 mr-1" />
                               Map Set
                             </Badge>
-                          ) : stay.latitude && stay.longitude ? (
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                              <MapPin className="h-3 w-3 mr-1" />
-                              Coordinates
-                            </Badge>
-                          ) : (
+                          ) :  (
                             <Badge variant="outline" className="bg-gray-50 text-gray-500">
                               No map
                             </Badge>

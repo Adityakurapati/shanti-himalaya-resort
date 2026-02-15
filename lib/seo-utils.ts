@@ -107,15 +107,6 @@ export function generateSEOMetadata(props: SEOProps): Metadata {
       // Add specific properties based on type
     };
     
-    // For hotels/places, you can add location data
-    if (facebookType === "place" || facebookType === "hotel") {
-      openGraph[`${facebookType}`] = {
-        location: {
-          latitude: 29.4521, // Example coordinates for Corbett
-          longitude: 79.1089,
-        }
-      };
-    }
   }
 
   return {

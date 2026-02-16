@@ -19,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from "@/components/ui/dialog";
 import CategoriesManager from "@/components/admin/CategoriesManager";
 import MapPicker from "@/components/admin/MapPicker";
@@ -34,13 +33,13 @@ const AdminDestinationNew = () => {
 
   const { loading: aiLoading, generateAllDestinationContent } = useDestinationAI();
 
-  // Track which dialog is open and which item is being edited
-  const [dialogState, setDialogState] = useState({
-    place: { isOpen: false, editId: null as string | null },
-    activity: { isOpen: false, editId: null as string | null },
-    itinerary: { isOpen: false, editId: null as string | null },
-    faq: { isOpen: false, editId: null as string | null },
-  });
+  // Modal state management
+  const [placesModalOpen, setPlacesModalOpen] = useState(false);
+  const [activitiesModalOpen, setActivitiesModalOpen] = useState(false);
+  const [itineraryModalOpen, setItineraryModalOpen] = useState(false);
+  const [faqModalOpen, setFaqModalOpen] = useState(false);
+  const [editingItemKey, setEditingItemKey] = useState<string | null>(null);
+  const [editingItemType, setEditingItemType] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -207,18 +206,15 @@ const AdminDestinationNew = () => {
         return;
       }
 
-      // Generate or validate slug - ensure it's NEVER null
       let finalSlug = formData.slug?.trim();
       if (!finalSlug || finalSlug === '') {
         finalSlug = generateSlug(formData.name);
       }
 
-      // Final fallback - generate a unique slug
       if (!finalSlug || finalSlug.trim() === '') {
         finalSlug = `destination-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
 
-      // Check if slug already exists
       const slugExists = await checkSlugExists(finalSlug);
       if (slugExists) {
         toast({
@@ -230,7 +226,6 @@ const AdminDestinationNew = () => {
         return;
       }
 
-      // Prepare data with proper TypeScript typing
       const destinationData = {
         name: formData.name,
         description: formData.description,
@@ -245,7 +240,7 @@ const AdminDestinationNew = () => {
         featured: formData.featured,
         category: formData.category,
         image_url: formData.image_url || null,
-        slug: finalSlug, // ✅ This MUST be a string, not null
+        slug: finalSlug,
         overview: formData.overview || null,
         overview_image_url: formData.overview_image_url || null,
         places_image_url: formData.places_image_url || null,
@@ -281,13 +276,11 @@ const AdminDestinationNew = () => {
       if (error) {
         console.error("❌ Supabase insert error:", error);
         if (error.code === "23505") {
-          // Duplicate slug error
           toast({
             title: "Slug already exists",
             description: "Please choose a different slug for this destination",
             variant: "destructive",
           });
-          // Suggest a new slug
           const newSlug = `${finalSlug}-${Date.now().toString().slice(-4)}`;
           setFormData(prev => ({ ...prev, slug: newSlug }));
         } else {
@@ -334,11 +327,9 @@ const AdminDestinationNew = () => {
       return;
     }
 
-    // Update all form fields at once
     setFormData(prev => {
       const newFormData = { ...prev };
 
-      // Basic Info
       if (allContent.basic) {
         newFormData.description = allContent.basic.description || prev.description;
         newFormData.duration = allContent.basic.duration || prev.duration;
@@ -349,12 +340,10 @@ const AdminDestinationNew = () => {
         newFormData.highlights = allContent.basic.highlights || prev.highlights;
       }
 
-      // Overview
       if (allContent.overview) {
         newFormData.overview = allContent.overview;
       }
 
-      // Places to Visit
       if (allContent.places && Array.isArray(allContent.places)) {
         const placesObj: { [key: string]: any } = {};
         allContent.places.forEach((place: any) => {
@@ -370,7 +359,6 @@ const AdminDestinationNew = () => {
         newFormData.places_to_visit = placesObj;
       }
 
-      // Activities
       if (allContent.activities && Array.isArray(allContent.activities)) {
         const activitiesObj: { [key: string]: any } = {};
         allContent.activities.forEach((activity: any) => {
@@ -385,7 +373,6 @@ const AdminDestinationNew = () => {
         newFormData.things_to_do = activitiesObj;
       }
 
-      // How to Reach
       if (allContent.howToReach) {
         newFormData.how_to_reach = {
           air: {
@@ -403,7 +390,6 @@ const AdminDestinationNew = () => {
         };
       }
 
-      // Best Time Details
       if (allContent.bestTime) {
         newFormData.best_time_details = {
           winter: allContent.bestTime.winter || prev.best_time_details.winter,
@@ -412,7 +398,6 @@ const AdminDestinationNew = () => {
         };
       }
 
-      // Where to Stay
       if (allContent.accommodation) {
         newFormData.where_to_stay = {
           budget: {
@@ -433,7 +418,6 @@ const AdminDestinationNew = () => {
         };
       }
 
-      // Itinerary
       if (allContent.itinerary && Array.isArray(allContent.itinerary)) {
         const itineraryObj: { [key: string]: any } = {};
         allContent.itinerary.forEach((day: any) => {
@@ -449,12 +433,10 @@ const AdminDestinationNew = () => {
         newFormData.itinerary = itineraryObj;
       }
 
-      // Travel Tips
       if (allContent.travelTips && Array.isArray(allContent.travelTips)) {
         newFormData.travel_tips = allContent.travelTips;
       }
 
-      // FAQs
       if (allContent.faqs && Array.isArray(allContent.faqs)) {
         const faqsObj: { [key: string]: any } = {};
         allContent.faqs.forEach((faq: any) => {
@@ -472,21 +454,7 @@ const AdminDestinationNew = () => {
     });
   };
 
-  // Dialog handlers for Places
-  const handleOpenPlaceDialog = (editId: string | null = null) => {
-    setDialogState({
-      ...dialogState,
-      place: { isOpen: true, editId }
-    });
-  };
-
-  const handleClosePlaceDialog = () => {
-    setDialogState({
-      ...dialogState,
-      place: { isOpen: false, editId: null }
-    });
-  };
-
+  // Places Handlers
   const handleAddPlace = (place: any) => {
     const id = generateId();
     const updated = {
@@ -497,7 +465,11 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, places_to_visit: updated });
-    handleClosePlaceDialog();
+    setPlacesModalOpen(false);
+    toast({
+      title: "Place added",
+      description: "New place has been added successfully.",
+    });
   };
 
   const handleUpdatePlace = (key: string, updatedPlace: any) => {
@@ -509,30 +481,25 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, places_to_visit: updated });
-    handleClosePlaceDialog();
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "Place updated",
+      description: "Place has been updated successfully.",
+    });
   };
 
   const handleDeletePlace = (key: string) => {
     const updated = { ...formData.places_to_visit };
     delete updated[key];
     setFormData({ ...formData, places_to_visit: updated });
-  };
-
-  // Dialog handlers for Activities
-  const handleOpenActivityDialog = (editId: string | null = null) => {
-    setDialogState({
-      ...dialogState,
-      activity: { isOpen: true, editId }
+    toast({
+      title: "Place deleted",
+      description: "Place has been removed.",
     });
   };
 
-  const handleCloseActivityDialog = () => {
-    setDialogState({
-      ...dialogState,
-      activity: { isOpen: false, editId: null }
-    });
-  };
-
+  // Activities Handlers
   const handleAddActivity = (activity: any) => {
     const id = generateId();
     const updated = {
@@ -543,7 +510,11 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, things_to_do: updated });
-    handleCloseActivityDialog();
+    setActivitiesModalOpen(false);
+    toast({
+      title: "Activity added",
+      description: "New activity has been added successfully.",
+    });
   };
 
   const handleUpdateActivity = (key: string, updatedActivity: any) => {
@@ -555,30 +526,25 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, things_to_do: updated });
-    handleCloseActivityDialog();
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "Activity updated",
+      description: "Activity has been updated successfully.",
+    });
   };
 
   const handleDeleteActivity = (key: string) => {
     const updated = { ...formData.things_to_do };
     delete updated[key];
     setFormData({ ...formData, things_to_do: updated });
-  };
-
-  // Dialog handlers for Itinerary
-  const handleOpenItineraryDialog = (editId: string | null = null) => {
-    setDialogState({
-      ...dialogState,
-      itinerary: { isOpen: true, editId }
+    toast({
+      title: "Activity deleted",
+      description: "Activity has been removed.",
     });
   };
 
-  const handleCloseItineraryDialog = () => {
-    setDialogState({
-      ...dialogState,
-      itinerary: { isOpen: false, editId: null }
-    });
-  };
-
+  // Itinerary Handlers
   const handleAddDay = (day: any) => {
     const id = generateId();
     const updated = {
@@ -589,7 +555,11 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, itinerary: updated });
-    handleCloseItineraryDialog();
+    setItineraryModalOpen(false);
+    toast({
+      title: "Itinerary day added",
+      description: "New itinerary day has been added successfully.",
+    });
   };
 
   const handleUpdateDay = (key: string, updatedDay: any) => {
@@ -601,30 +571,25 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, itinerary: updated });
-    handleCloseItineraryDialog();
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "Itinerary day updated",
+      description: "Itinerary day has been updated successfully.",
+    });
   };
 
   const handleDeleteDay = (key: string) => {
     const updated = { ...formData.itinerary };
     delete updated[key];
     setFormData({ ...formData, itinerary: updated });
-  };
-
-  // Dialog handlers for FAQs
-  const handleOpenFAQDialog = (editId: string | null = null) => {
-    setDialogState({
-      ...dialogState,
-      faq: { isOpen: true, editId }
+    toast({
+      title: "Itinerary day deleted",
+      description: "Itinerary day has been removed.",
     });
   };
 
-  const handleCloseFAQDialog = () => {
-    setDialogState({
-      ...dialogState,
-      faq: { isOpen: false, editId: null }
-    });
-  };
-
+  // FAQ Handlers
   const handleAddFAQ = (faq: any) => {
     const id = generateId();
     const updated = {
@@ -635,7 +600,11 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, faqs: updated });
-    handleCloseFAQDialog();
+    setFaqModalOpen(false);
+    toast({
+      title: "FAQ added",
+      description: "New FAQ has been added successfully.",
+    });
   };
 
   const handleUpdateFAQ = (key: string, updatedFAQ: any) => {
@@ -647,13 +616,28 @@ const AdminDestinationNew = () => {
       },
     };
     setFormData({ ...formData, faqs: updated });
-    handleCloseFAQDialog();
+    setEditingItemKey(null);
+    setEditingItemType(null);
+    toast({
+      title: "FAQ updated",
+      description: "FAQ has been updated successfully.",
+    });
   };
 
   const handleDeleteFAQ = (key: string) => {
     const updated = { ...formData.faqs };
     delete updated[key];
     setFormData({ ...formData, faqs: updated });
+    toast({
+      title: "FAQ deleted",
+      description: "FAQ has been removed.",
+    });
+  };
+
+  // Edit handler
+  const handleEditItem = (key: string, type: string) => {
+    setEditingItemKey(key);
+    setEditingItemType(type);
   };
 
   const tabs = [
@@ -731,9 +715,7 @@ const AdminDestinationNew = () => {
         </div>
       </div>
 
-
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-
         <div className="text-sm text-blue-800 grid grid-cols-2 md:grid-cols-4 gap-2">
           <div>
             Places to Visit:{" "}
@@ -751,7 +733,6 @@ const AdminDestinationNew = () => {
             FAQs: <strong>{Object.keys(formData.faqs).length}</strong>
           </div>
         </div>
-
       </div>
 
       <div>
@@ -764,8 +745,8 @@ const AdminDestinationNew = () => {
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-3 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${activeTab === tab.id
-                  ? "border-b-2 border-primary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                   }`}
               >
                 <Icon className="w-4 h-4" />
@@ -779,8 +760,7 @@ const AdminDestinationNew = () => {
         {activeTab === "basic" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Basic Information</h3>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -906,6 +886,7 @@ const AdminDestinationNew = () => {
               </div>
 
               <CategoriesManager />
+
               <div>
                 <Label htmlFor="image_url">Main Image</Label>
                 <ImageUploader
@@ -924,7 +905,7 @@ const AdminDestinationNew = () => {
                 />
                 <Label htmlFor="featured">Featured Destination</Label>
               </div>
-            </form>
+            </div>
           </div>
         )}
 
@@ -966,8 +947,7 @@ const AdminDestinationNew = () => {
         {activeTab === "overview" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Detailed Overview</h3>
-
-            <form onSubmit={handleSubmit}>
+            <div>
               <Label htmlFor="overview">Detailed Overview</Label>
               <Textarea
                 id="overview"
@@ -978,7 +958,7 @@ const AdminDestinationNew = () => {
                 rows={8}
                 placeholder="Provide a comprehensive overview of the destination..."
               />
-            </form>
+            </div>
             <div>
               <Label htmlFor="overview_image_url">Overview Section Image</Label>
               <ImageUploader
@@ -1004,9 +984,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => handleOpenPlaceDialog()}>
+                <Button size="sm" onClick={() => setPlacesModalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Manually
+                  Add Place
                 </Button>
               </div>
             </div>
@@ -1022,112 +1002,129 @@ const AdminDestinationNew = () => {
             </div>
 
             <div className="space-y-3">
-              {Object.entries(formData.itinerary)
-                .sort(([keyA, dayA], [keyB, dayB]) => {
-                  // Sort by day number in ascending order
-                  const dayNumA = dayA.day || 0;
-                  const dayNumB = dayB.day || 0;
-                  return dayNumA - dayNumB;
-                })
-                .map(([key, day]) => (
-                  <Card key={key}>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-lg">
-                            Day {day.day}: {day.title}
-                          </h4>
-                        </div>
-                        <div className="flex gap-1 ml-2">
+              {Object.entries(formData.places_to_visit).map(([key, place]) => (
+                <Card key={key}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-lg">{place.name}</h4>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleOpenItineraryDialog(key)}
+                            onClick={() => handleEditItem(key, "place")}
                           >
                             <Edit className="w-4 h-4 mr-1" />
                             Edit
                           </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteDay(key)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="md:col-span-2">
-                          <ul className="text-sm text-muted-foreground space-y-1">
-                            {day.activities?.map((activity: string, i: number) => (
-                              <li key={i}>• {activity}</li>
-                            ))}
-                          </ul>
                         </div>
 
-                        <div className="md:col-span-1">
-                          {day.image_url ? (
-                            <div className="h-32 rounded-lg overflow-hidden">
-                              <img
-                                src={day.image_url}
-                                alt={`Day ${day.day}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ) : (
-                            <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
-                              <p className="text-sm text-muted-foreground">
-                                No image
-                              </p>
-                            </div>
-                          )}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="md:col-span-2">
+                            <p className="text-muted-foreground mb-3">
+                              {place.description}
+                            </p>
+                            {place.highlights && place.highlights.length > 0 && (
+                              <div className="mt-2">
+                                <p className="font-medium text-sm mb-1">
+                                  Highlights:
+                                </p>
+                                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                                  {place.highlights.map((h: any, i: number) => (
+                                    <li key={i}>{h}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="md:col-span-1">
+                            {place.image_url ? (
+                              <div className="h-32 rounded-lg overflow-hidden">
+                                <img
+                                  src={place.image_url}
+                                  alt={place.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
+                                <p className="text-sm text-muted-foreground">
+                                  No image
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              {Object.keys(formData.itinerary).length === 0 && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeletePlace(key)}
+                        className="ml-2"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {Object.keys(formData.places_to_visit).length === 0 && (
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
-                  <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No itinerary days added yet. Use "Generate All Content" or add manually.
+                    No places added yet. Click "Add Place" to get started.
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Place Dialog */}
+            {/* Add Place Dialog */}
+            <Dialog open={placesModalOpen} onOpenChange={setPlacesModalOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add Place to Visit</DialogTitle>
+                  <DialogDescription>
+                    Add a new place that visitors should see at this destination.
+                  </DialogDescription>
+                </DialogHeader>
+                <PlaceForm
+                  onSubmit={handleAddPlace}
+                  onClose={() => setPlacesModalOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit Place Dialog */}
             <Dialog
-              open={dialogState.place.isOpen}
+              open={editingItemType === "place" && editingItemKey !== null}
               onOpenChange={(open) => {
-                if (!open) handleClosePlaceDialog();
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
               }}
             >
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
-                    {dialogState.place.editId ? "Edit Place" : "Add Place to Visit"}
+                    Edit Place:{" "}
+                    {editingItemKey && formData.places_to_visit[editingItemKey]?.name}
                   </DialogTitle>
-                  <DialogDescription>
-                    {dialogState.place.editId
-                      ? "Edit the details of this place."
-                      : "Add a new place that visitors should see at this destination."}
-                  </DialogDescription>
                 </DialogHeader>
-                <PlaceForm
-                  key={dialogState.place.editId || 'new-place'}
-                  initialData={dialogState.place.editId ? formData.places_to_visit[dialogState.place.editId] : undefined}
-                  onSubmit={(placeData) => {
-                    if (dialogState.place.editId) {
-                      handleUpdatePlace(dialogState.place.editId, placeData);
-                    } else {
-                      handleAddPlace(placeData);
+                {editingItemKey && (
+                  <PlaceForm
+                    initialData={formData.places_to_visit[editingItemKey]}
+                    onSubmit={(updatedPlace) =>
+                      handleUpdatePlace(editingItemKey!, updatedPlace)
                     }
-                  }}
-                  onCancel={handleClosePlaceDialog}
-                  isEdit={!!dialogState.place.editId}
-                />
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
               </DialogContent>
             </Dialog>
           </div>
@@ -1146,9 +1143,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => handleOpenActivityDialog()}>
+                <Button size="sm" onClick={() => setActivitiesModalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Manually
+                  Add Activity
                 </Button>
               </div>
             </div>
@@ -1197,7 +1194,7 @@ const AdminDestinationNew = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleOpenActivityDialog(key)}
+                            onClick={() => handleEditItem(key, "activity")}
                           >
                             <Edit className="w-3 h-3" />
                           </Button>
@@ -1238,43 +1235,58 @@ const AdminDestinationNew = () => {
                 <div className="col-span-2 text-center py-8 border-2 border-dashed rounded-lg">
                   <Route className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No activities added yet. Use "Generate All Content" or add manually.
+                    No activities added yet. Click "Add Activity" to get started.
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Activity Dialog */}
+            {/* Add Activity Dialog */}
+            <Dialog open={activitiesModalOpen} onOpenChange={setActivitiesModalOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add Activity</DialogTitle>
+                  <DialogDescription>
+                    Add a new activity that visitors can enjoy at this destination.
+                  </DialogDescription>
+                </DialogHeader>
+                <ActivityForm
+                  onSubmit={handleAddActivity}
+                  onClose={() => setActivitiesModalOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit Activity Dialog */}
             <Dialog
-              open={dialogState.activity.isOpen}
+              open={editingItemType === "activity" && editingItemKey !== null}
               onOpenChange={(open) => {
-                if (!open) handleCloseActivityDialog();
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
               }}
             >
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
-                    {dialogState.activity.editId ? "Edit Activity" : "Add Activity"}
+                    Edit Activity:{" "}
+                    {editingItemKey && formData.things_to_do[editingItemKey]?.title}
                   </DialogTitle>
-                  <DialogDescription>
-                    {dialogState.activity.editId
-                      ? "Edit the details of this activity."
-                      : "Add a new activity that visitors can enjoy at this destination."}
-                  </DialogDescription>
                 </DialogHeader>
-                <ActivityForm
-                  key={dialogState.activity.editId || 'new-activity'}
-                  initialData={dialogState.activity.editId ? formData.things_to_do[dialogState.activity.editId] : undefined}
-                  onSubmit={(activityData) => {
-                    if (dialogState.activity.editId) {
-                      handleUpdateActivity(dialogState.activity.editId, activityData);
-                    } else {
-                      handleAddActivity(activityData);
+                {editingItemKey && (
+                  <ActivityForm
+                    initialData={formData.things_to_do[editingItemKey]}
+                    onSubmit={(updatedActivity) =>
+                      handleUpdateActivity(editingItemKey!, updatedActivity)
                     }
-                  }}
-                  onCancel={handleCloseActivityDialog}
-                  isEdit={!!dialogState.activity.editId}
-                />
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
               </DialogContent>
             </Dialog>
           </div>
@@ -1284,50 +1296,47 @@ const AdminDestinationNew = () => {
         {activeTab === "reach" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">How to Reach</h3>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {["air", "train", "road"].map((method) => (
-                  <div key={method}>
-                    <Label htmlFor={`reach-${method}`} className="capitalize">
-                      <div className="flex items-center gap-2">
-                        {method === "air" && "✈️"}
-                        {method === "train" && "🚂"}
-                        {method === "road" && "🚗"}
-                        By {method}
-                      </div>
-                    </Label>
-                    <Textarea
-                      id={`reach-${method}`}
-                      value={
-                        formData.how_to_reach[
-                          method as keyof typeof formData.how_to_reach
-                        ]?.details?.join("\n") || ""
-                      }
-                      onChange={(e) => {
-                        const details = e.target.value
-                          .split("\n")
-                          .filter((d) => d.trim());
-                        setFormData({
-                          ...formData,
-                          how_to_reach: {
-                            ...formData.how_to_reach,
-                            [method]: {
-                              ...formData.how_to_reach[
-                              method as keyof typeof formData.how_to_reach
-                              ],
-                              details,
-                            },
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {["air", "train", "road"].map((method) => (
+                <div key={method}>
+                  <Label htmlFor={`reach-${method}`} className="capitalize">
+                    <div className="flex items-center gap-2">
+                      {method === "air" && "✈️"}
+                      {method === "train" && "🚂"}
+                      {method === "road" && "🚗"}
+                      By {method}
+                    </div>
+                  </Label>
+                  <Textarea
+                    id={`reach-${method}`}
+                    value={
+                      formData.how_to_reach[
+                        method as keyof typeof formData.how_to_reach
+                      ]?.details?.join("\n") || ""
+                    }
+                    onChange={(e) => {
+                      const details = e.target.value
+                        .split("\n")
+                        .filter((d) => d.trim());
+                      setFormData({
+                        ...formData,
+                        how_to_reach: {
+                          ...formData.how_to_reach,
+                          [method]: {
+                            ...formData.how_to_reach[
+                            method as keyof typeof formData.how_to_reach
+                            ],
+                            details,
                           },
-                        });
-                      }}
-                      placeholder={`Enter ${method} details (one per line)`}
-                      rows={4}
-                    />
-                  </div>
-                ))}
-              </div>
-            </form>
+                        },
+                      });
+                    }}
+                    placeholder={`Enter ${method} details (one per line)`}
+                    rows={4}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -1335,138 +1344,135 @@ const AdminDestinationNew = () => {
         {activeTab === "besttime" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Best Time to Visit</h3>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { key: "winter", label: "Winter", icon: "❄️" },
-                  { key: "summer", label: "Summer", icon: "☀️" },
-                  { key: "monsoon", label: "Monsoon", icon: "🌧️" }
-                ].map(({ key, label, icon }) => (
-                  <div key={key}>
-                    <Label className="capitalize font-semibold mb-2 block flex items-center gap-2">
-                      <span>{icon}</span> {label}
-                    </Label>
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Season dates"
-                        value={
-                          formData.best_time_details[
-                            key as keyof typeof formData.best_time_details
-                          ]?.season || ""
-                        }
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            best_time_details: {
-                              ...formData.best_time_details,
-                              [key]: {
-                                ...formData.best_time_details[
-                                key as keyof typeof formData.best_time_details
-                                ],
-                                season: e.target.value,
-                              },
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { key: "winter", label: "Winter", icon: "❄️" },
+                { key: "summer", label: "Summer", icon: "☀️" },
+                { key: "monsoon", label: "Monsoon", icon: "🌧️" }
+              ].map(({ key, label, icon }) => (
+                <div key={key}>
+                  <Label className="capitalize font-semibold mb-2 block flex items-center gap-2">
+                    <span>{icon}</span> {label}
+                  </Label>
+                  <div className="space-y-2">
+                    <Input
+                      placeholder="Season dates"
+                      value={
+                        formData.best_time_details[
+                          key as keyof typeof formData.best_time_details
+                        ]?.season || ""
+                      }
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          best_time_details: {
+                            ...formData.best_time_details,
+                            [key]: {
+                              ...formData.best_time_details[
+                              key as keyof typeof formData.best_time_details
+                              ],
+                              season: e.target.value,
                             },
-                          });
-                        }}
-                      />
-                      <Textarea
-                        placeholder="Weather"
-                        value={
-                          formData.best_time_details[
-                            key as keyof typeof formData.best_time_details
-                          ]?.weather || ""
-                        }
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            best_time_details: {
-                              ...formData.best_time_details,
-                              [key]: {
-                                ...formData.best_time_details[
-                                key as keyof typeof formData.best_time_details
-                                ],
-                                weather: e.target.value,
-                              },
+                          },
+                        });
+                      }}
+                    />
+                    <Textarea
+                      placeholder="Weather"
+                      value={
+                        formData.best_time_details[
+                          key as keyof typeof formData.best_time_details
+                        ]?.weather || ""
+                      }
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          best_time_details: {
+                            ...formData.best_time_details,
+                            [key]: {
+                              ...formData.best_time_details[
+                              key as keyof typeof formData.best_time_details
+                              ],
+                              weather: e.target.value,
                             },
-                          });
-                        }}
-                        rows={2}
-                      />
-                      <Textarea
-                        placeholder="Why visit"
-                        value={
-                          formData.best_time_details[
-                            key as keyof typeof formData.best_time_details
-                          ]?.why_visit || ""
-                        }
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            best_time_details: {
-                              ...formData.best_time_details,
-                              [key]: {
-                                ...formData.best_time_details[
-                                key as keyof typeof formData.best_time_details
-                                ],
-                                why_visit: e.target.value,
-                              },
+                          },
+                        });
+                      }}
+                      rows={2}
+                    />
+                    <Textarea
+                      placeholder="Why visit"
+                      value={
+                        formData.best_time_details[
+                          key as keyof typeof formData.best_time_details
+                        ]?.why_visit || ""
+                      }
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          best_time_details: {
+                            ...formData.best_time_details,
+                            [key]: {
+                              ...formData.best_time_details[
+                              key as keyof typeof formData.best_time_details
+                              ],
+                              why_visit: e.target.value,
                             },
-                          });
-                        }}
-                        rows={2}
-                      />
-                      <Textarea
-                        placeholder="Events"
-                        value={
-                          formData.best_time_details[
-                            key as keyof typeof formData.best_time_details
-                          ]?.events || ""
-                        }
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            best_time_details: {
-                              ...formData.best_time_details,
-                              [key]: {
-                                ...formData.best_time_details[
-                                key as keyof typeof formData.best_time_details
-                                ],
-                                events: e.target.value,
-                              },
+                          },
+                        });
+                      }}
+                      rows={2}
+                    />
+                    <Textarea
+                      placeholder="Events"
+                      value={
+                        formData.best_time_details[
+                          key as keyof typeof formData.best_time_details
+                        ]?.events || ""
+                      }
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          best_time_details: {
+                            ...formData.best_time_details,
+                            [key]: {
+                              ...formData.best_time_details[
+                              key as keyof typeof formData.best_time_details
+                              ],
+                              events: e.target.value,
                             },
-                          });
-                        }}
-                        rows={2}
-                      />
-                      <Textarea
-                        placeholder="Challenges"
-                        value={
-                          formData.best_time_details[
-                            key as keyof typeof formData.best_time_details
-                          ]?.challenges || ""
-                        }
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            best_time_details: {
-                              ...formData.best_time_details,
-                              [key]: {
-                                ...formData.best_time_details[
-                                key as keyof typeof formData.best_time_details
-                                ],
-                                challenges: e.target.value,
-                              },
+                          },
+                        });
+                      }}
+                      rows={2}
+                    />
+                    <Textarea
+                      placeholder="Challenges"
+                      value={
+                        formData.best_time_details[
+                          key as keyof typeof formData.best_time_details
+                        ]?.challenges || ""
+                      }
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          best_time_details: {
+                            ...formData.best_time_details,
+                            [key]: {
+                              ...formData.best_time_details[
+                              key as keyof typeof formData.best_time_details
+                              ],
+                              challenges: e.target.value,
                             },
-                          });
-                        }}
-                        rows={2}
-                      />
-                    </div>
+                          },
+                        });
+                      }}
+                      rows={2}
+                    />
                   </div>
-                ))}
-              </div>
-            </form>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -1474,71 +1480,69 @@ const AdminDestinationNew = () => {
         {activeTab === "stay" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Where to Stay</h3>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { key: "budget", label: "Budget", emoji: "💰" },
-                  { key: "midrange", label: "Mid-range", emoji: "🏨" },
-                  { key: "luxury", label: "Luxury", emoji: "✨" }
-                ].map(({ key, label, emoji }) => (
-                  <div key={key}>
-                    <Label className="capitalize font-semibold mb-2 block flex items-center gap-2">
-                      <span>{emoji}</span> {label}
-                    </Label>
-                    <Textarea
-                      placeholder={`${label} description`}
-                      value={
-                        formData.where_to_stay[
-                          key as keyof typeof formData.where_to_stay
-                        ]?.description || ""
-                      }
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          where_to_stay: {
-                            ...formData.where_to_stay,
-                            [key]: {
-                              ...formData.where_to_stay[
-                              key as keyof typeof formData.where_to_stay
-                              ],
-                              description: e.target.value,
-                            },
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { key: "budget", label: "Budget", emoji: "💰" },
+                { key: "midrange", label: "Mid-range", emoji: "🏨" },
+                { key: "luxury", label: "Luxury", emoji: "✨" }
+              ].map(({ key, label, emoji }) => (
+                <div key={key}>
+                  <Label className="capitalize font-semibold mb-2 block flex items-center gap-2">
+                    <span>{emoji}</span> {label}
+                  </Label>
+                  <Textarea
+                    placeholder={`${label} description`}
+                    value={
+                      formData.where_to_stay[
+                        key as keyof typeof formData.where_to_stay
+                      ]?.description || ""
+                    }
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        where_to_stay: {
+                          ...formData.where_to_stay,
+                          [key]: {
+                            ...formData.where_to_stay[
+                            key as keyof typeof formData.where_to_stay
+                            ],
+                            description: e.target.value,
                           },
-                        });
-                      }}
-                      rows={3}
-                    />
-                    <Textarea
-                      placeholder="Options (one per line)"
-                      value={
-                        formData.where_to_stay[
-                          key as keyof typeof formData.where_to_stay
-                        ]?.options?.join("\n") || ""
-                      }
-                      onChange={(e) => {
-                        const options = e.target.value
-                          .split("\n")
-                        setFormData({
-                          ...formData,
-                          where_to_stay: {
-                            ...formData.where_to_stay,
-                            [key]: {
-                              ...formData.where_to_stay[
-                              key as keyof typeof formData.where_to_stay
-                              ],
-                              options,
-                            },
+                        },
+                      });
+                    }}
+                    rows={3}
+                  />
+                  <Textarea
+                    placeholder="Options (one per line)"
+                    value={
+                      formData.where_to_stay[
+                        key as keyof typeof formData.where_to_stay
+                      ]?.options?.join("\n") || ""
+                    }
+                    onChange={(e) => {
+                      const options = e.target.value
+                        .split("\n")
+                        .filter((o) => o.trim());
+                      setFormData({
+                        ...formData,
+                        where_to_stay: {
+                          ...formData.where_to_stay,
+                          [key]: {
+                            ...formData.where_to_stay[
+                            key as keyof typeof formData.where_to_stay
+                            ],
+                            options,
                           },
-                        });
-                      }}
-                      rows={3}
-                      className="mt-2"
-                    />
-                  </div>
-                ))}
-              </div>
-            </form>
+                        },
+                      });
+                    }}
+                    rows={3}
+                    className="mt-2"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -1555,7 +1559,7 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => handleOpenItineraryDialog()}>
+                <Button size="sm" onClick={() => setItineraryModalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Day
                 </Button>
@@ -1575,105 +1579,165 @@ const AdminDestinationNew = () => {
             </div>
 
             <div className="space-y-3">
-              {Object.entries(formData.itinerary).map(([key, day]) => (
-                <Card key={key}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-lg">
-                          Day {day.day}: {day.title}
-                        </h4>
-                      </div>
-                      <div className="flex gap-1 ml-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenItineraryDialog(key)}
-                        >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteDay(key)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="md:col-span-2">
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          {day.activities?.map((activity: string, i: number) => (
-                            <li key={i}>• {activity}</li>
-                          ))}
-                        </ul>
+              {Object.entries(formData.itinerary)
+                .sort(([keyA, dayA], [keyB, dayB]) => {
+                  const dayNumA = dayA.day || 0;
+                  const dayNumB = dayB.day || 0;
+                  return dayNumA - dayNumB;
+                })
+                .map(([key, day]) => (
+                  <Card key={key}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-lg">
+                            Day {day.day}: {day.title}
+                          </h4>
+                        </div>
+                        <div className="flex gap-1 ml-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditItem(key, "itinerary")}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteDay(key)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
 
-                      <div className="md:col-span-1">
-                        {day.image_url ? (
-                          <div className="h-32 rounded-lg overflow-hidden">
-                            <img
-                              src={day.image_url}
-                              alt={`Day ${day.day}`}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
-                            <p className="text-sm text-muted-foreground">
-                              No image
-                            </p>
-                          </div>
-                        )}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            {day.activities?.map((activity: string, i: number) => (
+                              <li key={i}>• {activity}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="md:col-span-1">
+                          {day.image_url ? (
+                            <div className="h-32 rounded-lg overflow-hidden">
+                              <img
+                                src={day.image_url}
+                                alt={`Day ${day.day}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-32 rounded-lg bg-muted flex items-center justify-center">
+                              <p className="text-sm text-muted-foreground">
+                                No image
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
               {Object.keys(formData.itinerary).length === 0 && (
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
                   <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No itinerary days added yet. Use "Generate All Content" or add manually.
+                    No itinerary days added yet. Click "Add Day" to get started.
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Itinerary Dialog */}
+            {/* Add Itinerary Dialog */}
+            <Dialog open={itineraryModalOpen} onOpenChange={setItineraryModalOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add Itinerary Day</DialogTitle>
+                  <DialogDescription>
+                    Add a new day to the travel itinerary for this destination.
+                  </DialogDescription>
+                </DialogHeader>
+                <ItineraryForm
+                  onSubmit={handleAddDay}
+                  onClose={() => setItineraryModalOpen(false)}
+                  existingDays={Object.values(formData.itinerary).map((day: any) => day.day)}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit Itinerary Dialog */}
             <Dialog
-              open={dialogState.itinerary.isOpen}
+              open={editingItemType === "itinerary" && editingItemKey !== null}
               onOpenChange={(open) => {
-                if (!open) handleCloseItineraryDialog();
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
               }}
             >
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
-                    {dialogState.itinerary.editId ? "Edit Itinerary Day" : "Add Itinerary Day"}
+                    Edit Day{" "}
+                    {editingItemKey && formData.itinerary[editingItemKey]?.day}
+                    :{" "}
+                    {editingItemKey && formData.itinerary[editingItemKey]?.title}
                   </DialogTitle>
-                  <DialogDescription>
-                    {dialogState.itinerary.editId
-                      ? "Edit the details of this day."
-                      : "Add a new day to the travel itinerary for this destination."}
-                  </DialogDescription>
                 </DialogHeader>
-                <ItineraryForm
-                  key={dialogState.itinerary.editId || 'new-itinerary'}
-                  initialData={dialogState.itinerary.editId ? formData.itinerary[dialogState.itinerary.editId] : undefined}
-                  onSubmit={(dayData) => {
-                    if (dialogState.itinerary.editId) {
-                      handleUpdateDay(dialogState.itinerary.editId, dayData);
-                    } else {
-                      handleAddDay(dayData);
+                {editingItemKey && (
+                  <ItineraryForm
+                    initialData={formData.itinerary[editingItemKey]}
+                    onSubmit={(updatedDay) =>
+                      handleUpdateDay(editingItemKey!, updatedDay)
                     }
-                  }}
-                  onCancel={handleCloseItineraryDialog}
-                  isEdit={!!dialogState.itinerary.editId}
-                />
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                    existingDays={Object.values(formData.itinerary).map((day: any) => day.day)}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit Itinerary Dialog */}
+            <Dialog
+              open={editingItemType === "itinerary" && editingItemKey !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
+              }}
+            >
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    Edit Day{" "}
+                    {editingItemKey && formData.itinerary[editingItemKey]?.day}
+                    :{" "}
+                    {editingItemKey && formData.itinerary[editingItemKey]?.title}
+                  </DialogTitle>
+                </DialogHeader>
+                {editingItemKey && (
+                  <ItineraryForm
+                    initialData={formData.itinerary[editingItemKey]}
+                    onSubmit={(updatedDay) =>
+                      handleUpdateDay(editingItemKey!, updatedDay)
+                    }
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
               </DialogContent>
             </Dialog>
           </div>
@@ -1683,24 +1747,21 @@ const AdminDestinationNew = () => {
         {activeTab === "tips" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Travel Tips</h3>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="tips">Travel Tips (one per line)</Label>
-                <Textarea
-                  id="tips"
-                  value={formData.travel_tips.join("\n")}
-                  onChange={(e) => {
-                    const tips = e.target.value
-                      .split("\n")
-                    setFormData({ ...formData, travel_tips: tips });
-                  }}
-                  placeholder="Enter travel tips, one per line"
-                  rows={8}
-
-                />
-              </div>
-            </form>
+            <div>
+              <Label htmlFor="tips">Travel Tips (one per line)</Label>
+              <Textarea
+                id="tips"
+                value={formData.travel_tips.join("\n")}
+                onChange={(e) => {
+                  const tips = e.target.value
+                    .split("\n")
+                    .filter((t) => t.trim());
+                  setFormData({ ...formData, travel_tips: tips });
+                }}
+                placeholder="Enter travel tips, one per line"
+                rows={8}
+              />
+            </div>
           </div>
         )}
 
@@ -1717,9 +1778,9 @@ const AdminDestinationNew = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => handleOpenFAQDialog()}>
+                <Button size="sm" onClick={() => setFaqModalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Manually
+                  Add FAQ
                 </Button>
               </div>
             </div>
@@ -1741,10 +1802,9 @@ const AdminDestinationNew = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleOpenFAQDialog(key)}
+                          onClick={() => handleEditItem(key, "faq")}
                         >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
+                          <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="destructive"
@@ -1762,43 +1822,58 @@ const AdminDestinationNew = () => {
                 <div className="text-center py-8 border-2 border-dashed rounded-lg">
                   <HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
-                    No FAQs added yet. Use "Generate All Content" or add manually.
+                    No FAQs added yet. Click "Add FAQ" to get started.
                   </p>
                 </div>
               )}
             </div>
 
-            {/* FAQ Dialog */}
+            {/* Add FAQ Dialog */}
+            <Dialog open={faqModalOpen} onOpenChange={setFaqModalOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add FAQ</DialogTitle>
+                  <DialogDescription>
+                    Add a new frequently asked question and its answer.
+                  </DialogDescription>
+                </DialogHeader>
+                <FAQForm
+                  onSubmit={handleAddFAQ}
+                  onClose={() => setFaqModalOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit FAQ Dialog */}
             <Dialog
-              open={dialogState.faq.isOpen}
+              open={editingItemType === "faq" && editingItemKey !== null}
               onOpenChange={(open) => {
-                if (!open) handleCloseFAQDialog();
+                if (!open) {
+                  setEditingItemKey(null);
+                  setEditingItemType(null);
+                }
               }}
             >
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    {dialogState.faq.editId ? "Edit FAQ" : "Add FAQ"}
+                    Edit FAQ:{" "}
+                    {editingItemKey && formData.faqs[editingItemKey]?.question}
                   </DialogTitle>
-                  <DialogDescription>
-                    {dialogState.faq.editId
-                      ? "Edit the question and answer."
-                      : "Add a new frequently asked question and its answer."}
-                  </DialogDescription>
                 </DialogHeader>
-                <FAQForm
-                  key={dialogState.faq.editId || 'new-faq'}
-                  initialData={dialogState.faq.editId ? formData.faqs[dialogState.faq.editId] : undefined}
-                  onSubmit={(faqData) => {
-                    if (dialogState.faq.editId) {
-                      handleUpdateFAQ(dialogState.faq.editId, faqData);
-                    } else {
-                      handleAddFAQ(faqData);
+                {editingItemKey && (
+                  <FAQForm
+                    initialData={formData.faqs[editingItemKey]}
+                    onSubmit={(updatedFAQ) =>
+                      handleUpdateFAQ(editingItemKey!, updatedFAQ)
                     }
-                  }}
-                  onCancel={handleCloseFAQDialog}
-                  isEdit={!!dialogState.faq.editId}
-                />
+                    isEdit={true}
+                    onClose={() => {
+                      setEditingItemKey(null);
+                      setEditingItemType(null);
+                    }}
+                  />
+                )}
               </DialogContent>
             </Dialog>
           </div>
@@ -1808,12 +1883,17 @@ const AdminDestinationNew = () => {
   );
 };
 
-// Sub-components (PlaceForm, ActivityForm, ItineraryForm, FAQForm) with DialogClose removed
-function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+// Enhanced sub-components
+function PlaceForm({
+  onSubmit,
+  onClose,
+  initialData,
+  isEdit = false,
+}: {
   onSubmit: (place: any) => void;
+  onClose?: () => void;
   initialData?: any;
-  onCancel: () => void;
-  isEdit?: boolean
+  isEdit?: boolean;
 }) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
@@ -1832,8 +1912,10 @@ function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: {
         .filter((h: string) => h.trim()),
       image_url: formData.image_url,
     };
-    console.log("🎯 Submitting place:", placeData);
     onSubmit(placeData);
+    if (!isEdit) {
+      setFormData({ name: "", description: "", highlights: "", image_url: "" });
+    }
   };
 
   return (
@@ -1879,22 +1961,29 @@ function PlaceForm({ onSubmit, initialData, onCancel, isEdit = false }: {
         />
       </div>
       <div className="flex gap-2">
-        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
-          Cancel
-        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update Place" : "Add Place"}
         </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
       </div>
     </form>
   );
 }
 
-function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+function ActivityForm({
+  onSubmit,
+  onClose,
+  initialData,
+  isEdit = false,
+}: {
   onSubmit: (activity: any) => void;
+  onClose?: () => void;
   initialData?: any;
-  onCancel: () => void;
-  isEdit?: boolean
+  isEdit?: boolean;
 }) {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
@@ -1909,8 +1998,10 @@ function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: {
       description: formData.description,
       image_url: formData.image_url,
     };
-    console.log("🎯 Submitting activity:", activityData);
     onSubmit(activityData);
+    if (!isEdit) {
+      setFormData({ title: "", description: "", image_url: "" });
+    }
   };
 
   return (
@@ -1944,25 +2035,41 @@ function ActivityForm({ onSubmit, initialData, onCancel, isEdit = false }: {
         />
       </div>
       <div className="flex gap-2">
-        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
-          Cancel
-        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update Activity" : "Add Activity"}
         </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
       </div>
     </form>
   );
 }
 
-function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+function ItineraryForm({
+  onSubmit,
+  onClose,
+  initialData,
+  isEdit = false,
+  existingDays = [], // Add this prop to get existing day numbers
+}: {
   onSubmit: (day: any) => void;
+  onClose?: () => void;
   initialData?: any;
-  onCancel: () => void;
-  isEdit?: boolean
+  isEdit?: boolean;
+  existingDays?: number[]; // Add this type
 }) {
+  // Calculate next available day number
+  const getNextDayNumber = () => {
+    if (existingDays.length === 0) return 1;
+    const maxDay = Math.max(...existingDays);
+    return maxDay + 1;
+  };
+
   const [formData, setFormData] = useState({
-    day: initialData?.day || 1,
+    day: initialData?.day || (isEdit ? 1 : getNextDayNumber()),
     title: initialData?.title || "",
     activities: initialData?.activities?.join("\n") || "",
     image_url: initialData?.image_url || "",
@@ -1978,8 +2085,16 @@ function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: {
         .filter((a: string) => a.trim()),
       image_url: formData.image_url,
     };
-    console.log("🎯 Submitting itinerary day:", dayData);
     onSubmit(dayData);
+    if (!isEdit) {
+      // Reset form with next day number
+      setFormData({
+        day: getNextDayNumber() + 1, // Add 1 more for next time
+        title: "",
+        activities: "",
+        image_url: "",
+      });
+    }
   };
 
   return (
@@ -1996,6 +2111,11 @@ function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: {
           }
           required
         />
+        {!isEdit && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Suggested next day: {getNextDayNumber()}
+          </p>
+        )}
       </div>
       <div>
         <Label htmlFor="day-title">Day Title *</Label>
@@ -2027,22 +2147,29 @@ function ItineraryForm({ onSubmit, initialData, onCancel, isEdit = false }: {
         />
       </div>
       <div className="flex gap-2">
-        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
-          Cancel
-        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update Day" : "Add Day"}
         </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
       </div>
     </form>
   );
 }
 
-function FAQForm({ onSubmit, initialData, onCancel, isEdit = false }: {
+function FAQForm({
+  onSubmit,
+  onClose,
+  initialData,
+  isEdit = false,
+}: {
   onSubmit: (faq: any) => void;
+  onClose?: () => void;
   initialData?: any;
-  onCancel: () => void;
-  isEdit?: boolean
+  isEdit?: boolean;
 }) {
   const [formData, setFormData] = useState({
     question: initialData?.question || "",
@@ -2055,8 +2182,10 @@ function FAQForm({ onSubmit, initialData, onCancel, isEdit = false }: {
       question: formData.question,
       answer: formData.answer,
     };
-    console.log("🎯 Submitting FAQ:", faqData);
     onSubmit(faqData);
+    if (!isEdit) {
+      setFormData({ question: "", answer: "" });
+    }
   };
 
   return (
@@ -2082,12 +2211,14 @@ function FAQForm({ onSubmit, initialData, onCancel, isEdit = false }: {
         />
       </div>
       <div className="flex gap-2">
-        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
-          Cancel
-        </Button>
         <Button type="submit" className="flex-1">
           {isEdit ? "Update FAQ" : "Add FAQ"}
         </Button>
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
       </div>
     </form>
   );

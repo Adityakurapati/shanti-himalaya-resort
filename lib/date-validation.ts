@@ -2,6 +2,8 @@
  * Date validation utility functions
  */
 
+import { useEffect, useState } from "react";
+
 /**
  * Checks if checkout date is strictly greater than checkin date
  * @param checkInDate - Check-in date string (YYYY-MM-DD)

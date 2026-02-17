@@ -12,8 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 
 interface MapPickerProps {
   mapUrl?: string;
-  latitude?: number | null;
-  longitude?: number | null;
   zoom?: number;
   address?: string;
   onMapUrlChange?: (url: string) => void;
@@ -22,8 +20,6 @@ interface MapPickerProps {
 
 export default function MapPicker({
   mapUrl = "",
-  latitude,
-  longitude,
   zoom = 13,
   address = "",
   onMapUrlChange,

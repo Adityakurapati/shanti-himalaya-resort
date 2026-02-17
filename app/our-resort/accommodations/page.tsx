@@ -39,6 +39,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from "next/image"
+import { useDateValidation, validateDates, getMinDate, getMinCheckoutDate } from "@/lib/date-validation";
+
 
 const AccommodationsPage = () => {
   const [accommodationImages, setAccommodationImages] = useState<{ id: string; image_url: string; title: string; description: string }[]>([])
@@ -158,11 +160,63 @@ const AccommodationsPage = () => {
     })
   }
 
-  // Handle form input changes
+
+  // Add date validation
+  const [dateError, setDateError] = useState<string | null>(null);
+
+  // Validate dates whenever they change
+  useEffect(() => {
+    const { isValid, errorMessage } = validateDates(
+      bookingForm.checkInDate,
+      bookingForm.checkOutDate
+    );
+    setDateError(errorMessage);
+  }, [bookingForm.checkInDate, bookingForm.checkOutDate]);
+
+  // Update handleFormChange
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setBookingForm(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+
+    setBookingForm(prev => {
+      const newData = { ...prev, [name]: value };
+
+      // If changing check-in date and checkout is before new check-in, clear checkout
+      if (name === "checkInDate" && prev.checkOutDate) {
+        const { isValid } = validateDates(value, prev.checkOutDate);
+        if (!isValid) {
+          newData.checkOutDate = "";
+        }
+      }
+
+      return newData;
+    });
+  };
+
+
+
+  // Update handleSubmitBooking
+  const handleSubmitBooking = () => {
+    if (!bookingForm.name || !bookingForm.phone || !bookingForm.email ||
+      !bookingForm.checkInDate || !bookingForm.checkOutDate) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    // Validate dates
+    const { isValid, errorMessage } = validateDates(
+      bookingForm.checkInDate,
+      bookingForm.checkOutDate
+    );
+
+    if (!isValid) {
+      alert(errorMessage);
+      return;
+    }
+
+    const emailLink = generateBookingEmail();
+    window.open(emailLink, '_blank');
+    closeBookingModal();
+  };
 
   // Handle select changes
   const handleSelectChange = (name: string, value: string) => {
@@ -202,18 +256,7 @@ ${bookingForm.name}`
     return `mailto:shantihimalayas@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
-  // Handle form submission
-  const handleSubmitBooking = () => {
-    if (!bookingForm.name || !bookingForm.phone || !bookingForm.email ||
-      !bookingForm.checkInDate || !bookingForm.checkOutDate) {
-      alert("Please fill in all required fields")
-      return
-    }
 
-    const emailLink = generateBookingEmail()
-    window.open(emailLink, '_blank')
-    closeBookingModal()
-  }
 
   const amenities = [
     { icon: <Bed className="w-5 h-5" />, label: "Large Plush Bedding", description: "Comfortable bedding for 2-3 adults" },
@@ -470,8 +513,8 @@ ${bookingForm.name}`
                               <button
                                 key={image.id}
                                 className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === currentImageIndex
-                                    ? 'border-primary ring-2 ring-primary/30'
-                                    : 'border-transparent opacity-70 hover:opacity-100'
+                                  ? 'border-primary ring-2 ring-primary/30'
+                                  : 'border-transparent opacity-70 hover:opacity-100'
                                   }`}
                                 onClick={() => setCurrentImageIndex(index)}
                               >
@@ -817,8 +860,8 @@ ${bookingForm.name}`
                   <button
                     key={image.id}
                     className={`flex-shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-all ${index === selectedImageIndex
-                        ? 'border-white ring-2 ring-white/50'
-                        : 'border-transparent opacity-60 hover:opacity-100'
+                      ? 'border-white ring-2 ring-white/50'
+                      : 'border-transparent opacity-60 hover:opacity-100'
                       }`}
                     onClick={() => setSelectedImageIndex(index)}
                   >
@@ -909,7 +952,7 @@ ${bookingForm.name}`
                 />
               </div>
 
-              {/* Stay Dates */}
+           // Update the date inputs in the booking modal:
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="checkInDate" className="text-sm font-medium">
@@ -919,6 +962,7 @@ ${bookingForm.name}`
                     id="checkInDate"
                     name="checkInDate"
                     type="date"
+                    min={getMinDate(1)} // Can't book for today
                     value={bookingForm.checkInDate}
                     onChange={handleFormChange}
                     required
@@ -933,10 +977,15 @@ ${bookingForm.name}`
                     id="checkOutDate"
                     name="checkOutDate"
                     type="date"
+                    min={getMinCheckoutDate(bookingForm.checkInDate)}
                     value={bookingForm.checkOutDate}
                     onChange={handleFormChange}
                     required
+                    className={dateError ? "border-red-500 focus-visible:ring-red-500" : ""}
                   />
+                  {dateError && (
+                    <p className="text-sm text-red-500 mt-1">{dateError}</p>
+                  )}
                 </div>
               </div>
 

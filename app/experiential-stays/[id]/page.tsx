@@ -49,6 +49,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import LocationMapEmbed from "@/components/admin/LocationMapEmbed";
+import { getMinCheckoutDate, getMinDate } from "@/lib/date-validation";
+import { useDateValidation, validateDates } from "@/lib/date-validation";
+
 
 // Helper function to properly parse accommodation features
 const parseAccommodationFeatures = (featuresData: any): string[] => {
@@ -357,8 +360,8 @@ const ImageCarousel = ({
                 key={index}
                 onClick={() => setCurrentStartIndex(index)}
                 className={`w-3 h-3 rounded-full transition-all ${index === currentStartIndex % Math.min(5, totalImages)
-                    ? "bg-primary w-6"
-                    : "bg-border hover:bg-border/80"
+                  ? "bg-primary w-6"
+                  : "bg-border hover:bg-border/80"
                   }`}
                 aria-label={`Go to image set starting at ${index + 1}`}
               />
@@ -619,16 +622,59 @@ export default function StayDetail() {
     setShowFullScreen(true);
   };
 
+  // Add this import
+
+
+  // Add date validation
+  const [dateError, setDateError] = useState<string | null>(null);
+
+  // Validate dates whenever they change
+  useEffect(() => {
+    const { isValid, errorMessage } = validateDates(
+      formData.checkInDate,
+      formData.checkOutDate
+    );
+    setDateError(errorMessage);
+  }, [formData.checkInDate, formData.checkOutDate]);
+
+  // Update handleInputChange to include validation
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
+
+      // If changing check-in date and checkout is before new check-in, clear checkout
+      if (name === "checkInDate" && prev.checkOutDate) {
+        const { isValid } = validateDates(value, prev.checkOutDate);
+        if (!isValid) {
+          newData.checkOutDate = "";
+        }
+      }
+
+      return newData;
+    });
   };
+
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const { isValid, errorMessage } = validateDates(
+      formData.checkInDate,
+      formData.checkOutDate
+    );
+
+    if (!isValid) {
+      toast({
+        title: "Invalid Dates",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Construct email subject
     const subject = `Query for ${stay.name}`;
@@ -699,7 +745,7 @@ ${formData.contactNumber} | ${formData.email}
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["overview", "accommodations", "dining", "location", "connectivity", "query"];
-      
+
       for (const section of sections) {
         const element = sectionRefs.current[section];
         if (element) {
@@ -820,7 +866,7 @@ ${formData.contactNumber} | ${formData.email}
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2 text-muted-foreground mb-3">
                   <MapPin className="w-5 h-5" />
                   <span className="text-lg">{stay.location || "Location not specified"}</span>
@@ -1243,7 +1289,7 @@ ${formData.contactNumber} | ${formData.email}
                   <MapPin className="w-6 h-6 text-primary" />
                   Location
                 </h2>
-                
+
                 {stay.address && (
                   <div className="mb-4 p-4 bg-primary/5 rounded-lg">
                     <h3 className="font-semibold mb-2">Address:</h3>
@@ -1319,7 +1365,6 @@ ${formData.contactNumber} | ${formData.email}
                         <h2 className="text-3xl font-bold text-foreground mb-2">Book Your Stay</h2>
                         <p className="text-muted-foreground">Fill in the details below and we'll get back to you within 24 hours.</p>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="space-y-2">
                           <Label htmlFor="checkInDate">Check In Date</Label>
@@ -1327,6 +1372,7 @@ ${formData.contactNumber} | ${formData.email}
                             id="checkInDate"
                             name="checkInDate"
                             type="date"
+                            min={getMinDate(1)} // Can't book for today
                             value={formData.checkInDate}
                             onChange={handleInputChange}
                             required
@@ -1339,10 +1385,15 @@ ${formData.contactNumber} | ${formData.email}
                             id="checkOutDate"
                             name="checkOutDate"
                             type="date"
+                            min={getMinCheckoutDate(formData.checkInDate)}
                             value={formData.checkOutDate}
                             onChange={handleInputChange}
                             required
+                            className={dateError ? "border-red-500 focus-visible:ring-red-500" : ""}
                           />
+                          {dateError && (
+                            <p className="text-sm text-red-500 mt-1">{dateError}</p>
+                          )}
                         </div>
                       </div>
 

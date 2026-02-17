@@ -180,7 +180,7 @@ export default function ExperientialStays() {
             <Header />
 
             {/* Hero Section with Carousel */}
-            <section className="relative pt-32 pb-16 hero-gradient text-white overflow-hidden">
+            <section className="relative h-screen pt-32 pb-16 hero-gradient text-white overflow-hidden">
                 {/* Carousel Background */}
                 <div className="absolute inset-0 z-0">
                     {HERO_CAROUSEL_IMAGES.map((image, index) => (

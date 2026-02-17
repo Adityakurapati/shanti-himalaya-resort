@@ -1,20 +1,23 @@
-const resortImages = [
-        "20220116_124349 - Copy.jpg",
-        "20220116_124514 - Copy (2).jpg",
-        "20220116_124521 - Copy (2).jpg",
-        "20220116_125100 - Copy.jpg",
-        "20220116_125114 - Copy (2).jpg",
-        "Camp Ext 1.jpg",
-        "Camp Ext 2.jpg",
-        "Camp View Out.jpg",
-        "IMG_20220107_105940_644.webp",
-        "Resort Night View (2).jpg",
-        "Resort Night View (3) - Copy.jpg",
-        "Resort View.jpg",
-        "View 6.jpg",
-        "View Himalaya.jpg",
-        "View Umbrella.jpg"
-    ]
+const resortImages =  [
+  "1.webp",
+  "2.jpg",
+  "3.jpg",
+  "4.jpg",
+  "5.jpg",
+  "6.jpg",
+  "7.jpg",
+  "8.JPG",
+  "9.JPG",
+  "10.JPG",
+  "11.jpg",
+  "12.jpg",
+  "13.jpg",
+  "16.jpg",
+  "17.jpg"
+];
+
+
+
      const journeysImages = [
         "DSC07594.JPG",
         "IMG_9743.JPG",

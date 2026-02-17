@@ -345,9 +345,8 @@ const Index = () => {
                     {heroImages.map((image, index) => (
                         <div
                             key={index}
-                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                                index === currentIndices.hero ? 'opacity-100' : 'opacity-0'
-                            }`}
+                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentIndices.hero ? 'opacity-100' : 'opacity-0'
+                                }`}
                         >
                             <img
                                 src={getImagePath("HERO", image)}
@@ -395,30 +394,32 @@ const Index = () => {
                                     setAutoSlideEnabled(prev => ({ ...prev, hero: true }))
                                 }, 3000)
                             }}
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                                index === currentIndices.hero 
-                                    ? 'w-8 bg-white' 
+                            className={`h-2 rounded-full transition-all duration-300 ${index === currentIndices.hero
+                                    ? 'w-8 bg-white'
                                     : 'w-2 bg-white/50 hover:bg-white/70'
-                            }`}
+                                }`}
                             aria-label={`Go to slide ${index + 1}`}
                         />
                     ))}
                 </div>
 
-                <div className="relative z-10 text-center text-white pt-6 px-4 max-w-4xl mx-auto">
+                <div className="relative z-10 text-center text-white pt-6 md:mt-40 px-4 max-w-4xl mx-auto">
                     <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
                         <p className="text-lg">Discover Your Next Himalayan Adventure</p>
                     </Badge>
-                    <h1 className="text-5xl md:text-5xl font-display font-bold mb-16 leading-tight">
+                    <h1 className="text-5xl md:text-5xl font-display font-bold mb-24 leading-tight">
                         Welcome to Shanti Himalaya
                         <span className="text-3xl md:text-3xl block text-luxury leading-tight">
                             Meaningful Journeys & Experiential Stays through the Himalayas.
                         </span>
                     </h1>
-                    <span className="block mb-5 text-2xl">
+                    {/* HIMALAYAS Text - Moved closer to buttons with less margin */}
+                    <span className="block text-2xl ">
                         HIMALAYAS - INDIA | NEPAL | BHUTAN | TIBET
                     </span>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-24">
+
+                    {/* Buttons Section - Moved up and positioned lower */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center my-8">
                         <Link href="/our-resort">
                             <Button size="lg" className="bg-white text-primary hover:bg-white/90 hover-glow text-lg px-8">
                                 Explore Resort
@@ -434,6 +435,8 @@ const Index = () => {
                             </Button>
                         </Link>
                     </div>
+
+                    
                 </div>
 
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
@@ -475,10 +478,9 @@ const Index = () => {
                                         "A retreat designed for presence, privacy, and perspective"
                                     ].map((item, index) => (
                                         <div key={index} className="flex items-start space-x-4">
-                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                                                index === 0 || index === 3 || index === 4 ? 'bg-primary' :
-                                                index === 1 ? 'bg-accent' : 'bg-gold'
-                                            }`}></div>
+                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${index === 0 || index === 3 || index === 4 ? 'bg-primary' :
+                                                    index === 1 ? 'bg-accent' : 'bg-gold'
+                                                }`}></div>
                                             <span className="text-muted-foreground">{item}</span>
                                         </div>
                                     ))}
@@ -496,9 +498,8 @@ const Index = () => {
                                     {resortImages.map((image, index) => (
                                         <div
                                             key={index}
-                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                                                index === currentIndices.resort ? 'opacity-100' : 'opacity-0'
-                                            }`}
+                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndices.resort ? 'opacity-100' : 'opacity-0'
+                                                }`}
                                         >
                                             <img
                                                 src={getImagePath("Resort", image)}
@@ -541,11 +542,10 @@ const Index = () => {
                                                     setAutoSlideEnabled(prev => ({ ...prev, resort: true }))
                                                 }, 3000)
                                             }}
-                                            className={`h-2 rounded-full transition-all duration-300 ${
-                                                index === currentIndices.resort 
-                                                    ? 'w-6 bg-white' 
+                                            className={`h-2 rounded-full transition-all duration-300 ${index === currentIndices.resort
+                                                    ? 'w-6 bg-white'
                                                     : 'w-2 bg-white/50 hover:bg-white/70'
-                                            }`}
+                                                }`}
                                             aria-label={`Go to slide ${index + 1}`}
                                         />
                                     ))}
@@ -574,9 +574,8 @@ const Index = () => {
                                     {journeysImages.map((image, index) => (
                                         <div
                                             key={index}
-                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                                                index === currentIndices.journeys ? 'opacity-100' : 'opacity-0'
-                                            }`}
+                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndices.journeys ? 'opacity-100' : 'opacity-0'
+                                                }`}
                                         >
                                             <img
                                                 src={getImagePath("Epic Journeys", image)}
@@ -619,11 +618,10 @@ const Index = () => {
                                                     setAutoSlideEnabled(prev => ({ ...prev, journeys: true }))
                                                 }, 3000)
                                             }}
-                                            className={`h-2 rounded-full transition-all duration-300 ${
-                                                index === currentIndices.journeys 
-                                                    ? 'w-6 bg-white' 
+                                            className={`h-2 rounded-full transition-all duration-300 ${index === currentIndices.journeys
+                                                    ? 'w-6 bg-white'
                                                     : 'w-2 bg-white/50 hover:bg-white/70'
-                                            }`}
+                                                }`}
                                             aria-label={`Go to slide ${index + 1}`}
                                         />
                                     ))}
@@ -634,7 +632,7 @@ const Index = () => {
                         {/* Journey Details */}
                         <div className="space-y-8">
                             <div>
-                                <h3 className="text-2xl font-display font-semibold mb-6">Discover Legendary Treks</h3>
+                                <h3 className="text-2xl font-display font-semibold mb-6">Discover Experiential Journeys</h3>
                                 <div className="space-y-4">
                                     {[
                                         "Ladakh: Vast high-altitude deserts and timeless monasteries.",
@@ -646,10 +644,9 @@ const Index = () => {
                                         "North East India: Lush hills and untouched traditions."
                                     ].map((item, index) => (
                                         <div key={index} className="flex items-start space-x-4">
-                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                                                index === 0 || index === 3 || index === 4 ? 'bg-primary' :
-                                                index === 1 ? 'bg-accent' : 'bg-gold'
-                                            }`}></div>
+                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${index === 0 || index === 3 || index === 4 ? 'bg-primary' :
+                                                    index === 1 ? 'bg-accent' : 'bg-gold'
+                                                }`}></div>
                                             <span className="text-muted-foreground">{item}</span>
                                         </div>
                                     ))}
@@ -815,10 +812,9 @@ const Index = () => {
                                         "Everest and Annapurna regions - World's highest peaks"
                                     ].map((item, index) => (
                                         <div key={index} className="flex items-start space-x-4">
-                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                                                index === 0 || index === 3 ? 'bg-primary' :
-                                                index === 1 ? 'bg-accent' : 'bg-gold'
-                                            }`}></div>
+                                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${index === 0 || index === 3 ? 'bg-primary' :
+                                                    index === 1 ? 'bg-accent' : 'bg-gold'
+                                                }`}></div>
                                             <span className="text-muted-foreground">{item}</span>
                                         </div>
                                     ))}
@@ -836,9 +832,8 @@ const Index = () => {
                                     {destinationsImages.map((image, index) => (
                                         <div
                                             key={index}
-                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                                                index === currentIndices.destinations ? 'opacity-100' : 'opacity-0'
-                                            }`}
+                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndices.destinations ? 'opacity-100' : 'opacity-0'
+                                                }`}
                                         >
                                             <img
                                                 src={getImagePath("Amazing Destinations", image)}
@@ -881,11 +876,10 @@ const Index = () => {
                                                     setAutoSlideEnabled(prev => ({ ...prev, destinations: true }))
                                                 }, 3000)
                                             }}
-                                            className={`h-2 rounded-full transition-all duration-300 ${
-                                                index === currentIndices.destinations 
-                                                    ? 'w-6 bg-white' 
+                                            className={`h-2 rounded-full transition-all duration-300 ${index === currentIndices.destinations
+                                                    ? 'w-6 bg-white'
                                                     : 'w-2 bg-white/50 hover:bg-white/70'
-                                            }`}
+                                                }`}
                                             aria-label={`Go to slide ${index + 1}`}
                                         />
                                     ))}
@@ -914,9 +908,8 @@ const Index = () => {
                                     {experiencesImages.map((image, index) => (
                                         <div
                                             key={index}
-                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                                                index === currentIndices.experiences ? 'opacity-100' : 'opacity-0'
-                                            }`}
+                                            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndices.experiences ? 'opacity-100' : 'opacity-0'
+                                                }`}
                                         >
                                             <img
                                                 src={getImagePath("Experiences", image)}
@@ -959,11 +952,10 @@ const Index = () => {
                                                     setAutoSlideEnabled(prev => ({ ...prev, experiences: true }))
                                                 }, 3000)
                                             }}
-                                            className={`h-2 rounded-full transition-all duration-300 ${
-                                                index === currentIndices.experiences 
-                                                    ? 'w-6 bg-white' 
+                                            className={`h-2 rounded-full transition-all duration-300 ${index === currentIndices.experiences
+                                                    ? 'w-6 bg-white'
                                                     : 'w-2 bg-white/50 hover:bg-white/70'
-                                            }`}
+                                                }`}
                                             aria-label={`Go to slide ${index + 1}`}
                                         />
                                     ))}

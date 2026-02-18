@@ -34,9 +34,6 @@ export default function MenuMealsPage() {
   const [bonfireCurrentSlide, setBonfireCurrentSlide] = useState(0)
   const bonfireIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Dining images
-  // Update the diningImages array with your actual images
-  
 
   // Create a helper function to get the full image path
   const getDiningImagePath = (filename: string) => {
@@ -50,7 +47,7 @@ export default function MenuMealsPage() {
     if (diningIntervalRef.current) {
       clearInterval(diningIntervalRef.current)
     }
-    
+
     // Start new interval
     diningIntervalRef.current = setInterval(() => {
       setDiningCurrentSlide((prev) => (prev + 1) % diningImages.length)
@@ -63,7 +60,7 @@ export default function MenuMealsPage() {
     if (bonfireIntervalRef.current) {
       clearInterval(bonfireIntervalRef.current)
     }
-    
+
     // Start new interval
     bonfireIntervalRef.current = setInterval(() => {
       setBonfireCurrentSlide((prev) => (prev + 1) % bonfireImageFiles.length)
@@ -99,7 +96,7 @@ export default function MenuMealsPage() {
     if (diningIntervalRef.current) {
       clearInterval(diningIntervalRef.current)
     }
-    
+
     // Update slide
     if (action === 'next') {
       setDiningCurrentSlide((prev) => (prev + 1) % diningImages.length)
@@ -108,7 +105,7 @@ export default function MenuMealsPage() {
     } else if (action === 'set' && index !== undefined) {
       setDiningCurrentSlide(index)
     }
-    
+
     // Restart interval after 5 seconds
     setTimeout(() => {
       startDiningInterval()
@@ -121,7 +118,7 @@ export default function MenuMealsPage() {
     if (bonfireIntervalRef.current) {
       clearInterval(bonfireIntervalRef.current)
     }
-    
+
     // Update slide
     if (action === 'next') {
       setBonfireCurrentSlide((prev) => (prev + 1) % bonfireImageFiles.length)
@@ -130,7 +127,7 @@ export default function MenuMealsPage() {
     } else if (action === 'set' && index !== undefined) {
       setBonfireCurrentSlide(index)
     }
-    
+
     // Restart interval after 5 seconds
     setTimeout(() => {
       startBonfireInterval()
@@ -198,7 +195,7 @@ export default function MenuMealsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">
                   <h3 className="text-xl font-semibold">Dining Space {i + 1}</h3>
-                 </div>
+                </div>
               </div>
             ))}
           </div>
@@ -206,131 +203,134 @@ export default function MenuMealsPage() {
       </section>
 
       {/* ================= ENHANCED AUTO-SCROLLING CAROUSEL ================= */}
-<section className="py-12">
-  <div className="container mx-auto px-4">
-    <div className="text-center mb-12">
-      <h2 className="text-4xl md:text-5xl font-bold mb-4">
-        Our Dining Spaces
-      </h2>
-      <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-        Explore our beautifully designed dining areas that blend traditional
-        elegance with modern comfort
-      </p>
-    </div>
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Our Dining Spaces
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Explore our beautifully designed dining areas that blend traditional
+              elegance with modern comfort
+            </p>
+          </div>
 
-    {/* Main Carousel Layout */}
-    <div className="flex flex-col lg:flex-row gap-8">
-      {/* Left: Main Canvas (70%) */}
-      <div className="lg:w-[70%]">
-        <div className="relative rounded-2xl shadow-2xl overflow-hidden">
-          {/* Current Image */}
-          <img
-            src={getDiningImagePath(diningImages[diningCurrentSlide])}
-            alt={`Dining view ${diningCurrentSlide + 1}`}
-            className="w-full h-[500px] object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder.svg";
-            }}
-          />
-          
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          
-          {/* Navigation Buttons */}
-          <button
-            onClick={() => handleDiningNavigation('prev')}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
-            aria-label="Previous image"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          
-          <button
-            onClick={() => handleDiningNavigation('next')}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
-            aria-label="Next image"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-          
-          {/* Image Info */}
-          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-            <div className="max-w-2xl">
-              <Badge className="mb-4 bg-white/20 backdrop-blur-sm">
-                View {diningCurrentSlide + 1} of {diningImages.length}
-              </Badge>
-             
+          {/* Main Carousel Layout */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left: Main Canvas (70%) */}
+            <div className="lg:w-[70%]">
+              <div className="relative rounded-2xl shadow-2xl overflow-hidden h-[500px]">
+                {/* Images with fade transition */}
+                {diningImages.map((filename, index) => (
+                  <div
+                    key={filename}
+                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === diningCurrentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                      }`}
+                  >
+                    <img
+                      src={getDiningImagePath(filename)}
+                      alt={`Dining view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
+                    />
+                  </div>
+                ))}
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none z-20" />
+
+                {/* Navigation Buttons */}
+                <button
+                  onClick={() => handleDiningNavigation('prev')}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-30"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+
+                <button
+                  onClick={() => handleDiningNavigation('next')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-30"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+
+                {/* Image Info */}
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-20">
+                  <div className="max-w-2xl">
+                    <Badge className="mb-4 bg-white/20 backdrop-blur-sm">
+                      View {diningCurrentSlide + 1} of {diningImages.length}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Thumbnail Gallery (30%) - Show 12 images at a time */}
+            <div className="lg:w-[30%]">
+              <div className="h-[500px] overflow-y-auto rounded-xl border border-border/50 p-2">
+                <div className="grid grid-cols-3 gap-2">
+                  {diningImages.map((filename, index) => (
+                    <button
+                      key={filename}
+                      onClick={() => handleDiningNavigation('set', index)}
+                      className={`relative aspect-square rounded-lg overflow-hidden transition-all ${index === diningCurrentSlide
+                        ? "ring-2 ring-primary ring-offset-1 scale-105"
+                        : "opacity-70 hover:opacity-100 hover:scale-102"
+                        }`}
+                    >
+                      <img
+                        src={getDiningImagePath(filename)}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/placeholder.svg";
+                        }}
+                      />
+                      <div
+                        className={`absolute inset-0 ${index === diningCurrentSlide
+                          ? "bg-primary/20"
+                          : "bg-black/20 hover:bg-black/30"
+                          }`}
+                      />
+                      {/* Image number badge */}
+                      <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                        {index + 1}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Thumbnail Gallery Info */}
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Showing {diningImages.length} images • Click any image to view
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Right: Thumbnail Gallery (30%) - Show 12 images at a time */}
-      <div className="lg:w-[30%]">
-        <div className="h-[500px] overflow-y-auto rounded-xl border border-border/50 p-2">
-          <div className="grid grid-cols-3 gap-2">
-            {diningImages.map((filename, index) => (
+          {/* Dots Indicator (Mobile) */}
+          <div className="flex justify-center gap-2 mt-6 lg:hidden">
+            {diningImages.slice(0, Math.min(10, diningImages.length)).map((_, i) => (
               <button
-                key={filename}
-                onClick={() => handleDiningNavigation('set', index)}
-                className={`relative aspect-square rounded-lg overflow-hidden transition-all ${
-                  index === diningCurrentSlide
-                    ? "ring-2 ring-primary ring-offset-1 scale-105"
-                    : "opacity-70 hover:opacity-100 hover:scale-102"
-                }`}
-              >
-                <img
-                  src={getDiningImagePath(filename)}
-                  alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder.svg";
-                  }}
-                />
-                <div
-                  className={`absolute inset-0 ${
-                    index === diningCurrentSlide
-                      ? "bg-primary/20"
-                      : "bg-black/20 hover:bg-black/30"
+                key={i}
+                onClick={() => handleDiningNavigation('set', i)}
+                className={`h-2 w-2 rounded-full transition-all ${i === diningCurrentSlide
+                  ? "bg-primary w-8"
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
                   }`}
-                />
-                {/* Image number badge */}
-                <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
-                  {index + 1}
-                </div>
-              </button>
+                aria-label={`Go to slide ${i + 1}`}
+              />
             ))}
           </div>
         </div>
-        
-        {/* Thumbnail Gallery Info */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            Showing {diningImages.length} images • Click any image to view
-          </p>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    {/* Dots Indicator (Mobile) */}
-    <div className="flex justify-center gap-2 mt-6 lg:hidden">
-      {diningImages.slice(0, Math.min(10, diningImages.length)).map((_, i) => (
-        <button
-          key={i}
-          onClick={() => handleDiningNavigation('set', i)}
-          className={`h-2 w-2 rounded-full transition-all ${
-            i === diningCurrentSlide
-              ? "bg-primary w-8"
-              : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-          }`}
-          aria-label={`Go to slide ${i + 1}`}
-        />
-      ))}
-    </div>
-  </div>
-</section>
-      
-      
       {/* ================= SHANTI HIMALAYA DINING EXPERIENCE ================= */}
       <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/10">
         <div className="container mx-auto px-4 max-w-4xl">
@@ -780,37 +780,42 @@ export default function MenuMealsPage() {
           <div className="relative max-w-4xl mx-auto mb-8">
             {/* Main Image Container */}
             <div className="relative h-[500px] rounded-xl overflow-hidden shadow-2xl">
-              <div className="h-full bg-gradient-to-br from-orange-900/20 to-amber-900/20 flex items-center justify-center relative group">
-                {/* Current bonfire image */}
-                <img
-                  src={getBonfireImagePath(bonfireCurrentSlide)}
-                  alt={`Bonfire scene ${bonfireCurrentSlide + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-500"
-                  onError={(e) => {
-                    // Fallback if image fails to load
-                    (e.target as HTMLImageElement).src = "/placeholder.svg";
-                  }}
-                />
-              </div>
+              {/* Images with fade transition */}
+              {bonfireImageFiles.map((image, index) => (
+                <div
+                  key={image}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === bonfireCurrentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                    }`}
+                >
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_PATH || ''}/Bonfire/${image}`}
+                    alt={`Bonfire scene ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/placeholder.svg";
+                    }}
+                  />
+                </div>
+              ))}
 
               {/* Navigation Buttons */}
               <button
                 onClick={() => handleBonfireNavigation('prev')}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={() => handleBonfireNavigation('next')}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-10"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20"
                 aria-label="Next image"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
 
               {/* Image Counter */}
-              <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm z-10">
+              <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm z-20">
                 <span className="font-semibold">{bonfireCurrentSlide + 1}</span> / <span className="text-white/80">{bonfireImageFiles.length}</span>
               </div>
             </div>
@@ -848,7 +853,6 @@ export default function MenuMealsPage() {
                     alt={`Bonfire scene ${index + 1}`}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     onError={(e) => {
-                      // Fallback if image fails to load
                       (e.target as HTMLImageElement).src = "/placeholder.svg";
                     }}
                   />

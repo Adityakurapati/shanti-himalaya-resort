@@ -82,7 +82,7 @@ const EnquiryButton = () => {
       {/* Enquiry Modal */}
       <EnquiryModal
         item={{
-          id: "our-resort-id",
+          id: "550e8400-e29b-41d4-a716-446655440000",
           title: "Shanti Himalaya Resort",
           type: 'our-resort'
         }}

@@ -253,34 +253,6 @@ const OurResort = () => {
                 <div className="min-h-screen bg-background">
                         <Header />
 
-                        {/* Top Ribbon Banner - Only for Our Resort Page */}
-                        <div className="bg-primary text-white py-3 sticky top-0 z-40 border-b border-primary-foreground/20">
-                                <div className="container mx-auto px-4">
-                                        <nav className="flex items-center justify-center space-x-8 text-sm font-medium">
-                                                <a href="#our-resort" className="hover:text-luxury transition-colors">
-                                                        Our Resort
-                                                </a>
-                                                <a href="#accommodation" className="hover:text-luxury transition-colors">
-                                                        Accommodation
-                                                </a>
-                                                <a href="#packages" className="hover:text-luxury transition-colors">
-                                                        Packages
-                                                </a>
-                                                <a href="#location" className="hover:text-luxury transition-colors">
-                                                        Location
-                                                </a>
-                                                <Link href="/gallery" className="hover:text-luxury transition-colors">
-                                                        Gallery
-                                                </Link>
-                                                <a href="tel:9910775073" className="hover:text-luxury transition-colors ml-4 flex items-center">
-                                                        <Phone className="w-4 h-4 mr-1" />
-                                                        9910775073
-                                                </a>
-                                        </nav>
-                                </div>
-                        </div>
-
-                        {/* Hero Section */}
                         {/* Hero Section with Scrolling Himalayan Images */}
                         <section className="relative h-screen flex items-center justify-center overflow-hidden">
                                 <div className="absolute inset-0">
@@ -690,9 +662,9 @@ const OurResort = () => {
                                                                                 </div>
 
                                                                                 <div className="mt-auto space-y-3">
-<Link href={`/our-resort/packages/${pkg.slug}`} className="block">
-                                                <Button variant="outline" size="sm" className="w-full bg-transparent">
-                                                View Details
+                                                                                        <Link href={`/our-resort/packages/${pkg.slug}`} className="block">
+                                                                                                <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                                                                                        View Details
                                                                                                 </Button>
                                                                                         </Link>
                                                                                 </div>
@@ -735,7 +707,7 @@ const OurResort = () => {
                                                         <div className="h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center relative group">
                                                                 {galleryImages.length > 0 ? (
                                                                         <img
-                                                                                src={galleryImages[currentImageIndex]  || "/placeholder.svg"}
+                                                                                src={galleryImages[currentImageIndex] || "/placeholder.svg"}
                                                                                 alt={gallery[currentImageIndex]?.title || "Gallery image"}
                                                                                 className="w-full h-full object-cover"
                                                                         />
@@ -791,7 +763,7 @@ const OurResort = () => {
                                                                         className={`relative h-16 rounded-lg overflow-hidden transition-all group ${selectedThumbnail === index ? "ring-2 ring-primary" : "opacity-70 hover:opacity-100"}`}
                                                                 >
                                                                         <img
-                                                                                src={g.image_url  || "/placeholder.svg"}
+                                                                                src={g.image_url || "/placeholder.svg"}
                                                                                 alt={g.title || `Gallery ${index + 1}`}
                                                                                 className="w-full h-full object-cover"
                                                                         />
@@ -812,7 +784,7 @@ const OurResort = () => {
                                                         Activities & Experiences
                                                 </h2>
                                                 <p className="text-md text-muted-foreground max-w-5xl mx-auto">
-                                                        Wake to mountain stillness and days shaped by nature. Wander through nearby villages, follow gentle Himalayan trails, or trek at an easy, unhurried pace through forests and open meadows. Restore body and mind with yoga and meditation in pure mountain air, and capture rare moments through birdwatching and nature photography. 
+                                                        Wake to mountain stillness and days shaped by nature. Wander through nearby villages, follow gentle Himalayan trails, or trek at an easy, unhurried pace through forests and open meadows. Restore body and mind with yoga and meditation in pure mountain air, and capture rare moments through birdwatching and nature photography.
                                                 </p>
                                         </div>
 
@@ -895,216 +867,216 @@ const OurResort = () => {
                         </section>
 
                         {/* Perfect Location for Adventure */}
-                      <section id="location" className="py-20 mountain-gradient">
-  <div className="container mx-auto px-4">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      {/* ROW 1 — LEFT : Image Carousel */}
-      <div className="relative">
-        <div className="relative h-80 rounded-2xl overflow-hidden shadow-card group">
-          {/* Current Image */}
-          <img
-            src={getLocationImagePath(locationImages[currentLocationSlide]) || "/placeholder.svg"}
-            alt={`Location view ${currentLocationSlide + 1}`}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+                        <section id="location" className="py-20 mountain-gradient">
+                                <div className="container mx-auto px-4">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                                {/* ROW 1 — LEFT : Image Carousel */}
+                                                <div className="relative">
+                                                        <div className="relative h-80 rounded-2xl overflow-hidden shadow-card group">
+                                                                {/* Current Image */}
+                                                                <img
+                                                                        src={getLocationImagePath(locationImages[currentLocationSlide]) || "/placeholder.svg"}
+                                                                        alt={`Location view ${currentLocationSlide + 1}`}
+                                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                />
 
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+                                                                {/* Overlay */}
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
 
-          {/* Navigation Buttons */}
-          <button
-            onClick={() => handleLocationNavigation('prev')}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
-            aria-label="Previous image"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
+                                                                {/* Navigation Buttons */}
+                                                                <button
+                                                                        onClick={() => handleLocationNavigation('prev')}
+                                                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                                                                        aria-label="Previous image"
+                                                                >
+                                                                        <ChevronLeft className="w-5 h-5" />
+                                                                </button>
 
-          <button
-            onClick={() => handleLocationNavigation('next')}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
-            aria-label="Next image"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+                                                                <button
+                                                                        onClick={() => handleLocationNavigation('next')}
+                                                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100"
+                                                                        aria-label="Next image"
+                                                                >
+                                                                        <ChevronRight className="w-5 h-5" />
+                                                                </button>
 
-          {/* Image Counter */}
-          <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
-            <span className="font-semibold">{currentLocationSlide + 1}</span> / <span className="text-white/80">{locationImages.length}</span>
-          </div>
+                                                                {/* Image Counter */}
+                                                                <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                                                                        <span className="font-semibold">{currentLocationSlide + 1}</span> / <span className="text-white/80">{locationImages.length}</span>
+                                                                </div>
 
-          {/* Image Title Overlay */}
-          <div className="absolute bottom-4 left-4">
-            <Badge className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
-              Location Gallery
-            </Badge>
-          </div>
-        </div>
-      </div>
+                                                                {/* Image Title Overlay */}
+                                                                <div className="absolute bottom-4 left-4">
+                                                                        <Badge className="bg-white/20 backdrop-blur-sm border-white/30 text-white">
+                                                                                Location Gallery
+                                                                        </Badge>
+                                                                </div>
+                                                        </div>
+                                                </div>
 
-      {/* ROW 1 — RIGHT : Location Content */}
-      <div className="space-y-6">
-        <h2 className="text-4xl font-display font-bold text-foreground">
-          Perfect Location for Adventure
-        </h2>
+                                                {/* ROW 1 — RIGHT : Location Content */}
+                                                <div className="space-y-6">
+                                                        <h2 className="text-4xl font-display font-bold text-foreground">
+                                                                Perfect Location for Adventure
+                                                        </h2>
 
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Tucked away in the tranquil folds of the lower Himalayas, this offbeat camp resort is where the mountains slow time and nature takes the lead. Cradled close to the wild edges of Corbett National Park, it offers a rare blend of forest calm, open skies, and untamed beauty—perfect for those looking to disappear, even if just for a weekend.
-        </p>
+                                                        <p className="text-lg text-muted-foreground leading-relaxed">
+                                                                Tucked away in the tranquil folds of the lower Himalayas, this offbeat camp resort is where the mountains slow time and nature takes the lead. Cradled close to the wild edges of Corbett National Park, it offers a rare blend of forest calm, open skies, and untamed beauty—perfect for those looking to disappear, even if just for a weekend.
+                                                        </p>
 
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <MapPin className="w-5 h-5 text-primary" />
-            <span>Located in Digolikhal Village, Uttarakhand</span>
-          </div>
+                                                        <div className="space-y-1">
+                                                                <div className="flex items-center gap-3">
+                                                                        <MapPin className="w-5 h-5 text-primary" />
+                                                                        <span>Located in Digolikhal Village, Uttarakhand</span>
+                                                                </div>
 
-          <div className="flex items-center gap-3">
-            <Car className="w-5 h-5 text-primary" />
-            <span>280 km from Delhi · 6–7 hours scenic drive</span>
-          </div>
+                                                                <div className="flex items-center gap-3">
+                                                                        <Car className="w-5 h-5 text-primary" />
+                                                                        <span>280 km from Delhi · 6–7 hours scenic drive</span>
+                                                                </div>
 
-          <div className="flex items-center gap-3">
-            <TreePine className="w-5 h-5 text-primary" />
-            <span>Gateway to Corbett National Park & Himalayan foothills</span>
-          </div>
+                                                                <div className="flex items-center gap-3">
+                                                                        <TreePine className="w-5 h-5 text-primary" />
+                                                                        <span>Gateway to Corbett National Park & Himalayan foothills</span>
+                                                                </div>
 
-          <div className="flex items-center gap-3">
-            <Mountain className="w-5 h-5 text-primary" />
-            <span>Base for trekking to Gujrugarhi Hilltop & Manila Devi Temple</span>
-          </div>
-        </div>
-      </div>
+                                                                <div className="flex items-center gap-3">
+                                                                        <Mountain className="w-5 h-5 text-primary" />
+                                                                        <span>Base for trekking to Gujrugarhi Hilltop & Manila Devi Temple</span>
+                                                                </div>
+                                                        </div>
+                                                </div>
 
-      {/* ROW 2 — ENHANCED Travel Options Card */}
-      <div className="lg:col-span-2 bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 rounded-2xl shadow-xl p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side: Travel Options */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary text-primary-foreground rounded-xl">
-                <Car className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-foreground">Travel Options</h3>
-                <p className="text-muted-foreground mt-1">Choose your preferred way to reach us</p>
-              </div>
-            </div>
+                                                {/* ROW 2 — ENHANCED Travel Options Card */}
+                                                <div className="lg:col-span-2 bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 rounded-2xl shadow-xl p-8">
+                                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                                                {/* Left Side: Travel Options */}
+                                                                <div className="space-y-6">
+                                                                        <div className="flex items-center gap-3">
+                                                                                <div className="p-3 bg-primary text-primary-foreground rounded-xl">
+                                                                                        <Car className="w-6 h-6" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <h3 className="text-2xl font-bold text-foreground">Travel Options</h3>
+                                                                                        <p className="text-muted-foreground mt-1">Choose your preferred way to reach us</p>
+                                                                                </div>
+                                                                        </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* By Road */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <Car className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <h4 className="font-bold text-foreground">By Road</h4>
-                </div>
-                <p className="text-sm text-muted-foreground">Most convenient & scenic drive from Delhi</p>
-                <Badge className="mt-3 bg-emerald-100 text-emerald-700 border-emerald-200">
-                  Recommended
-                </Badge>
-              </div>
+                                                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                                                {/* By Road */}
+                                                                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 group">
+                                                                                        <div className="flex items-center gap-3 mb-3">
+                                                                                                <div className="p-2 bg-emerald-100 rounded-lg">
+                                                                                                        <Car className="w-5 h-5 text-emerald-600" />
+                                                                                                </div>
+                                                                                                <h4 className="font-bold text-foreground">By Road</h4>
+                                                                                        </div>
+                                                                                        <p className="text-sm text-muted-foreground">Most convenient & scenic drive from Delhi</p>
+                                                                                        <Badge className="mt-3 bg-emerald-100 text-emerald-700 border-emerald-200">
+                                                                                                Recommended
+                                                                                        </Badge>
+                                                                                </div>
 
-              {/* By Train + Road */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Train className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <h4 className="font-bold text-foreground">Train + Road</h4>
-                </div>
-                <p className="text-sm text-muted-foreground">Train to Ramnagar + short taxi ride</p>
-              </div>
+                                                                                {/* By Train + Road */}
+                                                                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 group">
+                                                                                        <div className="flex items-center gap-3 mb-3">
+                                                                                                <div className="p-2 bg-blue-100 rounded-lg">
+                                                                                                        <Train className="w-5 h-5 text-blue-600" />
+                                                                                                </div>
+                                                                                                <h4 className="font-bold text-foreground">Train + Road</h4>
+                                                                                        </div>
+                                                                                        <p className="text-sm text-muted-foreground">Train to Ramnagar + short taxi ride</p>
+                                                                                </div>
 
-              {/* By Air + Road */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Plane className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <h4 className="font-bold text-foreground">Air + Road</h4>
-                </div>
-                <p className="text-sm text-muted-foreground">Flight to Pantnagar + road journey</p>
-              </div>
-            </div>
+                                                                                {/* By Air + Road */}
+                                                                                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-primary/20 hover:border-primary hover:shadow-lg transition-all duration-300 group">
+                                                                                        <div className="flex items-center gap-3 mb-3">
+                                                                                                <div className="p-2 bg-purple-100 rounded-lg">
+                                                                                                        <Plane className="w-5 h-5 text-purple-600" />
+                                                                                                </div>
+                                                                                                <h4 className="font-bold text-foreground">Air + Road</h4>
+                                                                                        </div>
+                                                                                        <p className="text-sm text-muted-foreground">Flight to Pantnagar + road journey</p>
+                                                                                </div>
+                                                                        </div>
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span>Average travel time: 6-7 hours from Delhi</span>
-            </div>
-          </div>
+                                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                                                <Clock className="w-4 h-4" />
+                                                                                <span>Average travel time: 6-7 hours from Delhi</span>
+                                                                        </div>
+                                                                </div>
 
-          {/* Right Side: Detailed Information */}
-          <div className="lg:border-l lg:border-primary/20 lg:pl-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary text-primary-foreground rounded-xl">
-                <Compass className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-foreground">Detailed Directions</h3>
-                <p className="text-muted-foreground mt-1">Step-by-step guide to reach our camp</p>
-              </div>
-            </div>
+                                                                {/* Right Side: Detailed Information */}
+                                                                <div className="lg:border-l lg:border-primary/20 lg:pl-8 space-y-6">
+                                                                        <div className="flex items-center gap-3">
+                                                                                <div className="p-3 bg-primary text-primary-foreground rounded-xl">
+                                                                                        <Compass className="w-6 h-6" />
+                                                                                </div>
+                                                                                <div>
+                                                                                        <h3 className="text-2xl font-bold text-foreground">Detailed Directions</h3>
+                                                                                        <p className="text-muted-foreground mt-1">Step-by-step guide to reach our camp</p>
+                                                                                </div>
+                                                                        </div>
 
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
-                  1
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">From Delhi</h4>
-                  <p className="text-sm text-muted-foreground">Take NH9 towards Uttarakhand</p>
-                </div>
-              </div>
+                                                                        <div className="space-y-4">
+                                                                                <div className="flex items-start gap-3">
+                                                                                        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
+                                                                                                1
+                                                                                        </div>
+                                                                                        <div>
+                                                                                                <h4 className="font-semibold text-foreground">From Delhi</h4>
+                                                                                                <p className="text-sm text-muted-foreground">Take NH9 towards Uttarakhand</p>
+                                                                                        </div>
+                                                                                </div>
 
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
-                  2
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">At Ramnagar</h4>
-                  <p className="text-sm text-muted-foreground">Follow signs to Digolikhal Village</p>
-                </div>
-              </div>
+                                                                                <div className="flex items-start gap-3">
+                                                                                        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
+                                                                                                2
+                                                                                        </div>
+                                                                                        <div>
+                                                                                                <h4 className="font-semibold text-foreground">At Ramnagar</h4>
+                                                                                                <p className="text-sm text-muted-foreground">Follow signs to Digolikhal Village</p>
+                                                                                        </div>
+                                                                                </div>
 
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
-                  3
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">Final Stretch</h4>
-                  <p className="text-sm text-muted-foreground">Mountain road leads to our camp</p>
-                </div>
-              </div>
-            </div>
+                                                                                <div className="flex items-start gap-3">
+                                                                                        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
+                                                                                                3
+                                                                                        </div>
+                                                                                        <div>
+                                                                                                <h4 className="font-semibold text-foreground">Final Stretch</h4>
+                                                                                                <p className="text-sm text-muted-foreground">Mountain road leads to our camp</p>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
 
-            <Link href="/our-resort/how-to-reach" className="block">
-              <Button 
-                className="w-full lg:w-auto px-10 py-6 text-lg font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="flex items-center justify-center gap-3">
-                  <Map className="w-5 h-5" />
-                  
-                  <span>View Complete Travel Guide</span>
-                  <ArrowRight className="w-5 h-5" />
-                </div>
-              </Button>
-            </Link>
+                                                                        <Link href="/our-resort/how-to-reach" className="block">
+                                                                                <Button
+                                                                                        className="w-full lg:w-auto px-10 py-6 text-lg font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                                                                                >
+                                                                                        <div className="flex items-center justify-center gap-3">
+                                                                                                <Map className="w-5 h-5" />
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Phone className="w-4 h-4" />
-              <span>Need help? Call us: 
-                <a href="tel:+919910775073" className="text-primary font-medium ml-1 hover:underline">
-                  +91 99107 75073
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+                                                                                                <span>View Complete Travel Guide</span>
+                                                                                                <ArrowRight className="w-5 h-5" />
+                                                                                        </div>
+                                                                                </Button>
+                                                                        </Link>
+
+                                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                                                <Phone className="w-4 h-4" />
+                                                                                <span>Need help? Call us:
+                                                                                        <a href="tel:+919910775073" className="text-primary font-medium ml-1 hover:underline">
+                                                                                                +91 99107 75073
+                                                                                        </a>
+                                                                                </span>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                        </section>
 
 
 

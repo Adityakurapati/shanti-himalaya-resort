@@ -432,7 +432,7 @@ Best regards,
                           )}
                         </div>
                         <div className="space-y-3">
-                          <Link href={`/our-resort/packages/${otherPkg.id}`}>
+                          <Link href={`/our-resort/packages/${otherPkg.slug}`} className="w-full">
                             <Button variant="outline" className="w-full bg-transparent">
                               View Details
                             </Button>

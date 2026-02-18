@@ -953,7 +953,6 @@ ${bookingForm.name}`
                 />
               </div>
 
-           // Update the date inputs in the booking modal:
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="checkInDate" className="text-sm font-medium">

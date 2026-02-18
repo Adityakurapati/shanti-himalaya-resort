@@ -149,7 +149,7 @@ const Header = () => {
       const originalOverflow = document.body.style.overflow;
       // Prevent scroll
       document.body.style.overflow = 'hidden';
-      
+
       return () => {
         // Restore original overflow
         document.body.style.overflow = originalOverflow;
@@ -180,12 +180,12 @@ const Header = () => {
               `}
             >
               <span className="relative z-10">Our Resort</span>
-              
+
               {/* Permanent underline for active page */}
               {isOurResortActive && (
                 <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
               )}
-              
+
               {/* Hover animation underline */}
               {!isOurResortActive && (
                 <div className="
@@ -265,12 +265,12 @@ const Header = () => {
                   >
                     <span className="relative z-10">Journeys</span>
                     <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
-                    
+
                     {/* Permanent underline for active page */}
                     {isJourneysActive && (
                       <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                     )}
-                    
+
                     {/* Hover animation underline */}
                     {!isJourneysActive && (
                       <div className="
@@ -338,12 +338,12 @@ const Header = () => {
                   >
                     <span className="relative z-10">Destinations</span>
                     <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
-                    
+
                     {/* Permanent underline for active page */}
                     {isDestinationsActive && (
                       <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                     )}
-                    
+
                     {/* Hover animation underline */}
                     {!isDestinationsActive && (
                       <div className="
@@ -411,12 +411,12 @@ const Header = () => {
                   >
                     <span className="relative z-10">Experiences</span>
                     <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
-                    
+
                     {/* Permanent underline for active page */}
                     {isExperiencesActive && (
                       <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                     )}
-                    
+
                     {/* Hover animation underline */}
                     {!isExperiencesActive && (
                       <div className="
@@ -484,12 +484,12 @@ const Header = () => {
                   >
                     <span className="relative z-10">Stays</span>
                     <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
-                    
+
                     {/* Permanent underline for active page */}
                     {isStaysActive && (
                       <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                     )}
-                    
+
                     {/* Hover animation underline */}
                     {!isStaysActive && (
                       <div className="
@@ -552,12 +552,12 @@ const Header = () => {
                   `}
                 >
                   <span className="relative z-10">Blogs</span>
-                  
+
                   {/* Permanent underline for active page */}
                   {isBlogActive && (
                     <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                   )}
-                  
+
                   {/* Hover animation underline */}
                   {!isBlogActive && (
                     <div className="
@@ -587,7 +587,7 @@ const Header = () => {
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-lg text-muted-foreground">
               <Link href="tel:+919910775073">
-                
+
                 <Button className="hero-gradient hover-glow md:text-xl"> <Phone className="w-10 h-10" /> +91 9910775073</Button>
               </Link>
             </div>
@@ -613,9 +613,9 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
+      {isMenuOpen && (
+  <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 bg-white overflow-y-auto z-50">
+
             <nav className="flex flex-col space-y-3">
               {/* Our Resort Link */}
               <Link
@@ -626,8 +626,8 @@ const Header = () => {
                   rounded-lg 
                   font-medium 
                   transition-colors 
-                  ${isOurResortActive 
-                    ? "bg-primary text-primary-foreground" 
+                  ${isOurResortActive
+                    ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted"
                   }
                 `}
@@ -786,8 +786,8 @@ const Header = () => {
                       rounded-lg 
                       font-medium 
                       transition-colors 
-                      ${isBlogActive 
-                        ? "bg-primary text-primary-foreground" 
+                      ${isBlogActive
+                        ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted"
                       }
                     `}

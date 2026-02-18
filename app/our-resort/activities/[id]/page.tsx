@@ -317,7 +317,7 @@ export default async function ActivityDetailPage({ params }: { params: { id: str
                       <CardContent className="p-5">
                         <h3 className="text-lg font-semibold mb-2">{otherActivity.title}</h3>
                         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{otherActivity.description}</p>
-                        <Link href={`/our-resort/activities/${otherActivity.id}`}>
+                        <Link href={`/our-resort/activities/${otherActivity.slug}`} className="w-full">
                           <Button variant="outline" className="w-full bg-transparent">
                             View Details
                           </Button>

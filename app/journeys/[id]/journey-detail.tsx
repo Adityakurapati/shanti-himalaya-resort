@@ -97,41 +97,71 @@ const DayCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="px-4 sm:px-0"
     >
       <Card
-        className={`overflow-hidden border-2 transition-all duration-300 ${isExpanded ? "border-primary shadow-xl scale-[1.02]" : "border-border hover:border-primary/50"
-          }`}
+        className={`overflow-hidden border-2 transition-all duration-300 mx-2 sm:mx-0 ${
+          isExpanded
+            ? "border-primary shadow-xl scale-[1.02]"
+            : "border-border hover:border-primary/50"
+        }`}
       >
         <CardContent className="p-0">
-          {/* Day Header */}
+
+          {/* HEADER */}
           <div
-            className="p-6 cursor-pointer bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all relative z-10"
+            className="p-4 sm:p-6 cursor-pointer bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/15 transition-all"
             onClick={onToggle}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-primary text-primary-foreground rounded-full font-bold text-lg flex-shrink-0 relative z-20">
+            <div className="flex items-center">
+
+              {/* LEFT */}
+              <div className="flex items-center space-x-3 flex-1 min-w-0">
+
+                {/* DAY NUMBER */}
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary text-primary-foreground rounded-full font-bold text-sm sm:text-lg flex-shrink-0">
                   {day.day_number}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-xl font-bold text-foreground truncate">{day.title || `Day ${day.day_number}`}</h3>
+
+                {/* TITLE + DESC */}
+                <div className="flex-1 min-w-0">
+
+                  <h3 className="text-base sm:text-xl font-bold text-foreground truncate">
+                    {day.title || `Day ${day.day_number}`}
+                  </h3>
+
                   {day.description && (
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{day.description}</p>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {day.description}
+                    </p>
                   )}
+
                 </div>
+
               </div>
 
-              <div className="flex items-center space-x-3 flex-shrink-0">
-                {day.image_url && <Camera className="w-5 h-5 text-primary" />}
-                <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                  <ChevronDown className="w-6 h-6 text-muted-foreground" />
+
+              {/* RIGHT ICON */}
+              <div className="flex items-center space-x-2 flex-shrink-0 ml-3">
+
+                {day.image_url && (
+                  <Camera className="w-5 h-5 text-primary" />
+                )}
+
+                <motion.div
+                  animate={{ rotate: isExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
                 </motion.div>
+
               </div>
+
             </div>
           </div>
 
-          {/* Expandable Content */}
+
+
+          {/* EXPANDED CONTENT */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
@@ -139,114 +169,123 @@ const DayCard = ({
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="overflow-hidden relative z-0"
               >
-                <div className="p-6">
-                  {/* GRID LAYOUT */}
+                <div className="p-4 sm:p-6">
+
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* LEFT COLUMN */}
-                    {day.image_url ? (
-                      <div className="lg:col-span-5 flex flex-col">
-                        {/* Image */}
-                        <motion.div
-                          initial={{ scale: 0.95, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                          className="rounded-lg overflow-hidden h-fit shadow-lg mb-0"
-                        >
-                          <div className="h-fit">
-                            <img
-                              src={day.image_url || "/placeholder.svg"}
-                              alt={`Day ${day.day_number}`}
-                              className="w-full h-fit object-cover transition-transform duration-500 hover:scale-105"
-                            />
-                          </div>
-                        </motion.div>
 
-                        {/* Details below image */}
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.6 }}
-                          className="flex flex-col gap-6 pt-6 mt-6 border-t"
-                        >
-                          <DetailItem icon={Clock} title="Duration" value={day.duration || "6–7 hours"} color="blue" />
-                          <DetailItem icon={Home} title="Accommodation" value={day.accommodation || "Teahouse / Lodge"} color="purple" />
-                          <DetailItem icon={Utensils} title="Meals" value={day.meals || "Breakfast, Lunch, Dinner"} color="orange" />
-                        </motion.div>
-                      </div>
-                    ) : (
-                      // When no image
-                      <div className="lg:col-span-12">
-                        {/* Title & Description when no image */}
-                        <div className="space-y-4 mb-6">
-                          <motion.h3
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-2xl font-bold text-foreground"
-                          >
-                            {day.title || `Day ${day.day_number}`}
-                          </motion.h3>
 
-                          {day.description && (
-                            <motion.p
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.4 }}
-                              className="text-muted-foreground leading-relaxed whitespace-pre-line"
-                            >
-                              {day.description}
-                            </motion.p>
-                          )}
-                        </div>
-
-                        {/* Details when no image */}
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.5 }}
-                          className="flex flex-wrap gap-6 pt-6 border-t"
-                        >
-                          <DetailItem icon={Clock} title="Duration" value={day.duration || "6–7 hours"} color="blue" />
-                          <DetailItem icon={Home} title="Accommodation" value={day.accommodation || "Teahouse / Lodge"} color="purple" />
-                          <DetailItem icon={Utensils} title="Meals" value={day.meals || "Breakfast, Lunch, Dinner"} color="orange" />
-                        </motion.div>
-                      </div>
-                    )}
-
-                    {/* RIGHT COLUMN (only when image exists) */}
+                    {/* IMAGE COLUMN */}
                     {day.image_url && (
-                      <div className="lg:col-span-7">
-                        {/* Title & Description */}
-                        <div className="space-y-4">
-                          <motion.h3
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-2xl font-bold text-foreground"
-                          >
-                            {day.title || `Day ${day.day_number}`}
-                          </motion.h3>
+                      <div className="lg:col-span-5">
 
-                          {day.description && (
-                            <motion.p
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.4 }}
-                              className="text-muted-foreground leading-relaxed whitespace-pre-line"
-                            >
-                              {day.description}
-                            </motion.p>
-                          )}
+                        <img
+                          src={day.image_url}
+                          alt=""
+                          className="rounded-lg w-full object-cover"
+                        />
+
+                        {/* DETAILS BELOW IMAGE */}
+                        <div className="flex flex-col gap-4 pt-4">
+
+                          <DetailItem
+                            icon={Clock}
+                            title="Duration"
+                            value={day.duration || "6–7 hours"}
+                            color="blue"
+                          />
+
+                          <DetailItem
+                            icon={Home}
+                            title="Accommodation"
+                            value={
+                              day.accommodation ||
+                              "Teahouse / Lodge"
+                            }
+                            color="purple"
+                          />
+
+                          <DetailItem
+                            icon={Utensils}
+                            title="Meals"
+                            value={
+                              day.meals ||
+                              "Breakfast, Lunch, Dinner"
+                            }
+                            color="orange"
+                          />
+
                         </div>
+
                       </div>
                     )}
+
+
+
+                    {/* TEXT COLUMN */}
+                    <div
+                      className={
+                        day.image_url
+                          ? "lg:col-span-7"
+                          : "lg:col-span-12"
+                      }
+                    >
+
+                      <h3 className="text-xl font-bold mb-3">
+                        {day.title}
+                      </h3>
+
+                      <p className="text-muted-foreground whitespace-pre-line">
+                        {day.description}
+                      </p>
+
+
+
+                      {/* DETAILS WHEN NO IMAGE */}
+                      {!day.image_url && (
+                        <div className="flex flex-wrap gap-6 pt-6">
+
+                          <DetailItem
+                            icon={Clock}
+                            title="Duration"
+                            value={day.duration || "6–7 hours"}
+                            color="blue"
+                          />
+
+                          <DetailItem
+                            icon={Home}
+                            title="Accommodation"
+                            value={
+                              day.accommodation ||
+                              "Teahouse / Lodge"
+                            }
+                            color="purple"
+                          />
+
+                          <DetailItem
+                            icon={Utensils}
+                            title="Meals"
+                            value={
+                              day.meals ||
+                              "Breakfast, Lunch, Dinner"
+                            }
+                            color="orange"
+                          />
+
+                        </div>
+                      )}
+
+                    </div>
+
+
                   </div>
+
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
+
         </CardContent>
       </Card>
     </motion.div>

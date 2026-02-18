@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Globe, ChevronUp } from "luci
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import logo from "@/assets/shanti-himalaya-logo.jpg";
+import Link from "next/link";
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -119,55 +120,61 @@ const Footer = () => {
 
           {/* Site Map Links */}
           <div className="space-y-4">
-            <h4 className="font-display font-semibold text-lg">Site Map</h4>
+            <h4 className="font-display font-semibold text-lg">Quick Links</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <a href="/contact" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                <Link href="/contact" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Contact Us
-                </a>
-                <a href="/about-us-team" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                </Link>
+                <Link href="/about-us-team" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   About Us
-                </a>
-                <a href="/our-resort#gallery" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                </Link>
+                <Link href="/our-resort#gallery" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Gallery
-                </a>
-                <a href="/our-resort#accommodation" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                </Link>
+                <Link href="/our-resort#accommodation" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Accommodation
-                </a>
+                </Link>
               </div>
               <div className="space-y-2">
-                <a href="/about-us-team#team" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                <Link href="/about-us-team#team" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Our Team
-                </a>
-                <a href="/sustainable-tourism" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                </Link>
+                <Link href="/sustainable-tourism" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Sustainable Tourism
-                </a>
-                <a href="/terms" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                </Link>
+                <Link href="/sitemap" className="block text-md text-primary-foreground/80 hover:text-white transition-colors font-medium">
+                  Sitemap
+                </Link>
+                <Link href="/terms" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Terms & Conditions
-                </a>
-                <a href="/privacy" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
+                </Link>
+                <Link href="/privacy" className="block text-md text-primary-foreground/80 hover:text-white transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </div>
             </div>
           </div>
         </div>
 
         {/* Go to Top Button - Fixed position */}
-      <button
-        onClick={scrollToTop}
-        className="sticky bottom-6 left-[90vw] w-10 h-10 bg-gray-200 hover:bg-primary/90 text-black hover:text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
-        aria-label="Go to top"
-      >
-        <ChevronUp className="w-6 h-6" />
-      </button>
+        <button
+          onClick={scrollToTop}
+          className="sticky bottom-6 left-[90vw] w-10 h-10 bg-gray-200 hover:bg-primary/90 text-black hover:text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
+          aria-label="Go to top"
+        >
+          <ChevronUp className="w-6 h-6" />
+        </button>
 
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <p className="text-sm text-primary-foreground/60 text-center md:text-left mb-4 md:mb-0">
               © {new Date().getFullYear()} Shanti Himalaya. All rights reserved.
             </p>
-            <div className="text-sm text-primary-foreground/60">
+            <div className="flex items-center gap-2 text-sm text-primary-foreground/60">
+              <Link href="/sitemap" className="hover:text-white transition-colors border-r border-white/20 pr-2">
+                Sitemap
+              </Link>
               <span className="hidden md:inline">Website by </span>
               <a
                 href="https://shantihimalaya.com"

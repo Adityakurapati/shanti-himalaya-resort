@@ -20,7 +20,7 @@ const PrivacyPolicyPage = () => {
             </Badge>
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
               Privacy
-              <span className="block text-luxury">Policy</span>
+              <span className="block text-luxury leading-tight">Policy</span>
             </h1>
             <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
               Last updated: January 7, 2026
